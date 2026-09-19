@@ -5,74 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Vault | Movie Night Picker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0c0d12;
-      --card-bg: #161822;
-      --card-border: #232738;
-      --accent-har: #eab308;
+      --bg: #090a0f;
+      --card-bg: #12151f;
+      --card-border: #1f2537;
+      --accent-har: #f59e0b;
       --accent-scope: #3b82f6;
-      --text: #f3f4f6;
-      --text-dim: #9ca3af;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
       --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --success: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 80px;
+      padding-bottom: 90px;
+      -webkit-font-smoothing: antialiased;
     }
     header {
-      padding: 2.5rem 1rem 1.5rem;
+      padding: 3rem 1.5rem 2rem;
       text-align: center;
-      background: linear-gradient(180deg, #181b29 0%, transparent 100%);
+      background: radial-gradient(circle at top, #1e1b4b 0%, var(--bg) 70%);
     }
-    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
     h1 span { color: var(--accent-har); }
-    .subtitle { color: var(--text-dim); font-size: 0.95rem; }
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
 
     .sticky-top {
       position: sticky;
       top: 0;
-      background: rgba(12, 13, 18, 0.92);
-      backdrop-filter: blur(12px);
+      background: rgba(9, 10, 15, 0.92);
+      backdrop-filter: blur(14px);
       z-index: 50;
-      padding: 1rem;
+      padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--card-border);
     }
     .controls {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
     .search-bar input {
       width: 100%;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
       border: 1px solid var(--card-border);
-      background: #11131a;
+      background: #111420;
       color: var(--text);
       font-size: 1rem;
       outline: none;
+      transition: border-color 0.2s;
     }
+    .search-bar input:focus { border-color: var(--primary); }
     .filters {
       display: flex;
       gap: 0.5rem;
-      flex-wrap: wrap;
+      overflow-x: auto;
+      padding-bottom: 2px;
     }
     .pill {
-      background: #1f2333;
+      background: #171b29;
       border: 1px solid var(--card-border);
       color: var(--text-dim);
-      padding: 0.4rem 1rem;
-      border-radius: 20px;
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
       font-size: 0.85rem;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: all 0.2s;
     }
     .pill.active {
       background: var(--primary);
@@ -81,116 +100,192 @@
     }
 
     .leaderboard-section {
-      max-width: 900px;
-      margin: 1.5rem auto 0;
-      padding: 0 1rem;
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      padding: 0 1.5rem;
     }
     .leaderboard-box {
-      background: #12141f;
-      border: 1px solid #2d334a;
-      border-radius: 12px;
-      padding: 1rem;
+      background: linear-gradient(135deg, #161a29 0%, #111320 100%);
+      border: 1px solid #2d354d;
+      border-radius: 14px;
+      padding: 1.25rem;
     }
     .leaderboard-box h3 {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
       color: var(--accent-har);
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
-    .leader-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .leader-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
     .leader-item {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      font-size: 0.9rem;
-      padding: 0.4rem 0.6rem;
-      background: #1a1d2d;
-      border-radius: 6px;
+      font-size: 0.85rem;
+      padding: 0.6rem 0.85rem;
+      background: #1c2133;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-har);
     }
-    .leader-votes { font-weight: 700; color: #10b981; }
+    .leader-item strong {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+    .leader-votes {
+      font-weight: 800;
+      color: var(--success);
+      font-size: 0.85rem;
+    }
 
     .catalog {
-      max-width: 900px;
-      margin: 1.5rem auto 0;
-      padding: 0 1rem;
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      padding: 0 1.5rem;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 1.5rem;
     }
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.15s ease;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+      position: relative;
     }
-    .card:hover { transform: translateY(-2px); }
-    .card-top { margin-bottom: 0.8rem; }
-    .badge {
-      display: inline-block;
-      font-size: 0.7rem;
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #3b4566;
+    }
+    .poster-wrap {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      background: #181d2d;
+      position: relative;
+      overflow: hidden;
+    }
+    .poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .card:hover .poster-img { transform: scale(1.04); }
+    .badge-float {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 0.68rem;
       font-weight: 800;
-      padding: 0.2rem 0.45rem;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      backdrop-filter: blur(8px);
+      letter-spacing: 0.02em;
     }
-    .badge-har { background: rgba(234, 179, 8, 0.15); color: var(--accent-har); border: 1px solid rgba(234, 179, 8, 0.3); }
-    .badge-scope { background: rgba(59, 130, 246, 0.15); color: var(--accent-scope); border: 1px solid rgba(59, 130, 246, 0.3); }
-    .card-title { font-size: 1rem; font-weight: 600; line-height: 1.35; margin-bottom: 0.3rem; }
-    .card-meta { font-size: 0.75rem; color: var(--text-dim); }
+    .badge-har {
+      background: rgba(245, 158, 11, 0.9);
+      color: #000;
+    }
+    .badge-scope {
+      background: rgba(59, 130, 246, 0.9);
+      color: #fff;
+    }
+
+    .card-info {
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .card-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-meta {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.3;
+    }
 
     .card-action {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 0.5rem;
-      padding-top: 0.6rem;
-      border-top: 1px solid #1f2438;
+      padding-top: 0.5rem;
+      border-top: 1px solid #1c2236;
+      margin-top: auto;
     }
-    .vote-count { font-size: 0.85rem; font-weight: 600; color: var(--text-dim); }
+    .vote-count {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
     .vote-btn {
-      background: #252b42;
-      border: 1px solid #373e5c;
+      background: #23293e;
+      border: 1px solid #363f5e;
       color: #fff;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.8rem;
+      font-weight: 700;
       transition: all 0.2s;
     }
-    .vote-btn:hover { background: var(--primary); border-color: var(--primary); }
-    .vote-btn.voted { background: #10b981; border-color: #10b981; }
+    .vote-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .vote-btn.voted {
+      background: var(--success);
+      border-color: var(--success);
+      color: #000;
+    }
   </style>
 </head>
 <body>
 
 <header>
   <h1>THE <span>VAULT</span></h1>
-  <p class="subtitle">100-Inch Home Theater Experience • Pick what we watch</p>
+  <p class="subtitle">Curated High-Bitrate Master Library • Pick up to 3 films for movie night</p>
 </header>
 
 <div class="sticky-top">
   <div class="controls">
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search by title, year, audio track...">
+      <input type="text" id="searchInput" placeholder="Search by title, audio format, year...">
     </div>
     <div class="filters">
-      <button class="pill active" data-filter="all">All (89)</button>
-      <button class="pill" data-filter="HAR">[HAR] High Aspect Ratio (58)</button>
-      <button class="pill" data-filter="Scope">[Scope] 2.39:1 (13)</button>
+      <button class="pill active" data-filter="all">All Titles (89)</button>
+      <button class="pill" data-filter="HAR">[HAR] High Aspect Ratio (74)</button>
+      <button class="pill" data-filter="Scope">[Scope] 2.39:1 Cinematic (15)</button>
     </div>
   </div>
 </div>
 
 <div class="leaderboard-section">
   <div class="leaderboard-box">
-    <h3>🔥 Top Voted Right Now</h3>
+    <h3>🔥 Live Leaderboard</h3>
     <div class="leader-list" id="leaderList">
-      <div style="font-size:0.85rem; color: var(--text-dim);">No votes recorded yet. Be the first!</div>
+      <div style="font-size:0.85rem; color: var(--text-dim);">No votes cast yet. Be the first to vote!</div>
     </div>
   </div>
 </div>
@@ -215,95 +310,95 @@
   const db = getDatabase(app);
 
   const movies = [
-    { id: "har_1", title: "Aliens (Special Edition)", year: 1986, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_2", title: "Alita Battle Angel", year: 2019, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
-    { id: "har_3", title: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_4", title: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_5", title: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_6", title: "Aquaman", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_7", title: "Aquaman and the Lost Kingdom", year: 2023, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_8", title: "Arrival", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_9", title: "Avatar (Extended)", year: 2009, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_10", title: "Avatar: The Way of Water", year: 2022, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_11", title: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_12", title: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_13", title: "Back to the Future", year: 1985, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_14", title: "Batman v Superman: Dawn of Justice", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_15", title: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_16", title: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_17", title: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_18", title: "Blade Runner 2049", year: 2017, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
-    { id: "har_19", title: "Bumblebee", year: 2018, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_20", title: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_21", title: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_22", title: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_23", title: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_24", title: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_25", title: "Drumline", year: 2002, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_26", title: "Dunkirk", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_27", title: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_28", title: "First Man", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_29", title: "Gladiator", year: 2000, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_30", title: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_31", title: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX DS4K)" },
-    { id: "har_32", title: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_33", title: "Interstellar", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_34", title: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_35", title: "Joker", year: 2019, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_36", title: "Jurassic Park", year: 1993, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_37", title: "Logan", year: 2017, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_38", title: "Michael", year: 2026, tag: "HAR", audio: "7.1 Atmos Surround" },
-    { id: "har_39", title: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_40", title: "Mission: Impossible - Ghost Protocol", year: 2011, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_41", title: "Nope", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_42", title: "Oblivion", year: 2013, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_43", title: "Oppenheimer", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_44", title: "Pacific Rim", year: 2013, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_45", title: "Saving Private Ryan", year: 1998, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_46", title: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_47", title: "Skyfall", year: 2012, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_48", title: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_49", title: "Spider-Man 2", year: 2004, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_50", title: "Spider-Man: Far From Home", year: 2019, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_51", title: "Spider-Man: No Way Home", year: 2021, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_52", title: "Star Trek Into Darkness", year: 2013, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
-    { id: "har_53", title: "Sully", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_54", title: "Tenet", year: 2020, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_55", title: "Terminator 2: Judgment Day", year: 1991, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_56", title: "Terminator 3: Rise of the Machines", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_57", title: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_58", title: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_59", title: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_60", title: "The Hunger Games: Catching Fire", year: 2013, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_61", title: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_62", title: "The Matrix", year: 1999, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
-    { id: "har_63", title: "The Suicide Squad", year: 2021, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
-    { id: "har_64", title: "The Terminator", year: 1984, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_65", title: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_66", title: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_67", title: "Titanic", year: 1997, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_68", title: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_69", title: "Transformers: Age of Extinction", year: 2014, tag: "HAR", audio: "7.1 Atmos (IMAX)" },
-    { id: "har_70", title: "Transformers: Revenge of the Fallen", year: 2009, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_71", title: "Transformers: The Last Knight", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_72", title: "TRON: Legacy", year: 2010, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_73", title: "X-Men: Days of Future Past", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_74", title: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full IMAX)" },
-    { id: "scope_1", title: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish" },
-    { id: "scope_2", title: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_3", title: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround" },
-    { id: "scope_4", title: "Dune: Part One", year: 2021, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_5", title: "Dune: Part Two", year: 2024, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_6", title: "Memento", year: 2000, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_7", title: "Pride & Prejudice", year: 2005, tag: "Scope", audio: "2.0 Stereo" },
-    { id: "scope_8", title: "Spider-Man: Brand New Day", year: 2026, tag: "Scope", audio: "Stereo (Telesync)" },
-    { id: "scope_9", title: "Spider-Man: Homecoming", year: 2017, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_10", title: "Star Wars: The Force Awakens", year: 2015, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_11", title: "The Hunger Games", year: 2012, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_12", title: "The Hunger Games: Ballad of Songbirds and Snakes", year: 2023, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_13", title: "The Hunger Games: Mockingjay Part 1", year: 2014, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_14", title: "The Hunger Games: Mockingjay Part 2", year: 2015, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_15", title: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround" }
+    { id: "har_1", title: "Aliens (Special Edition)", query: "Aliens", year: 1986, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_2", title: "Alita: Battle Angel", query: "Alita Battle Angel", year: 2019, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { id: "har_3", title: "Ant-Man and the Wasp: Quantumania", query: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_4", title: "Ant-Man", query: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround" },
+    { id: "har_5", title: "Ant-Man and the Wasp", query: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_6", title: "Aquaman", query: "Aquaman", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_7", title: "Aquaman and the Lost Kingdom", query: "Aquaman and the Lost Kingdom", year: 2023, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_8", title: "Arrival", query: "Arrival", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_9", title: "Avatar (Extended)", query: "Avatar", year: 2009, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_10", title: "Avatar: The Way of Water", query: "Avatar: The Way of Water", year: 2022, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_11", title: "Avengers: Endgame", query: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_12", title: "Avengers: Infinity War", query: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_13", title: "Back to the Future", query: "Back to the Future", year: 1985, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_14", title: "Batman v Superman: Dawn of Justice", query: "Batman v Superman: Dawn of Justice", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_15", title: "Black Panther", query: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_16", title: "Black Panther: Wakanda Forever", query: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_17", title: "Black Widow", query: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_18", title: "Blade Runner 2049", query: "Blade Runner 2049", year: 2017, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { id: "har_19", title: "Bumblebee", query: "Bumblebee", year: 2018, tag: "HAR", audio: "7.1 Surround" },
+    { id: "har_20", title: "Captain America: Brave New World", query: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_21", title: "Captain America: Civil War", query: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_22", title: "Captain Marvel", query: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_23", title: "Doctor Strange", query: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_24", title: "Doctor Strange in the Multiverse of Madness", query: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_25", title: "Drumline", query: "Drumline", year: 2002, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_26", title: "Dunkirk", query: "Dunkirk", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_27", title: "Eternals", query: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_28", title: "First Man", query: "First Man", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_29", title: "Gladiator", query: "Gladiator", year: 2000, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_30", title: "Guardians of the Galaxy", query: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_31", title: "Guardians of the Galaxy Vol. 2", query: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX DS4K)" },
+    { id: "har_32", title: "Guardians of the Galaxy Vol. 3", query: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_33", title: "Interstellar", query: "Interstellar", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_34", title: "Iron Man", query: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_35", title: "Joker", query: "Joker", year: 2019, tag: "HAR", audio: "7.1 Surround" },
+    { id: "har_36", title: "Jurassic Park", query: "Jurassic Park", year: 1993, tag: "HAR", audio: "7.1 Surround" },
+    { id: "har_37", title: "Logan", query: "Logan", year: 2017, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_38", title: "Michael", query: "Michael", year: 2026, tag: "HAR", audio: "7.1 Atmos Surround" },
+    { id: "har_39", title: "Mission: Impossible - Fallout", query: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_40", title: "Mission: Impossible - Ghost Protocol", query: "Mission: Impossible - Ghost Protocol", year: 2011, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_41", title: "Nope", query: "Nope", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_42", title: "Oblivion", query: "Oblivion", year: 2013, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_43", title: "Oppenheimer", query: "Oppenheimer", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_44", title: "Pacific Rim", query: "Pacific Rim", year: 2013, tag: "HAR", audio: "7.1 Surround" },
+    { id: "har_45", title: "Saving Private Ryan", query: "Saving Private Ryan", year: 1998, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_46", title: "Shang-Chi and the Legend of the Ten Rings", query: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_47", title: "Skyfall", query: "Skyfall", year: 2012, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_48", title: "Spider-Man", query: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_49", title: "Spider-Man 2", query: "Spider-Man 2", year: 2004, tag: "HAR", audio: "5.1 Surround" },
+    { id: "har_50", title: "Spider-Man: Far From Home", query: "Spider-Man: Far From Home", year: 2019, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_51", title: "Spider-Man: No Way Home", query: "Spider-Man: No Way Home", year: 2021, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_52", title: "Star Trek Into Darkness", query: "Star Trek Into Darkness", year: 2013, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
+    { id: "har_53", title: "Sully", query: "Sully", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_54", title: "Tenet", query: "Tenet", year: 2020, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_55", title: "Terminator 2: Judgment Day", query: "Terminator 2: Judgment Day", year: 1991, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_56", title: "Terminator 3: Rise of the Machines", query: "Terminator 3: Rise of the Machines", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_57", title: "The Avengers", query: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround" },
+    { id: "har_58", title: "The Dark Knight", query: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_59", title: "The Dark Knight Rises", query: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_60", title: "The Hunger Games: Catching Fire", query: "The Hunger Games: Catching Fire", year: 2013, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_61", title: "The Marvels", query: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_62", title: "The Matrix", query: "The Matrix", year: 1999, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { id: "har_63", title: "The Suicide Squad", query: "The Suicide Squad", year: 2021, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
+    { id: "har_64", title: "The Terminator", query: "The Terminator", year: 1984, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_65", title: "Thor: Love and Thunder", query: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_66", title: "Thor: Ragnarok", query: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_67", title: "Titanic", query: "Titanic", year: 1997, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_68", title: "Top Gun: Maverick", query: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { id: "har_69", title: "Transformers: Age of Extinction", query: "Transformers: Age of Extinction", year: 2014, tag: "HAR", audio: "7.1 Atmos (IMAX)" },
+    { id: "har_70", title: "Transformers: Revenge of the Fallen", query: "Transformers: Revenge of the Fallen", year: 2009, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_71", title: "Transformers: The Last Knight", query: "Transformers: The Last Knight", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { id: "har_72", title: "TRON: Legacy", query: "TRON: Legacy", year: 2010, tag: "HAR", audio: "7.1 Surround" },
+    { id: "har_73", title: "X-Men: Days of Future Past", query: "X-Men: Days of Future Past", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { id: "har_74", title: "Zack Snyder's Justice League", query: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full IMAX)" },
+    { id: "scope_1", title: "A Quiet Place", query: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish" },
+    { id: "scope_2", title: "A Quiet Place: Day One", query: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround" },
+    { id: "scope_3", title: "A Quiet Place Part II", query: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround" },
+    { id: "scope_4", title: "Dune: Part One", query: "Dune", year: 2021, tag: "Scope", audio: "7.1 Surround" },
+    { id: "scope_5", title: "Dune: Part Two", query: "Dune: Part Two", year: 2024, tag: "Scope", audio: "7.1 Surround" },
+    { id: "scope_6", title: "Memento", query: "Memento", year: 2000, tag: "Scope", audio: "5.1 Surround" },
+    { id: "scope_7", title: "Pride & Prejudice", query: "Pride & Prejudice", year: 2005, tag: "Scope", audio: "2.0 Stereo" },
+    { id: "scope_8", title: "Spider-Man: Brand New Day", query: "Spider-Man", year: 2026, tag: "Scope", audio: "Stereo (Telesync)" },
+    { id: "scope_9", title: "Spider-Man: Homecoming", query: "Spider-Man: Homecoming", year: 2017, tag: "Scope", audio: "5.1 Surround" },
+    { id: "scope_10", title: "Star Wars: The Force Awakens", query: "Star Wars: The Force Awakens", year: 2015, tag: "Scope", audio: "5.1 Surround" },
+    { id: "scope_11", title: "The Hunger Games", query: "The Hunger Games", year: 2012, tag: "Scope", audio: "7.1 Surround" },
+    { id: "scope_12", title: "The Hunger Games: Ballad of Songbirds & Snakes", query: "The Ballad of Songbirds & Snakes", year: 2023, tag: "Scope", audio: "7.1 Surround" },
+    { id: "scope_13", title: "The Hunger Games: Mockingjay Part 1", query: "The Hunger Games: Mockingjay - Part 1", year: 2014, tag: "Scope", audio: "7.1 Surround" },
+    { id: "scope_14", title: "The Hunger Games: Mockingjay Part 2", query: "The Hunger Games: Mockingjay - Part 2", year: 2015, tag: "Scope", audio: "7.1 Surround" },
+    { id: "scope_15", title: "Thunderbolts*", query: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround" }
   ];
 
   let currentFilter = "all";
@@ -316,6 +411,7 @@
   const pills = document.querySelectorAll(".pill");
   const leaderList = document.getElementById("leaderList");
 
+  // Firebase Live Sync
   const votesRef = ref(db, "movie_votes");
   onValue(votesRef, (snapshot) => {
     liveVotes = snapshot.val() || {};
@@ -323,7 +419,26 @@
     renderLeaderboard();
   });
 
-  function renderCatalog() {
+  // Client-Side Poster Hydration via TMDB
+  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache") || "{}");
+  async function fetchPoster(movie) {
+    if (posterCache[movie.id]) return posterCache[movie.id];
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0 && data.results[0].poster_path) {
+        const url = `https://image.tmdb.org/t/p/w500${data.results[0].poster_path}`;
+        posterCache[movie.id] = url;
+        localStorage.setItem("vault_poster_cache", JSON.stringify(posterCache));
+        return url;
+      }
+    } catch (e) {
+      // Fall through to placeholder
+    }
+    return `https://via.placeholder.com/300x450/161926/94a3b8?text=${encodeURIComponent(movie.title)}`;
+  }
+
+  async function renderCatalog() {
     catalogEl.innerHTML = "";
     const filtered = movies.filter(m => {
       const matchFilter = currentFilter === "all" || m.tag === currentFilter;
@@ -333,27 +448,42 @@
       return matchFilter && matchSearch;
     });
 
-    filtered.forEach(m => {
+    for (const m of filtered) {
       const isVoted = myVotes.includes(m.id);
       const voteCount = liveVotes[m.id] || 0;
+      const cachedPoster = posterCache[m.id] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%2312151f'/%3E%3C/svg%3E";
+
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <div class="card-top">
-          <span class="badge ${m.tag === 'HAR' ? 'badge-har' : 'badge-scope'}">${m.tag}</span>
-          <div class="card-title">${m.title}</div>
-          <div class="card-meta">${m.year} • ${m.audio}</div>
+        <div class="poster-wrap">
+          <img src="${cachedPoster}" alt="${m.title}" id="img_${m.id}" class="poster-img" loading="lazy">
+          <span class="badge-float ${m.tag === 'HAR' ? 'badge-har' : 'badge-scope'}">${m.tag}</span>
         </div>
-        <div class="card-action">
-          <span class="vote-count">${voteCount} ${voteCount === 1 ? 'vote' : 'votes'}</span>
-          <button class="vote-btn ${isVoted ? 'voted' : ''}" data-id="${m.id}">
-            ${isVoted ? '✓ Picked' : '+ Pick'}
-          </button>
+        <div class="card-info">
+          <div>
+            <div class="card-title">${m.title}</div>
+            <div class="card-meta">${m.year} • ${m.audio}</div>
+          </div>
+          <div class="card-action">
+            <span class="vote-count">${voteCount} ${voteCount === 1 ? 'vote' : 'votes'}</span>
+            <button class="vote-btn ${isVoted ? 'voted' : ''}" data-id="${m.id}">
+              ${isVoted ? '✓ Picked' : '+ Pick'}
+            </button>
+          </div>
         </div>
       `;
+
       card.querySelector(".vote-btn").addEventListener("click", () => toggleVote(m.id));
       catalogEl.appendChild(card);
-    });
+
+      if (!posterCache[m.id]) {
+        fetchPoster(m).then(url => {
+          const el = document.getElementById(`img_${m.id}`);
+          if (el) el.src = url;
+        });
+      }
+    }
   }
 
   function renderLeaderboard() {
@@ -364,14 +494,14 @@
       .slice(0, 5);
 
     if (sorted.length === 0) {
-      leaderList.innerHTML = `<div style="font-size:0.85rem; color: var(--text-dim);">No votes recorded yet. Be the first!</div>`;
+      leaderList.innerHTML = `<div style="font-size:0.85rem; color: var(--text-dim);">No votes cast yet. Be the first to vote!</div>`;
       return;
     }
 
     leaderList.innerHTML = sorted.map(item => `
       <div class="leader-item">
-        <span><strong>${item.movie.title}</strong> (${item.movie.tag})</span>
-        <span class="leader-votes">${item.count} votes</span>
+        <strong>${item.movie.title}</strong>
+        <span class="leader-votes">${item.count} ${item.count === 1 ? 'vote' : 'votes'}</span>
       </div>
     `).join("");
   }
