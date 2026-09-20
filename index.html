@@ -263,6 +263,27 @@
 </head>
 <body>
 
+<div id="introModal" style="position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease;">
+  <div style="width: 100vw; height: 100vh; position: relative; pointer-events: none;">
+    <iframe 
+      style="width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+      src="https://www.youtube.com/embed/KIUhDod8WlI?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3" 
+      frameborder="0" 
+      allow="autoplay; encrypted-media">
+    </iframe>
+  </div>
+  <button onclick="closeIntro()" style="position: absolute; bottom: 40px; right: 40px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; z-index: 1001;">SKIP INTRO</button>
+</div>
+
+<script>
+  function closeIntro() {
+    const modal = document.getElementById('introModal');
+    modal.style.opacity = '0';
+    setTimeout(() => modal.remove(), 800);
+  }
+  // Auto-dismisses after 5 seconds to reveal the catalog
+  setTimeout(closeIntro, 5000);
+</script>
 <header>
   <h1>THE <span>VAULT</span></h1>
   <p class="subtitle">Curated High-Bitrate Master Library • Pick up to 3 films for movie night</p>
