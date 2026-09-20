@@ -263,27 +263,29 @@
 </head>
 <body>
 
-<div id="introModal" style="position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease;">
-  <div style="width: 100vw; height: 100vh; position: relative; pointer-events: none;">
+<!-- Cinematic Intro Modal Overlay -->
+<div id="introModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease; gap: 1.25rem;">
+  <div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.9); border: 1px solid #1f2537;">
     <iframe 
-      style="width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+      style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
       src="https://www.youtube.com/embed/KIUhDod8WlI?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3" 
       frameborder="0" 
       allow="autoplay; encrypted-media">
     </iframe>
   </div>
-  <button onclick="closeIntro()" style="position: absolute; bottom: 40px; right: 40px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; z-index: 1001;">SKIP INTRO</button>
+  <button onclick="closeIntro()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: background 0.2s;">SKIP INTRO</button>
 </div>
 
 <script>
   function closeIntro() {
     const modal = document.getElementById('introModal');
-    modal.style.opacity = '0';
-    setTimeout(() => modal.remove(), 800);
+    if (modal) {
+      modal.style.opacity = '0';
+      setTimeout(() => modal.remove(), 800);
+    }
   }
-  // Auto-dismisses after 5 seconds to reveal the catalog
-  setTimeout(closeIntro, 5000);
 </script>
+
 <header>
   <h1>THE <span>VAULT</span></h1>
   <p class="subtitle">Curated High-Bitrate Master Library • Pick up to 3 films for movie night</p>
@@ -432,7 +434,6 @@
   const pills = document.querySelectorAll(".pill");
   const leaderList = document.getElementById("leaderList");
 
-  // Firebase Live Sync
   const votesRef = ref(db, "movie_votes");
   onValue(votesRef, (snapshot) => {
     liveVotes = snapshot.val() || {};
@@ -440,7 +441,6 @@
     renderLeaderboard();
   });
 
-  // Client-Side Poster Hydration via TMDB
   const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache") || "{}");
   async function fetchPoster(movie) {
     if (posterCache[movie.id]) return posterCache[movie.id];
@@ -453,9 +453,7 @@
         localStorage.setItem("vault_poster_cache", JSON.stringify(posterCache));
         return url;
       }
-    } catch (e) {
-      // Fall through to placeholder
-    }
+    } catch (e) {}
     return `https://via.placeholder.com/300x450/161926/94a3b8?text=${encodeURIComponent(movie.title)}`;
   }
 
