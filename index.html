@@ -627,6 +627,10 @@
   const swapTargetTitle = document.getElementById("swapTargetTitle");
   const swapCancelBtn = document.getElementById("swapCancelBtn");
 
+  function getPhaseStorageKey() {
+    return `vault_${currentSession}_${sessionData.phase}`;
+  }
+
   // Real-time Session Sync
   const sessionPointerRef = ref(db, "active_session");
   onValue(sessionPointerRef, (snapshot) => {
@@ -639,17 +643,7 @@
 
     currentSession = sessionVal;
 
-    // Check LocalStorage Session State
-    const storedSession = localStorage.getItem("vault_session");
-    if (storedSession !== currentSession) {
-      localStorage.setItem("vault_session", currentSession);
-      localStorage.setItem("vault_my_votes", "[]");
-      myVotes = [];
-    } else {
-      myVotes = JSON.parse(localStorage.getItem("vault_my_votes") || "[]");
-    }
-
-    // Bind Session Data (phase, finalists, votes)
+    // Bind Session Data
     const sessionRef = ref(db, `sessions/${currentSession}`);
     onValue(sessionRef, (snap) => {
       const val = snap.val() || {};
@@ -658,6 +652,9 @@
         finalists: val.finalists || [],
         votes: val.votes || {}
       };
+
+      // Isolated phase-based pick loading
+      myVotes = JSON.parse(localStorage.getItem(getPhaseStorageKey()) || "[]");
 
       // UI Phase Management
       if (sessionData.phase === "showdown") {
@@ -696,7 +693,7 @@
   async function renderCatalog() {
     catalogEl.innerHTML = "";
 
-    // If Showdown is active, only render the 4 finalists
+    // Showdown filters catalog strictly down to finalists
     let baseList = movies;
     if (sessionData.phase === "showdown" && sessionData.finalists.length > 0) {
       baseList = movies.filter(m => sessionData.finalists.includes(m.id));
@@ -768,35 +765,33 @@
     `).join("");
   }
 
-  // Voting Orchestrator
+  // Voting Orchestration Logic
   function handleVoteClick(movieId) {
     if (!currentSession) return;
     const isVoted = myVotes.includes(movieId);
 
-    // Showdown Phase Logic (1 vote strict limit)
+    // Showdown Mode: 1 vote maximum. Clicking another film auto-swaps your vote.
     if (sessionData.phase === "showdown") {
       if (isVoted) {
         commitVote(movieId, -1);
         myVotes = [];
       } else {
-        if (myVotes.length >= 1) {
-          // Auto swap single vote in Showdown
+        if (myVotes.length > 0) {
           commitVote(myVotes[0], -1);
-          myVotes = [];
         }
         commitVote(movieId, +1);
         myVotes = [movieId];
       }
-      localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+      localStorage.setItem(getPhaseStorageKey(), JSON.stringify(myVotes));
       renderCatalog();
       return;
     }
 
-    // Nominations Phase Logic (3 vote limit with Visual Swap Dialog)
+    // Nominations Mode: 3 votes maximum with visual swap prompt
     if (isVoted) {
       commitVote(movieId, -1);
       myVotes = myVotes.filter(id => id !== movieId);
-      localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+      localStorage.setItem(getPhaseStorageKey(), JSON.stringify(myVotes));
       renderCatalog();
     } else {
       if (myVotes.length >= 3) {
@@ -804,7 +799,7 @@
       } else {
         commitVote(movieId, +1);
         myVotes.push(movieId);
-        localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+        localStorage.setItem(getPhaseStorageKey(), JSON.stringify(myVotes));
         renderCatalog();
       }
     }
@@ -818,7 +813,7 @@
     });
   }
 
-  // Visual Swap Modal Implementation
+  // Visual Swap Modal Handlers
   function openSwapModal(newMovieId) {
     pendingSwapMovieId = newMovieId;
     const newMovie = movies.find(m => m.id === newMovieId);
@@ -855,7 +850,7 @@
     commitVote(newId, +1);
     myVotes = myVotes.filter(id => id !== oldId);
     myVotes.push(newId);
-    localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+    localStorage.setItem(getPhaseStorageKey(), JSON.stringify(myVotes));
     closeSwapModal();
     renderCatalog();
   }
@@ -886,22 +881,20 @@
         return;
       }
 
-      // Reset votes for the runoff and set top 4 finalists
       set(ref(db, `sessions/${currentSession}/phase`), "showdown");
       set(ref(db, `sessions/${currentSession}/finalists`), top4);
       set(ref(db, `sessions/${currentSession}/votes`), null);
-      alert("🏆 Runoff Phase Initiated! Catalog narrowed to the top 4.");
+      alert("🏆 Runoff Phase Initiated! Ready for final votes.");
     } else {
-      // Revert back to nominations
       set(ref(db, `sessions/${currentSession}/phase`), "nominations");
       set(ref(db, `sessions/${currentSession}/finalists`), null);
       set(ref(db, `sessions/${currentSession}/votes`), null);
-      alert("Reverted to Nominations phase.");
+      alert("Reverted back to Nominations phase.");
     }
   });
 
   document.getElementById("adminResetBtn").addEventListener("click", () => {
-    const pin = prompt("Enter Admin PIN to start a new movie night round:");
+    const pin = prompt("Enter Admin PIN to start a fresh movie night round:");
     if (pin === "1234") {
       const nextRound = `round_${Date.now()}`;
       set(sessionPointerRef, nextRound);
