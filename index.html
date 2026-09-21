@@ -18,6 +18,7 @@
       --primary: #6366f1;
       --primary-hover: #4f46e5;
       --success: #10b981;
+      --danger: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -75,6 +76,12 @@
       transition: border-color 0.2s;
     }
     .search-bar input:focus { border-color: var(--primary); }
+    .filters-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
     .filters {
       display: flex;
       gap: 0.5rem;
@@ -97,6 +104,22 @@
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
+    }
+    .admin-btn {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: var(--danger);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .admin-btn:hover {
+      background: var(--danger);
+      color: #fff;
     }
 
     .leaderboard-section {
@@ -296,10 +319,13 @@
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search by title, audio format, year...">
     </div>
-    <div class="filters">
-      <button class="pill active" data-filter="all">All Titles (89)</button>
-      <button class="pill" data-filter="HAR">[HAR] High Aspect Ratio (74)</button>
-      <button class="pill" data-filter="Scope">[Scope] 2.39:1 Cinematic (15)</button>
+    <div class="filters-bar">
+      <div class="filters">
+        <button class="pill active" data-filter="all">All Titles</button>
+        <button class="pill" data-filter="HAR">[HAR] High Aspect Ratio</button>
+        <button class="pill" data-filter="Scope">[Scope] 2.39:1 Cinematic</button>
+      </div>
+      <button class="admin-btn" id="adminResetBtn">⚡ New Round</button>
     </div>
   </div>
 </div>
@@ -317,7 +343,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+  import { getDatabase, ref, onValue, runTransaction, set } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB0XqKMTAKjv3ImnzIgvJPGRMS4SwcI7go",
@@ -332,114 +358,163 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  const movies = [
-    { id: "har_1", title: "Aliens (Special Edition)", query: "Aliens", year: 1986, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_2", title: "Alita: Battle Angel", query: "Alita Battle Angel", year: 2019, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
-    { id: "har_3", title: "Ant-Man and the Wasp: Quantumania", query: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_4", title: "Ant-Man", query: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_5", title: "Ant-Man and the Wasp", query: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_6", title: "Aquaman", query: "Aquaman", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_7", title: "Aquaman and the Lost Kingdom", query: "Aquaman and the Lost Kingdom", year: 2023, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_8", title: "Arrival", query: "Arrival", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_9", title: "Avatar (Extended)", query: "Avatar", year: 2009, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_10", title: "Avatar: The Way of Water", query: "Avatar: The Way of Water", year: 2022, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_11", title: "Avengers: Endgame", query: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_12", title: "Avengers: Infinity War", query: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_13", title: "Back to the Future", query: "Back to the Future", year: 1985, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_14", title: "Batman v Superman: Dawn of Justice", query: "Batman v Superman: Dawn of Justice", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_15", title: "Black Panther", query: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_16", title: "Black Panther: Wakanda Forever", query: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_17", title: "Black Widow", query: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_18", title: "Blade Runner 2049", query: "Blade Runner 2049", year: 2017, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
-    { id: "har_19", title: "Bumblebee", query: "Bumblebee", year: 2018, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_20", title: "Captain America: Brave New World", query: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_21", title: "Captain America: Civil War", query: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_22", title: "Captain Marvel", query: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_23", title: "Doctor Strange", query: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_24", title: "Doctor Strange in the Multiverse of Madness", query: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_25", title: "Drumline", query: "Drumline", year: 2002, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_26", title: "Dunkirk", query: "Dunkirk", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_27", title: "Eternals", query: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_28", title: "First Man", query: "First Man", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_29", title: "Gladiator", query: "Gladiator", year: 2000, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_30", title: "Guardians of the Galaxy", query: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_31", title: "Guardians of the Galaxy Vol. 2", query: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX DS4K)" },
-    { id: "har_32", title: "Guardians of the Galaxy Vol. 3", query: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_33", title: "Interstellar", query: "Interstellar", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_34", title: "Iron Man", query: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_35", title: "Joker", query: "Joker", year: 2019, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_36", title: "Jurassic Park", query: "Jurassic Park", year: 1993, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_37", title: "Logan", query: "Logan", year: 2017, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_38", title: "Michael", query: "Michael", year: 2026, tag: "HAR", audio: "7.1 Atmos Surround" },
-    { id: "har_39", title: "Mission: Impossible - Fallout", query: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_40", title: "Mission: Impossible - Ghost Protocol", query: "Mission: Impossible - Ghost Protocol", year: 2011, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_41", title: "Nope", query: "Nope", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_42", title: "Oblivion", query: "Oblivion", year: 2013, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_43", title: "Oppenheimer", query: "Oppenheimer", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_44", title: "Pacific Rim", query: "Pacific Rim", year: 2013, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_45", title: "Saving Private Ryan", query: "Saving Private Ryan", year: 1998, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_46", title: "Shang-Chi and the Legend of the Ten Rings", query: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_47", title: "Skyfall", query: "Skyfall", year: 2012, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_48", title: "Spider-Man", query: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_49", title: "Spider-Man 2", query: "Spider-Man 2", year: 2004, tag: "HAR", audio: "5.1 Surround" },
-    { id: "har_50", title: "Spider-Man: Far From Home", query: "Spider-Man: Far From Home", year: 2019, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_51", title: "Spider-Man: No Way Home", query: "Spider-Man: No Way Home", year: 2021, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_52", title: "Star Trek Into Darkness", query: "Star Trek Into Darkness", year: 2013, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
-    { id: "har_53", title: "Sully", query: "Sully", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_54", title: "Tenet", query: "Tenet", year: 2020, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_55", title: "Terminator 2: Judgment Day", query: "Terminator 2: Judgment Day", year: 1991, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_56", title: "Terminator 3: Rise of the Machines", query: "Terminator 3: Rise of the Machines", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_57", title: "The Avengers", query: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_58", title: "The Dark Knight", query: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_59", title: "The Dark Knight Rises", query: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_60", title: "The Hunger Games: Catching Fire", query: "The Hunger Games: Catching Fire", year: 2013, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_61", title: "The Marvels", query: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_62", title: "The Matrix", query: "The Matrix", year: 1999, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
-    { id: "har_63", title: "The Suicide Squad", query: "The Suicide Squad", year: 2021, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
-    { id: "har_64", title: "The Terminator", query: "The Terminator", year: 1984, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_65", title: "Thor: Love and Thunder", query: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_66", title: "Thor: Ragnarok", query: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_67", title: "Titanic", query: "Titanic", year: 1997, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_68", title: "Top Gun: Maverick", query: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
-    { id: "har_69", title: "Transformers: Age of Extinction", query: "Transformers: Age of Extinction", year: 2014, tag: "HAR", audio: "7.1 Atmos (IMAX)" },
-    { id: "har_70", title: "Transformers: Revenge of the Fallen", query: "Transformers: Revenge of the Fallen", year: 2009, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_71", title: "Transformers: The Last Knight", query: "Transformers: The Last Knight", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
-    { id: "har_72", title: "TRON: Legacy", query: "TRON: Legacy", year: 2010, tag: "HAR", audio: "7.1 Surround" },
-    { id: "har_73", title: "X-Men: Days of Future Past", query: "X-Men: Days of Future Past", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
-    { id: "har_74", title: "Zack Snyder's Justice League", query: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full IMAX)" },
-    { id: "har_75", title: "Kill Bill: The Whole Bloody Affair", query: "Kill Bill: The Whole Bloody Affair", year: 2011, tag: "HAR", audio: "5.1 Surround (Open Matte UAR)" },
-    { id: "scope_1", title: "A Quiet Place", query: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish" },
-    { id: "scope_2", title: "A Quiet Place: Day One", query: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_3", title: "A Quiet Place Part II", query: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround" },
-    { id: "scope_4", title: "Dune: Part One", query: "Dune", year: 2021, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_5", title: "Dune: Part Two", query: "Dune: Part Two", year: 2024, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_6", title: "Memento", query: "Memento", year: 2000, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_7", title: "Pride & Prejudice", query: "Pride & Prejudice", year: 2005, tag: "Scope", audio: "2.0 Stereo" },
-    { id: "scope_8", title: "Spider-Man: Brand New Day", query: "Spider-Man", year: 2026, tag: "Scope", audio: "Stereo (Telesync)" },
-    { id: "scope_9", title: "Spider-Man: Homecoming", query: "Spider-Man: Homecoming", year: 2017, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_10", title: "Star Wars: The Force Awakens", query: "Star Wars: The Force Awakens", year: 2015, tag: "Scope", audio: "5.1 Surround" },
-    { id: "scope_11", title: "The Hunger Games", query: "The Hunger Games", year: 2012, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_12", title: "The Hunger Games: Ballad of Songbirds & Snakes", query: "The Ballad of Songbirds & Snakes", year: 2023, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_13", title: "The Hunger Games: Mockingjay Part 1", query: "The Hunger Games: Mockingjay - Part 1", year: 2014, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_14", title: "The Hunger Games: Mockingjay Part 2", query: "The Hunger Games: Mockingjay - Part 2", year: 2015, tag: "Scope", audio: "7.1 Surround" },
-    { id: "scope_15", title: "Thunderbolts*", query: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround" }
+  // Raw movie list without manual IDs
+  const rawMovies = [
+    { title: "Aliens (Special Edition)", query: "Aliens", year: 1986, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Alita: Battle Angel", query: "Alita Battle Angel", year: 2019, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { title: "Ant-Man and the Wasp: Quantumania", query: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Ant-Man", query: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Ant-Man and the Wasp", query: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Aquaman", query: "Aquaman", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Aquaman and the Lost Kingdom", query: "Aquaman and the Lost Kingdom", year: 2023, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Arrival", query: "Arrival", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Avatar (Extended)", query: "Avatar", year: 2009, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Avatar: The Way of Water", query: "Avatar: The Way of Water", year: 2022, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Avengers: Endgame", query: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Avengers: Infinity War", query: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Back to the Future", query: "Back to the Future", year: 1985, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Back to the Future Part II", query: "Back to the Future Part II", year: 1989, tag: "HAR", audio: "5.1 Surround (Native Flat)" },
+    { title: "Batman v Superman: Dawn of Justice", query: "Batman v Superman: Dawn of Justice", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Black Panther", query: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Black Panther: Wakanda Forever", query: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Black Widow", query: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Blade Runner 2049", query: "Blade Runner 2049", year: 2017, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { title: "Bumblebee", query: "Bumblebee", year: 2018, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Captain America: Brave New World", query: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Captain America: Civil War", query: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Captain Marvel", query: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Doctor Strange", query: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Doctor Strange in the Multiverse of Madness", query: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Drumline", query: "Drumline", year: 2002, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Dunkirk", query: "Dunkirk", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Eternals", query: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "First Man", query: "First Man", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Gladiator", query: "Gladiator", year: 2000, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Guardians of the Galaxy", query: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Guardians of the Galaxy Vol. 2", query: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX DS4K)" },
+    { title: "Guardians of the Galaxy Vol. 3", query: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Interstellar", query: "Interstellar", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Iron Man", query: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Joker", query: "Joker", year: 2019, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Jurassic Park", query: "Jurassic Park", year: 1993, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Logan", query: "Logan", year: 2017, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Michael", query: "Michael", year: 2026, tag: "HAR", audio: "7.1 Atmos Surround" },
+    { title: "Mission: Impossible - Fallout", query: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Mission: Impossible - Ghost Protocol", query: "Mission: Impossible - Ghost Protocol", year: 2011, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Nope", query: "Nope", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Oblivion", query: "Oblivion", year: 2013, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Oppenheimer", query: "Oppenheimer", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Pacific Rim", query: "Pacific Rim", year: 2013, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Saving Private Ryan", query: "Saving Private Ryan", year: 1998, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Shang-Chi and the Legend of the Ten Rings", query: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Skyfall", query: "Skyfall", year: 2012, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Spider-Man", query: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Spider-Man: Far From Home", query: "Spider-Man: Far From Home", year: 2019, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Spider-Man: No Way Home", query: "Spider-Man: No Way Home", year: 2021, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Star Trek Into Darkness", query: "Star Trek Into Darkness", year: 2013, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
+    { title: "Sully", query: "Sully", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Tenet", query: "Tenet", year: 2020, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Terminator 2: Judgment Day", query: "Terminator 2: Judgment Day", year: 1991, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Terminator 3: Rise of the Machines", query: "Terminator 3: Rise of the Machines", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "The Avengers", query: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround" },
+    { title: "The Dark Knight", query: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "The Dark Knight Rises", query: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "The Hunger Games: Catching Fire", query: "The Hunger Games: Catching Fire", year: 2013, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "The Marvels", query: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "The Matrix", query: "The Matrix", year: 1999, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { title: "The Suicide Squad", query: "The Suicide Squad", year: 2021, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
+    { title: "The Terminator", query: "The Terminator", year: 1984, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Thor: Love and Thunder", query: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Thor: Ragnarok", query: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Titanic", query: "Titanic", year: 1997, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Top Gun: Maverick", query: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Transformers: Age of Extinction", query: "Transformers: Age of Extinction", year: 2014, tag: "HAR", audio: "7.1 Atmos (IMAX)" },
+    { title: "Transformers: Revenge of the Fallen", query: "Transformers: Revenge of the Fallen", year: 2009, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Transformers: The Last Knight", query: "Transformers: The Last Knight", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "TRON: Legacy", query: "TRON: Legacy", year: 2010, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Venom: Let There Be Carnage", query: "Venom: Let There Be Carnage", year: 2021, tag: "HAR", audio: "5.1 Surround (Native Flat)" },
+    { title: "X-Men: Days of Future Past", query: "X-Men: Days of Future Past", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Zack Snyder's Justice League", query: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full IMAX)" },
+    { title: "Kill Bill: The Whole Bloody Affair", query: "Kill Bill: The Whole Bloody Affair", year: 2011, tag: "HAR", audio: "5.1 Surround (Open Matte UAR)" },
+    
+    // --- SCOPE RELEASES ---
+    { title: "A Quiet Place", query: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish" },
+    { title: "A Quiet Place: Day One", query: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround" },
+    { title: "A Quiet Place Part II", query: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround" },
+    { title: "Dune: Part One", query: "Dune", year: 2021, tag: "Scope", audio: "7.1 Surround" },
+    { title: "Dune: Part Two", query: "Dune: Part Two", year: 2024, tag: "Scope", audio: "7.1 Surround" },
+    { title: "Memento", query: "Memento", year: 2000, tag: "Scope", audio: "5.1 Surround" },
+    { title: "Pride & Prejudice", query: "Pride & Prejudice", year: 2005, tag: "Scope", audio: "2.0 Stereo" },
+    { title: "Spider-Man 2", query: "Spider-Man 2", year: 2004, tag: "Scope", audio: "5.1 Surround (2.39:1 Scope)" },
+    { title: "Spider-Man 3", query: "Spider-Man 3", year: 2007, tag: "Scope", audio: "5.1 Surround (2.39:1 Scope)" },
+    { title: "Spider-Man: Brand New Day", query: "Spider-Man", year: 2026, tag: "Scope", audio: "Stereo (Telesync)" },
+    { title: "Spider-Man: Homecoming", query: "Spider-Man: Homecoming", year: 2017, tag: "Scope", audio: "5.1 Surround" },
+    { title: "Star Wars: The Force Awakens", query: "Star Wars: The Force Awakens", year: 2015, tag: "Scope", audio: "5.1 Surround" },
+    { title: "The Hunger Games", query: "The Hunger Games", year: 2012, tag: "Scope", audio: "7.1 Surround" },
+    { title: "The Hunger Games: Ballad of Songbirds & Snakes", query: "The Ballad of Songbirds & Snakes", year: 2023, tag: "Scope", audio: "7.1 Surround" },
+    { title: "The Hunger Games: Mockingjay Part 1", query: "The Hunger Games: Mockingjay - Part 1", year: 2014, tag: "Scope", audio: "7.1 Surround" },
+    { title: "The Hunger Games: Mockingjay Part 2", query: "The Hunger Games: Mockingjay - Part 2", year: 2015, tag: "Scope", audio: "7.1 Surround" },
+    { title: "Thunderbolts*", query: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround" }
   ];
 
+  // Auto-generate slug IDs (spider_man_2_2004)
+  const movies = rawMovies.map(m => ({
+    ...m,
+    id: `${m.title}_${m.year}`.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_")
+  }));
+
+  // Auto-calculate filter pill counts
+  function updatePillCounts() {
+    const harTotal = movies.filter(m => m.tag === "HAR").length;
+    const scopeTotal = movies.filter(m => m.tag === "Scope").length;
+    document.querySelector('[data-filter="all"]').textContent = `All Titles (${movies.length})`;
+    document.querySelector('[data-filter="HAR"]').textContent = `[HAR] High Aspect Ratio (${harTotal})`;
+    document.querySelector('[data-filter="Scope"]').textContent = `[Scope] 2.39:1 Cinematic (${scopeTotal})`;
+  }
+  updatePillCounts();
+
+  let currentSession = null;
   let currentFilter = "all";
   let searchQuery = "";
   let liveVotes = {};
-  let myVotes = JSON.parse(localStorage.getItem("vault_my_votes") || "[]");
+  let myVotes = [];
 
   const catalogEl = document.getElementById("catalog");
   const searchInput = document.getElementById("searchInput");
   const pills = document.querySelectorAll(".pill");
   const leaderList = document.getElementById("leaderList");
 
-  const votesRef = ref(db, "movie_votes");
-  onValue(votesRef, (snapshot) => {
-    liveVotes = snapshot.val() || {};
-    renderCatalog();
-    renderLeaderboard();
+  // Realtime Session Orchestrator
+  const sessionRef = ref(db, "active_session");
+  let votesUnsubscribe = null;
+
+  onValue(sessionRef, (snapshot) => {
+    let sessionVal = snapshot.val();
+    if (!sessionVal) {
+      sessionVal = "round_init";
+      set(sessionRef, sessionVal);
+      return;
+    }
+
+    currentSession = sessionVal;
+
+    // Reset user client if an admin triggered a new round
+    const storedSession = localStorage.getItem("vault_session");
+    if (storedSession !== currentSession) {
+      localStorage.setItem("vault_session", currentSession);
+      localStorage.setItem("vault_my_votes", "[]");
+      myVotes = [];
+    } else {
+      myVotes = JSON.parse(localStorage.getItem("vault_my_votes") || "[]");
+    }
+
+    // Bind real-time votes to active session path
+    const votesRef = ref(db, `sessions/${currentSession}/votes`);
+    onValue(votesRef, (voteSnap) => {
+      liveVotes = voteSnap.val() || {};
+      renderCatalog();
+      renderLeaderboard();
+    });
   });
 
   const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache") || "{}");
@@ -527,13 +602,14 @@
   }
 
   window.toggleVote = function(movieId) {
+    if (!currentSession) return;
     const hasVoted = myVotes.includes(movieId);
     if (!hasVoted && myVotes.length >= 3) {
       alert("You have reached the maximum of 3 picks per movie night!");
       return;
     }
 
-    const targetRef = ref(db, `movie_votes/${movieId}`);
+    const targetRef = ref(db, `sessions/${currentSession}/votes/${movieId}`);
     runTransaction(targetRef, (current) => {
       if (hasVoted) {
         return (current || 1) - 1;
@@ -550,6 +626,18 @@
     localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
     renderCatalog();
   };
+
+  // Admin New Round Trigger
+  document.getElementById("adminResetBtn").addEventListener("click", () => {
+    const pin = prompt("Enter Admin PIN to start a new movie night round:");
+    if (pin === "1234") {
+      const nextRound = `round_${Date.now()}`;
+      set(ref(db, "active_session"), nextRound);
+      alert("New round initiated! All votes reset to 0.");
+    } else if (pin !== null) {
+      alert("Access Denied: Incorrect PIN");
+    }
+  });
 
   searchInput.addEventListener("input", (e) => {
     searchQuery = e.target.value;
