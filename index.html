@@ -19,6 +19,7 @@
       --primary-hover: #4f46e5;
       --success: #10b981;
       --danger: #ef4444;
+      --purple: #8b5cf6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -81,6 +82,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
     .filters {
       display: flex;
@@ -105,11 +107,15 @@
       color: #fff;
       border-color: var(--primary);
     }
-    .admin-btn {
+    .admin-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-admin {
       background: transparent;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: var(--danger);
-      padding: 0.45rem 0.9rem;
+      border: 1px solid var(--card-border);
+      color: var(--text-dim);
+      padding: 0.45rem 0.85rem;
       border-radius: 8px;
       font-size: 0.78rem;
       font-weight: 700;
@@ -117,9 +123,31 @@
       white-space: nowrap;
       transition: all 0.2s;
     }
-    .admin-btn:hover {
-      background: var(--danger);
-      color: #fff;
+    .btn-runoff { border-color: rgba(139, 92, 246, 0.4); color: #c4b5fd; }
+    .btn-runoff:hover { background: var(--purple); color: #fff; }
+    .btn-reset { border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
+    .btn-reset:hover { background: var(--danger); color: #fff; }
+
+    .showdown-banner {
+      max-width: 1200px;
+      margin: 1.5rem auto 0;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(30, 27, 75, 0.6) 100%);
+      border: 1px solid var(--purple);
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+    }
+    .showdown-banner h2 {
+      font-size: 1.3rem;
+      color: #ddd6fe;
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .showdown-banner p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
     }
 
     .leaderboard-section {
@@ -282,6 +310,99 @@
       border-color: var(--success);
       color: #000;
     }
+
+    /* Modal Architecture */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-box {
+      background: #161a29;
+      border: 1px solid #2d354d;
+      border-radius: 16px;
+      max-width: 520px;
+      width: 100%;
+      padding: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+    }
+    .modal-box h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+      color: #fff;
+    }
+    .modal-box p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 1.25rem;
+    }
+    .swap-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .swap-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      background: #111420;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.6rem 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .swap-item:hover {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+    .swap-poster {
+      width: 40px;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #1a1e2e;
+    }
+    .swap-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .swap-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .swap-meta {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+    .swap-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--danger);
+    }
+    .modal-cancel-btn {
+      width: 100%;
+      background: #23293e;
+      border: 1px solid #363f5e;
+      color: #fff;
+      padding: 0.7rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .modal-cancel-btn:hover { background: #2d354e; }
   </style>
 </head>
 <body>
@@ -309,9 +430,19 @@
   }
 </script>
 
+<!-- Visual Swap Dialog Modal -->
+<div id="swapModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Picks Reached (3/3)</h3>
+    <p>Select which movie to swap out for <strong id="swapTargetTitle" style="color:var(--text)"></strong>:</p>
+    <div class="swap-list" id="swapList"></div>
+    <button class="modal-cancel-btn" id="swapCancelBtn">Cancel</button>
+  </div>
+</div>
+
 <header>
   <h1>THE <span>VAULT</span></h1>
-  <p class="subtitle">Curated High-Bitrate Master Library • Pick up to 3 films for movie night</p>
+  <p class="subtitle" id="vaultSubtitle">Curated High-Bitrate Master Library • Pick up to 3 films for movie night</p>
 </header>
 
 <div class="sticky-top">
@@ -320,19 +451,27 @@
       <input type="text" id="searchInput" placeholder="Search by title, audio format, year...">
     </div>
     <div class="filters-bar">
-      <div class="filters">
+      <div class="filters" id="filtersGroup">
         <button class="pill active" data-filter="all">All Titles</button>
         <button class="pill" data-filter="HAR">[HAR] High Aspect Ratio</button>
         <button class="pill" data-filter="Scope">[Scope] 2.39:1 Cinematic</button>
       </div>
-      <button class="admin-btn" id="adminResetBtn">⚡ New Round</button>
+      <div class="admin-actions">
+        <button class="btn-admin btn-runoff" id="adminRunoffBtn">⚔️ Runoff</button>
+        <button class="btn-admin btn-reset" id="adminResetBtn">⚡ New Round</button>
+      </div>
     </div>
   </div>
 </div>
 
+<div class="showdown-banner" id="showdownBanner">
+  <h2>🏆 Final Showdown: The Runoff</h2>
+  <p>The top contenders have been shortlisted. Cast your <strong>1 final vote</strong> to crown tonight's movie!</p>
+</div>
+
 <div class="leaderboard-section">
   <div class="leaderboard-box">
-    <h3>🔥 Live Leaderboard</h3>
+    <h3 id="leaderboardTitle">🔥 Live Leaderboard</h3>
     <div class="leader-list" id="leaderList">
       <div style="font-size:0.85rem; color: var(--text-dim);">No votes cast yet. Be the first to vote!</div>
     </div>
@@ -358,7 +497,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Raw movie list without manual IDs
   const rawMovies = [
     { title: "Aliens (Special Edition)", query: "Aliens", year: 1986, tag: "HAR", audio: "5.1 Surround" },
     { title: "Alita: Battle Angel", query: "Alita Battle Angel", year: 2019, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
@@ -457,13 +595,11 @@
     { title: "Thunderbolts*", query: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround" }
   ];
 
-  // Auto-generate slug IDs (spider_man_2_2004)
   const movies = rawMovies.map(m => ({
     ...m,
     id: `${m.title}_${m.year}`.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_")
   }));
 
-  // Auto-calculate filter pill counts
   function updatePillCounts() {
     const harTotal = movies.filter(m => m.tag === "HAR").length;
     const scopeTotal = movies.filter(m => m.tag === "Scope").length;
@@ -474,31 +610,36 @@
   updatePillCounts();
 
   let currentSession = null;
+  let sessionData = { phase: "nominations", finalists: [], votes: {} };
   let currentFilter = "all";
   let searchQuery = "";
-  let liveVotes = {};
   let myVotes = [];
+  let pendingSwapMovieId = null;
 
   const catalogEl = document.getElementById("catalog");
   const searchInput = document.getElementById("searchInput");
   const pills = document.querySelectorAll(".pill");
   const leaderList = document.getElementById("leaderList");
+  const showdownBanner = document.getElementById("showdownBanner");
+  const adminRunoffBtn = document.getElementById("adminRunoffBtn");
+  const swapModal = document.getElementById("swapModal");
+  const swapList = document.getElementById("swapList");
+  const swapTargetTitle = document.getElementById("swapTargetTitle");
+  const swapCancelBtn = document.getElementById("swapCancelBtn");
 
-  // Realtime Session Orchestrator
-  const sessionRef = ref(db, "active_session");
-  let votesUnsubscribe = null;
-
-  onValue(sessionRef, (snapshot) => {
+  // Real-time Session Sync
+  const sessionPointerRef = ref(db, "active_session");
+  onValue(sessionPointerRef, (snapshot) => {
     let sessionVal = snapshot.val();
     if (!sessionVal) {
       sessionVal = "round_init";
-      set(sessionRef, sessionVal);
+      set(sessionPointerRef, sessionVal);
       return;
     }
 
     currentSession = sessionVal;
 
-    // Reset user client if an admin triggered a new round
+    // Check LocalStorage Session State
     const storedSession = localStorage.getItem("vault_session");
     if (storedSession !== currentSession) {
       localStorage.setItem("vault_session", currentSession);
@@ -508,10 +649,29 @@
       myVotes = JSON.parse(localStorage.getItem("vault_my_votes") || "[]");
     }
 
-    // Bind real-time votes to active session path
-    const votesRef = ref(db, `sessions/${currentSession}/votes`);
-    onValue(votesRef, (voteSnap) => {
-      liveVotes = voteSnap.val() || {};
+    // Bind Session Data (phase, finalists, votes)
+    const sessionRef = ref(db, `sessions/${currentSession}`);
+    onValue(sessionRef, (snap) => {
+      const val = snap.val() || {};
+      sessionData = {
+        phase: val.phase || "nominations",
+        finalists: val.finalists || [],
+        votes: val.votes || {}
+      };
+
+      // UI Phase Management
+      if (sessionData.phase === "showdown") {
+        showdownBanner.style.display = "block";
+        document.getElementById("vaultSubtitle").textContent = "🏆 RUNOFF IN PROGRESS • Cast your 1 final vote";
+        adminRunoffBtn.textContent = "↩ Back to Nominations";
+        document.getElementById("leaderboardTitle").innerHTML = "🏆 Runoff Winner Standings";
+      } else {
+        showdownBanner.style.display = "none";
+        document.getElementById("vaultSubtitle").textContent = "Curated High-Bitrate Master Library • Pick up to 3 films for movie night";
+        adminRunoffBtn.textContent = "⚔️ Runoff";
+        document.getElementById("leaderboardTitle").innerHTML = "🔥 Live Leaderboard";
+      }
+
       renderCatalog();
       renderLeaderboard();
     });
@@ -535,7 +695,14 @@
 
   async function renderCatalog() {
     catalogEl.innerHTML = "";
-    const filtered = movies.filter(m => {
+
+    // If Showdown is active, only render the 4 finalists
+    let baseList = movies;
+    if (sessionData.phase === "showdown" && sessionData.finalists.length > 0) {
+      baseList = movies.filter(m => sessionData.finalists.includes(m.id));
+    }
+
+    const filtered = baseList.filter(m => {
       const matchFilter = currentFilter === "all" || m.tag === currentFilter;
       const matchSearch = m.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           m.year.toString().includes(searchQuery) ||
@@ -545,7 +712,7 @@
 
     for (const m of filtered) {
       const isVoted = myVotes.includes(m.id);
-      const voteCount = liveVotes[m.id] || 0;
+      const voteCount = sessionData.votes[m.id] || 0;
       const cachedPoster = posterCache[m.id] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%2312151f'/%3E%3C/svg%3E";
 
       const card = document.createElement("div");
@@ -569,7 +736,7 @@
         </div>
       `;
 
-      card.querySelector(".vote-btn").addEventListener("click", () => toggleVote(m.id));
+      card.querySelector(".vote-btn").addEventListener("click", () => handleVoteClick(m.id));
       catalogEl.appendChild(card);
 
       if (!posterCache[m.id]) {
@@ -582,7 +749,7 @@
   }
 
   function renderLeaderboard() {
-    const sorted = Object.entries(liveVotes)
+    const sorted = Object.entries(sessionData.votes)
       .map(([id, count]) => ({ movie: movies.find(m => m.id === id), count }))
       .filter(item => item.movie && item.count > 0)
       .sort((a, b) => b.count - a.count)
@@ -601,41 +768,146 @@
     `).join("");
   }
 
-  window.toggleVote = function(movieId) {
+  // Voting Orchestrator
+  function handleVoteClick(movieId) {
     if (!currentSession) return;
-    const hasVoted = myVotes.includes(movieId);
-    if (!hasVoted && myVotes.length >= 3) {
-      alert("You have reached the maximum of 3 picks per movie night!");
+    const isVoted = myVotes.includes(movieId);
+
+    // Showdown Phase Logic (1 vote strict limit)
+    if (sessionData.phase === "showdown") {
+      if (isVoted) {
+        commitVote(movieId, -1);
+        myVotes = [];
+      } else {
+        if (myVotes.length >= 1) {
+          // Auto swap single vote in Showdown
+          commitVote(myVotes[0], -1);
+          myVotes = [];
+        }
+        commitVote(movieId, +1);
+        myVotes = [movieId];
+      }
+      localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+      renderCatalog();
       return;
     }
 
+    // Nominations Phase Logic (3 vote limit with Visual Swap Dialog)
+    if (isVoted) {
+      commitVote(movieId, -1);
+      myVotes = myVotes.filter(id => id !== movieId);
+      localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+      renderCatalog();
+    } else {
+      if (myVotes.length >= 3) {
+        openSwapModal(movieId);
+      } else {
+        commitVote(movieId, +1);
+        myVotes.push(movieId);
+        localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+        renderCatalog();
+      }
+    }
+  }
+
+  function commitVote(movieId, delta) {
     const targetRef = ref(db, `sessions/${currentSession}/votes/${movieId}`);
     runTransaction(targetRef, (current) => {
-      if (hasVoted) {
-        return (current || 1) - 1;
-      } else {
-        return (current || 0) + 1;
-      }
+      const next = (current || 0) + delta;
+      return next <= 0 ? null : next;
+    });
+  }
+
+  // Visual Swap Modal Implementation
+  function openSwapModal(newMovieId) {
+    pendingSwapMovieId = newMovieId;
+    const newMovie = movies.find(m => m.id === newMovieId);
+    swapTargetTitle.textContent = newMovie ? newMovie.title : "New Film";
+
+    swapList.innerHTML = myVotes.map(id => {
+      const m = movies.find(movie => movie.id === id);
+      if (!m) return "";
+      const poster = posterCache[m.id] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='60' fill='%231a1e2e'/%3E";
+      return `
+        <div class="swap-item" data-remove-id="${m.id}">
+          <img src="${poster}" class="swap-poster" alt="${m.title}">
+          <div class="swap-info">
+            <div class="swap-title">${m.title}</div>
+            <div class="swap-meta">${m.year} • ${m.tag}</div>
+          </div>
+          <span class="swap-tag">Replace ✕</span>
+        </div>
+      `;
+    }).join("");
+
+    swapList.querySelectorAll(".swap-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const removeId = item.dataset.removeId;
+        executeSwap(removeId, pendingSwapMovieId);
+      });
     });
 
-    if (hasVoted) {
-      myVotes = myVotes.filter(id => id !== movieId);
-    } else {
-      myVotes.push(movieId);
-    }
-    localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
-    renderCatalog();
-  };
+    swapModal.style.display = "flex";
+  }
 
-  // Admin New Round Trigger
+  function executeSwap(oldId, newId) {
+    commitVote(oldId, -1);
+    commitVote(newId, +1);
+    myVotes = myVotes.filter(id => id !== oldId);
+    myVotes.push(newId);
+    localStorage.setItem("vault_my_votes", JSON.stringify(myVotes));
+    closeSwapModal();
+    renderCatalog();
+  }
+
+  function closeSwapModal() {
+    swapModal.style.display = "none";
+    pendingSwapMovieId = null;
+  }
+  swapCancelBtn.addEventListener("click", closeSwapModal);
+
+  // Admin Controls
+  adminRunoffBtn.addEventListener("click", () => {
+    const pin = prompt("Enter Admin PIN:");
+    if (pin !== "1234") {
+      if (pin !== null) alert("Access Denied");
+      return;
+    }
+
+    if (sessionData.phase === "nominations") {
+      // Find top 4 voted movies
+      const top4 = Object.entries(sessionData.votes)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(entry => entry[0]);
+
+      if (top4.length < 2) {
+        alert("Need at least 2 voted movies to initiate a Runoff!");
+        return;
+      }
+
+      // Reset votes for the runoff and set top 4 finalists
+      set(ref(db, `sessions/${currentSession}/phase`), "showdown");
+      set(ref(db, `sessions/${currentSession}/finalists`), top4);
+      set(ref(db, `sessions/${currentSession}/votes`), null);
+      alert("🏆 Runoff Phase Initiated! Catalog narrowed to the top 4.");
+    } else {
+      // Revert back to nominations
+      set(ref(db, `sessions/${currentSession}/phase`), "nominations");
+      set(ref(db, `sessions/${currentSession}/finalists`), null);
+      set(ref(db, `sessions/${currentSession}/votes`), null);
+      alert("Reverted to Nominations phase.");
+    }
+  });
+
   document.getElementById("adminResetBtn").addEventListener("click", () => {
     const pin = prompt("Enter Admin PIN to start a new movie night round:");
     if (pin === "1234") {
       const nextRound = `round_${Date.now()}`;
-      set(ref(db, "active_session"), nextRound);
-      alert("New round initiated! All votes reset to 0.");
+      set(sessionPointerRef, nextRound);
+      alert("New round initiated! All votes and states reset.");
     } else if (pin !== null) {
-      alert("Access Denied: Incorrect PIN");
+      alert("Access Denied");
     }
   });
 
