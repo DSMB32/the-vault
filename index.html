@@ -26,15 +26,1066 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 90px;
+      padding-bottom: 60px;
       -webkit-font-smoothing: antialiased;
     }
     header {
-      padding: 3rem 1.5rem 2rem;
+      padding: 1.5rem 1rem 1rem;
       text-align: center;
       background: radial-gradient(circle at top, #1e1b4b 0%, var(--bg) 70%);
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    h1 span { color: var(--accent-har); }
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .notice-bar {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #c7d2fe;
+    }
+    .notice-bar strong { color: #fff; }
+
+    .sticky-top {
+      position: sticky;
+      top: 0;
+      background: rgba(9, 10, 15, 0.94);
+      backdrop-filter: blur(14px);
+      z-index: 50;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .controls {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: #111420;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-bar input:focus { border-color: var(--primary); }
+    .filters-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .filters {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .pill {
+      background: #171b29;
+      border: 1px solid var(--card-border);
+      color: var(--text-dim);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .pill.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .actions-group {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .btn-action {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-dim);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .btn-lang {
+      border-color: #3b4566;
+      color: #cbd5e1;
+      font-weight: 800;
+    }
+    .btn-lang:hover { background: #1c2236; }
+    .btn-runoff { border-color: rgba(139, 92, 246, 0.4); color: #c4b5fd; }
+    .btn-runoff:hover { background: var(--purple); color: #fff; }
+    .btn-reset { border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
+    .btn-reset:hover { background: var(--danger); color: #fff; }
+
+    .showdown-banner {
+      max-width: 1200px;
+      margin: 0.75rem auto 0;
+      padding: 0.85rem 1rem;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(30, 27, 75, 0.6) 100%);
+      border: 1px solid var(--purple);
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+    }
+    .showdown-banner h2 {
+      font-size: 1.1rem;
+      color: #ddd6fe;
+      margin-bottom: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .showdown-banner p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .leaderboard-ticker {
+      max-width: 1200px;
+      margin: 0.75rem auto 0;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .leaderboard-ticker::-webkit-scrollbar { display: none; }
+    .ticker-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--accent-har);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .ticker-track {
+      display: flex;
+      gap: 0.45rem;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+    .ticker-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #151928;
+      border: 1px solid var(--card-border);
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+    .ticker-chip strong {
+      color: #f8fafc;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ticker-count {
+      color: var(--success);
+      font-weight: 800;
+      font-size: 0.75rem;
+    }
+
+    .catalog {
+      max-width: 1200px;
+      margin: 1.25rem auto 0;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
       position: relative;
     }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: #3b4566;
+    }
+    .poster-wrap {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      background: #181d2d;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .card:hover .poster-img { transform: scale(1.04); }
+    .badge-float {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      backdrop-filter: blur(8px);
+      letter-spacing: 0.02em;
+    }
+    .badge-har {
+      background: rgba(245, 158, 11, 0.9);
+      color: #000;
+    }
+    .badge-scope {
+      background: rgba(59, 130, 246, 0.9);
+      color: #fff;
+    }
+    .trailer-hint {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      opacity: 0.85;
+    }
+
+    .card-info {
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+      gap: 0.4rem;
+    }
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-meta {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      line-height: 1.25;
+    }
+    .card-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.4rem;
+      border-top: 1px solid #1c2236;
+      margin-top: auto;
+    }
+    .vote-count {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+    .vote-btn {
+      background: #23293e;
+      border: 1px solid #363f5e;
+      color: #fff;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 700;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .vote-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .vote-btn.voted {
+      background: var(--success);
+      border-color: var(--success);
+      color: #000;
+    }
+
+    .trailer-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      gap: 0.85rem;
+    }
+    .trailer-frame-wrap {
+      width: 100%;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #2d354d;
+      background: #000;
+    }
+    .trailer-frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .trailer-close-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .trailer-close-btn:hover { background: rgba(255, 255, 255, 0.25); }
+  </style>
+</head>
+<body>
+
+<div id="introModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
+  <div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; position: relative; border-radius: 10px; overflow: hidden; border: 1px solid #1f2537;">
+    <iframe 
+      style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
+      src="https://www.youtube.com/embed/KIUhDod8WlI?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3" 
+      frameborder="0" 
+      allow="autoplay; encrypted-media">
+    </iframe>
+  </div>
+  <button onclick="closeIntro()" id="skipIntroBtn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.85rem;">SKIP INTRO</button>
+</div>
+
+<script>
+  function closeIntro() {
+    const modal = document.getElementById('introModal');
+    if (modal) modal.remove();
+  }
+</script>
+
+<div id="trailerModal" class="trailer-modal">
+  <div class="trailer-frame-wrap">
+    <iframe id="trailerIframe" src="" allow="autoplay; encrypted-media; fullscreen"></iframe>
+  </div>
+  <button class="trailer-close-btn" id="closeTrailerBtn">✕ Close Trailer</button>
+</div>
+
+<header>
+  <h1>THE <span>VAULT</span></h1>
+  <p class="subtitle" id="vaultSubtitle">Curated High-Bitrate Master Library</p>
+  <div class="notice-bar" id="draftNotice">
+    🎲 <strong>Draft Rule:</strong> Pick as many as you want. When closed, 1 movie per person is randomly drafted for the Runoff!
+  </div>
+</header>
+
+<div class="sticky-top">
+  <div class="controls">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by title, audio format, year...">
+    </div>
+    <div class="filters-bar">
+      <div class="filters" id="filtersGroup">
+        <button class="pill active" data-filter="all">All Titles</button>
+        <button class="pill" data-filter="HAR">[HAR] High Aspect Ratio</button>
+        <button class="pill" data-filter="Scope">[Scope] 2.39:1 Cinematic</button>
+      </div>
+      <div class="actions-group">
+        <button class="btn-action btn-lang" id="langToggleBtn">🌐 ES</button>
+        <button class="btn-action btn-runoff" id="adminRunoffBtn">⚔️ Runoff</button>
+        <button class="btn-action btn-reset" id="adminResetBtn">⚡ New Round</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="showdown-banner" id="showdownBanner">
+  <h2 id="showdownHeading">🏆 Final Showdown: The Runoff</h2>
+  <p id="showdownDesc">1 movie drafted per voter. Cast your 1 final vote to decide tonight's winner!</p>
+</div>
+
+<div class="leaderboard-ticker">
+  <div class="ticker-title" id="leaderboardTitle">🔥 Live Picks:</div>
+  <div class="ticker-track" id="leaderList">
+    <div style="font-size:0.75rem; color: var(--text-dim);" id="leaderboardEmpty">No picks yet</div>
+  </div>
+</div>
+
+<main class="catalog" id="catalog"></main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0XqKMTAKjv3ImnzIgvJPGRMS4SwcI7go",
+    authDomain: "the-vault-c719f.firebaseapp.com",
+    databaseURL: "https://the-vault-c719f-default-rtdb.firebaseio.com",
+    projectId: "the-vault-c719f",
+    storageBucket: "the-vault-c719f.firebasestorage.app",
+    messagingSenderId: "553364033327",
+    appId: "1:553364033327:web:691a4a21cb171d733b9bda"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const i18n = {
+    en: {
+      subtitle_nom: "Curated High-Bitrate Master Library",
+      subtitle_run: "🏆 RUNOFF IN PROGRESS • 1 random film drafted per person",
+      draft_notice: "🎲 <strong>Draft Rule:</strong> Pick as many as you want. When closed, 1 movie per person is randomly drafted for the Runoff!",
+      search_placeholder: "Search by title, audio format, year...",
+      pill_all: "All Titles",
+      pill_har: "[HAR] High Aspect Ratio",
+      pill_scope: "[Scope] 2.39:1 Cinematic",
+      btn_runoff: "⚔️ Runoff",
+      btn_back_nom: "↩ Nominations",
+      btn_new_round: "⚡ New Round",
+      showdown_title: "🏆 Final Showdown: The Runoff",
+      showdown_desc: "1 movie drafted per voter. Cast your 1 final vote to decide tonight's winner!",
+      lb_nominations: "🔥 Live Picks:",
+      lb_showdown: "🏆 Standings:",
+      lb_empty: "No picks yet",
+      pick_btn: "+ Pick",
+      picked_btn: "✓ Picked",
+      vote_btn: "Vote",
+      voted_btn: "✓ Voted",
+      pick_singular: "pick",
+      pick_plural: "picks",
+      vote_singular: "vote",
+      vote_plural: "votes",
+      trailer_hint: "▶ Trailer",
+      close_trailer: "✕ Close Trailer",
+      skip_intro: "SKIP INTRO",
+      lang_toggle: "🌐 ES",
+      trailer_unavailable: "Official trailer unavailable for this title."
+    },
+    es: {
+      subtitle_nom: "Biblioteca Maestra Curada en Alta Tasa de Bits",
+      subtitle_run: "🏆 DESEMPATE EN CURSO • 1 película sorteada por persona",
+      draft_notice: "🎲 <strong>Regla del Sorteo:</strong> Elige todas las que quieras. Al cerrar, se sorteará 1 de cada persona para el Desempate!",
+      search_placeholder: "Buscar por título, formato de audio, año...",
+      pill_all: "Todos los Títulos",
+      pill_har: "[HAR] Aspecto Abierto",
+      pill_scope: "[Scope] 2.39:1 Cinemático",
+      btn_runoff: "⚔️ Desempate",
+      btn_back_nom: "↩ Nominaciones",
+      btn_new_round: "⚡ Nueva Ronda",
+      showdown_title: "🏆 Duelo Final: El Desempate",
+      showdown_desc: "1 película sorteada por participante. ¡Emite tu voto final!",
+      lb_nominations: "🔥 Elecciones:",
+      lb_showdown: "🏆 Posiciones:",
+      lb_empty: "Sin elecciones aún",
+      pick_btn: "+ Elegir",
+      picked_btn: "✓ Elegida",
+      vote_btn: "Votar",
+      voted_btn: "✓ Votado",
+      pick_singular: "elección",
+      pick_plural: "elecciones",
+      vote_singular: "voto",
+      vote_plural: "votos",
+      trailer_hint: "▶ Tráiler",
+      close_trailer: "✕ Cerrar Tráiler",
+      skip_intro: "SALTAR INTRO",
+      lang_toggle: "🌐 EN",
+      trailer_unavailable: "Tráiler oficial no disponible."
+    }
+  };
+
+  let currentLang = localStorage.getItem("vault_lang") || "en";
+
+  let userId = localStorage.getItem("vault_user_id");
+  if (!userId) {
+    userId = "voter_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
+    localStorage.setItem("vault_user_id", userId);
+  }
+
+  const rawMovies = [
+    { title: "Aliens (Special Edition)", query: "Aliens", year: 1986, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Alita: Battle Angel", query: "Alita Battle Angel", year: 2019, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { title: "Ant-Man and the Wasp: Quantumania", query: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Ant-Man", query: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Ant-Man and the Wasp", query: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Aquaman", query: "Aquaman", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Aquaman and the Lost Kingdom", query: "Aquaman and the Lost Kingdom", year: 2023, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Arrival", query: "Arrival", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Avatar (Extended)", query: "Avatar", year: 2009, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Avatar: The Way of Water", query: "Avatar: The Way of Water", year: 2022, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Avengers: Endgame", query: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Avengers: Infinity War", query: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Back to the Future", query: "Back to the Future", year: 1985, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Back to the Future Part II", query: "Back to the Future Part II", year: 1989, tag: "HAR", audio: "5.1 Surround (Native Flat)" },
+    { title: "Batman v Superman: Dawn of Justice", query: "Batman v Superman: Dawn of Justice", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Black Panther", query: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Black Panther: Wakanda Forever", query: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Black Widow", query: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Blade Runner 2049", query: "Blade Runner 2049", year: 2017, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { title: "Bumblebee", query: "Bumblebee", year: 2018, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Captain America: Brave New World", query: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Captain America: Civil War", query: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Captain Marvel", query: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Doctor Strange", query: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Doctor Strange in the Multiverse of Madness", query: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Drumline", query: "Drumline", year: 2002, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Dunkirk", query: "Dunkirk", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Eternals", query: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "First Man", query: "First Man", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Gladiator", query: "Gladiator", year: 2000, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Guardians of the Galaxy", query: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Guardians of the Galaxy Vol. 2", query: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX DS4K)" },
+    { title: "Guardians of the Galaxy Vol. 3", query: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Interstellar", query: "Interstellar", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Iron Man", query: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Joker", query: "Joker", year: 2019, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Jurassic Park", query: "Jurassic Park", year: 1993, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Logan", query: "Logan", year: 2017, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Michael", query: "Michael", year: 2026, tag: "HAR", audio: "7.1 Atmos Surround" },
+    { title: "Mission: Impossible - Fallout", query: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Mission: Impossible - Ghost Protocol", query: "Mission: Impossible - Ghost Protocol", year: 2011, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Nope", query: "Nope", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Oblivion", query: "Oblivion", year: 2013, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Oppenheimer", query: "Oppenheimer", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Pacific Rim", query: "Pacific Rim", year: 2013, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Saving Private Ryan", query: "Saving Private Ryan", year: 1998, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Shang-Chi and the Legend of the Ten Rings", query: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Skyfall", query: "Skyfall", year: 2012, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Spider-Man", query: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround" },
+    { title: "Spider-Man: Far From Home", query: "Spider-Man: Far From Home", year: 2019, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Spider-Man: No Way Home", query: "Spider-Man: No Way Home", year: 2021, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Star Trek Into Darkness", query: "Star Trek Into Darkness", year: 2013, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
+    { title: "Sully", query: "Sully", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Tenet", query: "Tenet", year: 2020, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Terminator 2: Judgment Day", query: "Terminator 2: Judgment Day", year: 1991, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Terminator 3: Rise of the Machines", query: "Terminator 3: Rise of the Machines", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "The Avengers", query: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround" },
+    { title: "The Dark Knight", query: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "The Dark Knight Rises", query: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "The Hunger Games: Catching Fire", query: "The Hunger Games: Catching Fire", year: 2013, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "The Marvels", query: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "The Matrix", query: "The Matrix", year: 1999, tag: "HAR", audio: "7.1 Surround (Open Matte)" },
+    { title: "The Suicide Squad", query: "The Suicide Squad", year: 2021, tag: "HAR", audio: "5.1 Atmos (IMAX)" },
+    { title: "The Terminator", query: "The Terminator", year: 1984, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Thor: Love and Thunder", query: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Thor: Ragnarok", query: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Titanic", query: "Titanic", year: 1997, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Top Gun: Maverick", query: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)" },
+    { title: "Transformers: Age of Extinction", query: "Transformers: Age of Extinction", year: 2014, tag: "HAR", audio: "7.1 Atmos (IMAX)" },
+    { title: "Transformers: Revenge of the Fallen", query: "Transformers: Revenge of the Fallen", year: 2009, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "Transformers: The Last Knight", query: "Transformers: The Last Knight", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)" },
+    { title: "TRON: Legacy", query: "TRON: Legacy", year: 2010, tag: "HAR", audio: "7.1 Surround" },
+    { title: "Venom: Let There Be Carnage", query: "Venom: Let There Be Carnage", year: 2021, tag: "HAR", audio: "5.1 Surround (Native Flat)" },
+    { title: "X-Men: Days of Future Past", query: "X-Men: Days of Future Past", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
+    { title: "Zack Snyder's Justice League", query: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full IMAX)" },
+    { title: "Kill Bill: The Whole Bloody Affair", query: "Kill Bill: The Whole Bloody Affair", year: 2011, tag: "HAR", audio: "5.1 Surround (Open Matte UAR)" },
+    { title: "A Quiet Place", query: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish" },
+    { title: "A Quiet Place: Day One", query: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround" },
+    { title: "A Quiet Place Part II", query: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround" },
+    { title: "Dune: Part One", query: "Dune", year: 2021, tag: "Scope", audio: "7.1 Surround" },
+    { title: "Dune: Part Two", query: "Dune: Part Two", year: 2024, tag: "Scope", audio: "7.1 Surround" },
+    { title: "Memento", query: "Memento", year: 2000, tag: "Scope", audio: "5.1 Surround" },
+    { title: "Pride & Prejudice", query: "Pride & Prejudice", year: 2005, tag: "Scope", audio: "2.0 Stereo" },
+    { title: "Spider-Man 2", query: "Spider-Man 2", year: 2004, tag: "Scope", audio: "5.1 Surround (2.39:1 Scope)" },
+    { title: "Spider-Man 3", query: "Spider-Man 3", year: 2007, tag: "Scope", audio: "5.1 Surround (2.39:1 Scope)" },
+    { title: "Spider-Man: Brand New Day", query: "Spider-Man", year: 2026, tag: "Scope", audio: "Stereo (Telesync)" },
+    { title: "Spider-Man: Homecoming", query: "Spider-Man: Homecoming", year: 2017, tag: "Scope", audio: "5.1 Surround" },
+    { title: "Star Wars: The Force Awakens", query: "Star Wars: The Force Awakens", year: 2015, tag: "Scope", audio: "5.1 Surround" },
+    { title: "The Hunger Games", query: "The Hunger Games", year: 2012, tag: "Scope", audio: "7.1 Surround" },
+    { title: "The Hunger Games: Ballad of Songbirds & Snakes", query: "The Ballad of Songbirds & Snakes", year: 2023, tag: "Scope", audio: "7.1 Surround" },
+    { title: "The Hunger Games: Mockingjay Part 1", query: "The Hunger Games: Mockingjay - Part 1", year: 2014, tag: "Scope", audio: "7.1 Surround" },
+    { title: "The Hunger Games: Mockingjay Part 2", query: "The Hunger Games: Mockingjay - Part 2", year: 2015, tag: "Scope", audio: "7.1 Surround" },
+    { title: "Thunderbolts*", query: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround" }
+  ];
+
+  const movies = rawMovies.map(m => ({
+    ...m,
+    id: `${m.title}_${m.year}`.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_")
+  }));
+
+  let currentSession = null;
+  let sessionData = { phase: "nominations", finalists: [], ballots: {}, votes: {} };
+  let currentFilter = "all";
+  let searchQuery = "";
+  let renderedPhase = null;
+
+  const TMDB_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
+  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache") || "{}");
+  const trailerCache = JSON.parse(localStorage.getItem("vault_trailer_cache") || "{}");
+
+  const catalogEl = document.getElementById("catalog");
+  const searchInput = document.getElementById("searchInput");
+  const pills = document.querySelectorAll(".pill");
+  const leaderList = document.getElementById("leaderList");
+  const showdownBanner = document.getElementById("showdownBanner");
+  const draftNotice = document.getElementById("draftNotice");
+  const adminRunoffBtn = document.getElementById("adminRunoffBtn");
+  const langToggleBtn = document.getElementById("langToggleBtn");
+  const trailerModal = document.getElementById("trailerModal");
+  const trailerIframe = document.getElementById("trailerIframe");
+  const closeTrailerBtn = document.getElementById("closeTrailerBtn");
+
+  function applyLanguage() {
+    const t = i18n[currentLang];
+    langToggleBtn.textContent = t.lang_toggle;
+    searchInput.placeholder = t.search_placeholder;
+    closeTrailerBtn.textContent = t.close_trailer;
+    const skipBtn = document.getElementById("skipIntroBtn");
+    if (skipBtn) skipBtn.textContent = t.skip_intro;
+
+    const harTotal = movies.filter(m => m.tag === "HAR").length;
+    const scopeTotal = movies.filter(m => m.tag === "Scope").length;
+    document.querySelector('[data-filter="all"]').textContent = `${t.pill_all} (${movies.length})`;
+    document.querySelector('[data-filter="HAR"]').textContent = `${t.pill_har} (${harTotal})`;
+    document.querySelector('[data-filter="Scope"]').textContent = `${t.pill_scope} (${scopeTotal})`;
+
+    if (sessionData.phase === "showdown") {
+      document.getElementById("vaultSubtitle").textContent = t.subtitle_run;
+      adminRunoffBtn.textContent = t.btn_back_nom;
+      document.getElementById("leaderboardTitle").innerHTML = t.lb_showdown;
+    } else {
+      document.getElementById("vaultSubtitle").textContent = t.subtitle_nom;
+      adminRunoffBtn.textContent = t.btn_runoff;
+      document.getElementById("leaderboardTitle").innerHTML = t.lb_nominations;
+    }
+
+    draftNotice.innerHTML = t.draft_notice;
+    document.getElementById("adminResetBtn").textContent = t.btn_new_round;
+    document.getElementById("showdownHeading").textContent = t.showdown_title;
+    document.getElementById("showdownDesc").innerHTML = t.showdown_desc;
+
+    fullCatalogRender();
+    renderLeaderboard();
+  }
+
+  langToggleBtn.addEventListener("click", () => {
+    currentLang = currentLang === "en" ? "es" : "en";
+    localStorage.setItem("vault_lang", currentLang);
+    applyLanguage();
+  });
+
+  const sessionPointerRef = ref(db, "active_session");
+  onValue(sessionPointerRef, (snapshot) => {
+    let sessionVal = snapshot.val();
+    if (!sessionVal) {
+      sessionVal = "round_init";
+      set(sessionPointerRef, sessionVal);
+      return;
+    }
+
+    currentSession = sessionVal;
+
+    const sessionRef = ref(db, `sessions/${currentSession}`);
+    onValue(sessionRef, (snap) => {
+      const val = snap.val() || {};
+      sessionData = {
+        phase: val.phase || "nominations",
+        finalists: val.finalists || [],
+        ballots: val.ballots || {},
+        votes: val.votes || {}
+      };
+
+      if (sessionData.phase === "showdown") {
+        showdownBanner.style.display = "block";
+        draftNotice.style.display = "none";
+      } else {
+        showdownBanner.style.display = "none";
+        draftNotice.style.display = "block";
+      }
+
+      if (renderedPhase !== sessionData.phase) {
+        fullCatalogRender();
+      } else {
+        syncCardStatesInPlace();
+      }
+
+      renderLeaderboard();
+    });
+  });
+
+  async function fetchPoster(movie) {
+    if (posterCache[movie.id]) return posterCache[movie.id];
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0 && data.results[0].poster_path) {
+        const url = `https://image.tmdb.org/t/p/w500${data.results[0].poster_path}`;
+        posterCache[movie.id] = url;
+        localStorage.setItem("vault_poster_cache", JSON.stringify(posterCache));
+        return url;
+      }
+    } catch (e) {}
+    return `https://via.placeholder.com/300x450/161926/94a3b8?text=${encodeURIComponent(movie.title)}`;
+  }
+
+  function scoreVideo(v) {
+    if (v.site !== "YouTube") return -999;
+    let score = 0;
+    const name = (v.name || "").toLowerCase();
+
+    if (name.includes("promo") || name.includes("spot") || name.includes("preview") || name.includes("christmas") || name.includes("blu-ray") || name.includes("home video") || name.includes("tv")) {
+      return -500;
+    }
+
+    if (v.type === "Trailer") score += 100;
+    if (v.type === "Teaser") score += 30;
+    if (v.official === true) score += 50;
+
+    if (name.includes("official trailer")) score += 40;
+    if (name.includes("main trailer")) score += 30;
+    if (name.includes("theatrical trailer")) score += 25;
+    if (name.includes("trailer 1") || name.includes("trailer #1")) score += 20;
+
+    score += (v.size || 0);
+    return score;
+  }
+
+  async function fetchTrailerKey(movie) {
+    if (trailerCache[movie.id]) return trailerCache[movie.id];
+    try {
+      const searchRes = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
+      const searchData = await searchRes.json();
+      if (!searchData.results || searchData.results.length === 0) return null;
+
+      const tmdbId = searchData.results[0].id;
+      const videoRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${TMDB_KEY}`);
+      const videoData = await videoRes.json();
+
+      if (videoData.results && videoData.results.length > 0) {
+        const sortedVideos = videoData.results
+          .map(v => ({ video: v, score: scoreVideo(v) }))
+          .filter(item => item.score > 0)
+          .sort((a, b) => b.score - a.score);
+
+        if (sortedVideos.length > 0 && sortedVideos[0].video.key) {
+          const chosenKey = sortedVideos[0].video.key;
+          trailerCache[movie.id] = chosenKey;
+          localStorage.setItem("vault_trailer_cache", JSON.stringify(trailerCache));
+          return chosenKey;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  }
+
+  async function openTrailer(movie) {
+    trailerModal.style.display = "flex";
+    trailerIframe.src = "about:blank";
+
+    const key = await fetchTrailerKey(movie);
+    if (key) {
+      trailerIframe.src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&rel=0`;
+    } else {
+      alert(i18n[currentLang].trailer_unavailable);
+      closeTrailer();
+    }
+  }
+
+  function closeTrailer() {
+    trailerIframe.src = "about:blank";
+    trailerModal.style.display = "none";
+  }
+
+  closeTrailerBtn.addEventListener("click", closeTrailer);
+  trailerModal.addEventListener("click", (e) => {
+    if (e.target === trailerModal) closeTrailer();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && trailerModal.style.display === "flex") closeTrailer();
+  });
+
+  function getMovieMetrics(movieId) {
+    const t = i18n[currentLang];
+    if (sessionData.phase === "showdown") {
+      const voteEntries = Object.values(sessionData.votes || {});
+      const count = voteEntries.filter(id => id === movieId).length;
+      const isSelected = sessionData.votes?.[userId] === movieId;
+      return { 
+        count, 
+        isSelected, 
+        label: count === 1 ? t.vote_singular : t.vote_plural, 
+        btnActive: t.voted_btn, 
+        btnInactive: t.vote_btn 
+      };
+    } else {
+      let count = 0;
+      Object.values(sessionData.ballots || {}).forEach(userBallot => {
+        if (userBallot && userBallot[movieId] === true) count++;
+      });
+      const isSelected = sessionData.ballots?.[userId]?.[movieId] === true;
+      return { 
+        count, 
+        isSelected, 
+        label: count === 1 ? t.pick_singular : t.pick_plural, 
+        btnActive: t.picked_btn, 
+        btnInactive: t.pick_btn 
+      };
+    }
+  }
+
+  function syncCardStatesInPlace() {
+    movies.forEach(m => {
+      const card = document.getElementById(`card_${m.id}`);
+      if (!card) return;
+      const metric = getMovieMetrics(m.id);
+
+      const countEl = card.querySelector(".vote-count");
+      if (countEl) countEl.textContent = `${metric.count} ${metric.label}`;
+
+      const btn = card.querySelector(".vote-btn");
+      if (btn) {
+        btn.textContent = metric.isSelected ? metric.btnActive : metric.btnInactive;
+        if (metric.isSelected) {
+          btn.classList.add("voted");
+        } else {
+          btn.classList.remove("voted");
+        }
+      }
+    });
+  }
+
+  function fullCatalogRender() {
+    catalogEl.innerHTML = "";
+    renderedPhase = sessionData.phase;
+    const t = i18n[currentLang];
+
+    let baseList = movies;
+    if (sessionData.phase === "showdown" && sessionData.finalists.length > 0) {
+      baseList = movies.filter(m => sessionData.finalists.includes(m.id));
+    }
+
+    const filtered = baseList.filter(m => {
+      const matchFilter = currentFilter === "all" || m.tag === currentFilter;
+      const matchSearch = m.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          m.year.toString().includes(searchQuery) ||
+                          m.audio.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchFilter && matchSearch;
+    });
+
+    for (const m of filtered) {
+      const metric = getMovieMetrics(m.id);
+      const cachedPoster = posterCache[m.id] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%2312151f'/%3E%3C/svg%3E";
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.id = `card_${m.id}`;
+      card.innerHTML = `
+        <div class="poster-wrap" title="Click to watch trailer">
+          <img src="${cachedPoster}" alt="${m.title}" id="img_${m.id}" class="poster-img" loading="lazy">
+          <span class="badge-float ${m.tag === 'HAR' ? 'badge-har' : 'badge-scope'}">${m.tag}</span>
+          <span class="trailer-hint">${t.trailer_hint}</span>
+        </div>
+        <div class="card-info">
+          <div>
+            <div class="card-title">${m.title}</div>
+            <div class="card-meta">${m.year} • ${m.audio}</div>
+          </div>
+          <div class="card-action">
+            <span class="vote-count">${metric.count} ${metric.label}</span>
+            <button class="vote-btn ${metric.isSelected ? 'voted' : ''}" data-id="${m.id}">
+              ${metric.isSelected ? metric.btnActive : metric.btnInactive}
+            </button>
+          </div>
+        </div>
+      `;
+
+      card.querySelector(".poster-wrap").addEventListener("click", () => openTrailer(m));
+      card.querySelector(".vote-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleVoteClick(m.id);
+      });
+
+      catalogEl.appendChild(card);
+
+      if (!posterCache[m.id]) {
+        fetchPoster(m).then(url => {
+          const el = document.getElementById(`img_${m.id}`);
+          if (el) el.src = url;
+        });
+      }
+    }
+  }
+
+  function renderLeaderboard() {
+    const t = i18n[currentLang];
+    let tallies = [];
+
+    if (sessionData.phase === "showdown") {
+      const voteEntries = Object.values(sessionData.votes || {});
+      tallies = sessionData.finalists.map(id => ({
+        movie: movies.find(m => m.id === id),
+        count: voteEntries.filter(vId => vId === id).length
+      }));
+    } else {
+      tallies = movies.map(m => {
+        let count = 0;
+        Object.values(sessionData.ballots || {}).forEach(ballot => {
+          if (ballot && ballot[m.id] === true) count++;
+        });
+        return { movie: m, count };
+      });
+    }
+
+    const sorted = tallies
+      .filter(item => item.movie && item.count > 0)
+      .sort((a, b) => b.count - a.count);
+
+    if (sorted.length === 0) {
+      leaderList.innerHTML = `<div style="font-size:0.75rem; color: var(--text-dim);">${t.lb_empty}</div>`;
+      return;
+    }
+
+    const isShowdown = sessionData.phase === "showdown";
+    leaderList.innerHTML = sorted.map(item => {
+      const unit = isShowdown 
+        ? (item.count === 1 ? t.vote_singular : t.vote_plural)
+        : (item.count === 1 ? t.pick_singular : t.pick_plural);
+      return `
+        <div class="ticker-chip">
+          <strong title="${item.movie.title}">${item.movie.title}</strong>
+          <span class="ticker-count">${item.count} ${unit}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function handleVoteClick(movieId) {
+    if (!currentSession) return;
+
+    if (sessionData.phase === "showdown") {
+      const currentVote = sessionData.votes?.[userId];
+      const voteRef = ref(db, `sessions/${currentSession}/votes/${userId}`);
+      if (currentVote === movieId) {
+        set(voteRef, null);
+      } else {
+        set(voteRef, movieId);
+      }
+    } else {
+      const isPicked = sessionData.ballots?.[userId]?.[movieId] === true;
+      const ballotItemRef = ref(db, `sessions/${currentSession}/ballots/${userId}/${movieId}`);
+      if (isPicked) {
+        set(ballotItemRef, null);
+      } else {
+        set(ballotItemRef, true);
+      }
+    }
+  }
+
+  adminRunoffBtn.addEventListener("click", () => {
+    const pin = prompt("Enter Admin PIN:");
+    if (pin !== "1234") {
+      if (pin !== null) alert("Access Denied");
+      return;
+    }
+
+    if (sessionData.phase === "nominations") {
+      const ballots = sessionData.ballots || {};
+      const activeUserIds = Object.keys(ballots);
+      const drafted = [];
+
+      activeUserIds.forEach(uid => {
+        const userPicks = Object.keys(ballots[uid] || {}).filter(mId => ballots[uid][mId] === true);
+        if (userPicks.length > 0) {
+          const randomPick = userPicks[Math.floor(Math.random() * userPicks.length)];
+          drafted.push(randomPick);
+        }
+      });
+
+      let uniqueFinalists = [...new Set(drafted)];
+
+      if (uniqueFinalists.length < 2) {
+        const allNominated = [...new Set(activeUserIds.flatMap(uid => 
+          Object.keys(ballots[uid] || {}).filter(mId => ballots[uid][mId] === true)
+        ))];
+
+        if (allNominated.length < 2) {
+          alert(currentLang === "es" ? "¡Se necesitan al menos 2 películas nominadas!" : "Need at least 2 movie nominations across voters!");
+          return;
+        }
+
+        const remainingPool = allNominated.filter(id => !uniqueFinalists.includes(id));
+        while (uniqueFinalists.length < Math.min(4, allNominated.length) && remainingPool.length > 0) {
+          const randIdx = Math.floor(Math.random() * remainingPool.length);
+          uniqueFinalists.push(remainingPool.splice(randIdx, 1)[0]);
+        }
+      }
+
+      set(ref(db, `sessions/${currentSession}/phase`), "showdown");
+      set(ref(db, `sessions/${currentSession}/finalists`), uniqueFinalists);
+      set(ref(db, `sessions/${currentSession}/votes`), null);
+    } else {
+      set(ref(db, `sessions/${currentSession}/phase`), "nominations");
+      set(ref(db, `sessions/${currentSession}/finalists`), null);
+      set(ref(db, `sessions/${currentSession}/votes`), null);
+    }
+  });
+
+  document.getElementById("adminResetBtn").addEventListener("click", () => {
+    const pin = prompt("Enter Admin PIN to start a fresh movie night round:");
+    if (pin === "1234") {
+      const nextRound = `round_${Date.now()}`;
+      set(sessionPointerRef, nextRound);
+    } else if (pin !== null) {
+      alert("Access Denied");
+    }
+  });
+
+  searchInput.addEventListener("input", (e) => {
+    searchQuery = e.target.value;
+    fullCatalogRender();
+  });
+
+  pills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      pills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      currentFilter = pill.dataset.filter;
+      fullCatalogRender();
+    });
+  });
+
+  applyLanguage();
+</script>
+</body>
+</html>    }
     h1 {
       font-size: 2.8rem;
       font-weight: 800;
