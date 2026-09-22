@@ -351,7 +351,6 @@
       color: #000;
     }
 
-    /* Trailer Modal */
     .trailer-modal {
       position: fixed;
       inset: 0;
@@ -397,7 +396,6 @@
 </head>
 <body>
 
-<!-- Cinematic Intro Modal Overlay -->
 <div id="introModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease; gap: 1.25rem;">
   <div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.9); border: 1px solid #1f2537;">
     <iframe 
@@ -420,7 +418,6 @@
   }
 </script>
 
-<!-- Interactive Trailer Modal -->
 <div id="trailerModal" class="trailer-modal">
   <div class="trailer-frame-wrap">
     <iframe id="trailerIframe" src="" allow="autoplay; encrypted-media; fullscreen"></iframe>
@@ -489,7 +486,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // i18n Translation Dictionary
   const i18n = {
     en: {
       subtitle_nom: "Curated High-Bitrate Master Library",
@@ -518,7 +514,8 @@
       trailer_hint: "▶ Trailer",
       close_trailer: "✕ Close Trailer",
       skip_intro: "SKIP INTRO",
-      lang_toggle: "🌐 ES"
+      lang_toggle: "🌐 ES",
+      trailer_unavailable: "Trailer not available for this title."
     },
     es: {
       subtitle_nom: "Biblioteca Maestra Curada en Alta Tasa de Bits",
@@ -547,13 +544,13 @@
       trailer_hint: "▶ Tráiler",
       close_trailer: "✕ Cerrar Tráiler",
       skip_intro: "SALTAR INTRO",
-      lang_toggle: "🌐 EN"
+      lang_toggle: "🌐 EN",
+      trailer_unavailable: "Tráiler no disponible para este título."
     }
   };
 
   let currentLang = localStorage.getItem("vault_lang") || "en";
 
-  // Persistent Anonymous User ID
   let userId = localStorage.getItem("vault_user_id");
   if (!userId) {
     userId = "voter_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
@@ -637,8 +634,6 @@
     { title: "X-Men: Days of Future Past", query: "X-Men: Days of Future Past", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)" },
     { title: "Zack Snyder's Justice League", query: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full IMAX)" },
     { title: "Kill Bill: The Whole Bloody Affair", query: "Kill Bill: The Whole Bloody Affair", year: 2011, tag: "HAR", audio: "5.1 Surround (Open Matte UAR)" },
-    
-    // --- SCOPE RELEASES ---
     { title: "A Quiet Place", query: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish" },
     { title: "A Quiet Place: Day One", query: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround" },
     { title: "A Quiet Place Part II", query: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround" },
@@ -667,6 +662,10 @@
   let sessionData = { phase: "nominations", finalists: [], ballots: {}, votes: {} };
   let currentFilter = "all";
   let searchQuery = "";
+
+  const TMDB_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
+  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache") || "{}");
+  const trailerCache = JSON.parse(localStorage.getItem("vault_trailer_cache") || "{}");
 
   const catalogEl = document.getElementById("catalog");
   const searchInput = document.getElementById("searchInput");
@@ -719,7 +718,6 @@
     applyLanguage();
   });
 
-  // Real-time Session Sync
   const sessionPointerRef = ref(db, "active_session");
   onValue(sessionPointerRef, (snapshot) => {
     let sessionVal = snapshot.val();
@@ -753,11 +751,10 @@
     });
   });
 
-  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache") || "{}");
   async function fetchPoster(movie) {
     if (posterCache[movie.id]) return posterCache[movie.id];
     try {
-      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=15d2ea6d0dc1d476efbca3eba2b9bbfb&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
+      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
       const data = await res.json();
       if (data.results && data.results.length > 0 && data.results[0].poster_path) {
         const url = `https://image.tmdb.org/t/p/w500${data.results[0].poster_path}`;
@@ -768,6 +765,60 @@
     } catch (e) {}
     return `https://via.placeholder.com/300x450/161926/94a3b8?text=${encodeURIComponent(movie.title)}`;
   }
+
+  async function fetchTrailerKey(movie) {
+    if (trailerCache[movie.id]) return trailerCache[movie.id];
+    try {
+      const searchRes = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
+      const searchData = await searchRes.json();
+      if (!searchData.results || searchData.results.length === 0) return null;
+
+      const tmdbId = searchData.results[0].id;
+      const videoRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${TMDB_KEY}`);
+      const videoData = await videoRes.json();
+
+      if (videoData.results && videoData.results.length > 0) {
+        const trailer = videoData.results.find(v => v.site === "YouTube" && v.type === "Trailer") 
+                     || videoData.results.find(v => v.site === "YouTube" && v.type === "Teaser")
+                     || videoData.results.find(v => v.site === "YouTube");
+
+        if (trailer && trailer.key) {
+          trailerCache[movie.id] = trailer.key;
+          localStorage.setItem("vault_trailer_cache", JSON.stringify(trailerCache));
+          return trailer.key;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  }
+
+  async function openTrailer(movie) {
+    trailerModal.style.display = "flex";
+    trailerIframe.src = "about:blank";
+
+    const key = await fetchTrailerKey(movie);
+    if (key) {
+      trailerIframe.src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&rel=0`;
+    } else {
+      alert(i18n[currentLang].trailer_unavailable);
+      closeTrailer();
+    }
+  }
+
+  function closeTrailer() {
+    trailerIframe.src = "about:blank";
+    trailerModal.style.display = "none";
+  }
+
+  closeTrailerBtn.addEventListener("click", closeTrailer);
+  trailerModal.addEventListener("click", (e) => {
+    if (e.target === trailerModal) closeTrailer();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && trailerModal.style.display === "flex") closeTrailer();
+  });
 
   function getMovieMetrics(movieId) {
     const t = i18n[currentLang];
@@ -797,26 +848,6 @@
       };
     }
   }
-
-  // Trailer Modal Handlers
-  function openTrailer(movie) {
-    const searchQuery = `${movie.title} ${movie.year} official trailer`;
-    trailerIframe.src = `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(searchQuery)}&autoplay=1`;
-    trailerModal.style.display = "flex";
-  }
-
-  function closeTrailer() {
-    trailerIframe.src = "";
-    trailerModal.style.display = "none";
-  }
-
-  closeTrailerBtn.addEventListener("click", closeTrailer);
-  trailerModal.addEventListener("click", (e) => {
-    if (e.target === trailerModal) closeTrailer();
-  });
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && trailerModal.style.display === "flex") closeTrailer();
-  });
 
   async function renderCatalog() {
     catalogEl.innerHTML = "";
@@ -944,7 +975,6 @@
     }
   }
 
-  // Admin Runoff: Randomly Draft 1 Movie Per Person
   adminRunoffBtn.addEventListener("click", () => {
     const pin = prompt("Enter Admin PIN:");
     if (pin !== "1234") {
