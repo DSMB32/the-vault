@@ -33,6 +33,7 @@
       padding: 3rem 1.5rem 2rem;
       text-align: center;
       background: radial-gradient(circle at top, #1e1b4b 0%, var(--bg) 70%);
+      position: relative;
     }
     h1 {
       font-size: 2.8rem;
@@ -120,11 +121,12 @@
       color: #fff;
       border-color: var(--primary);
     }
-    .admin-actions {
+    .actions-group {
       display: flex;
       gap: 0.5rem;
+      align-items: center;
     }
-    .btn-admin {
+    .btn-action {
       background: transparent;
       border: 1px solid var(--card-border);
       color: var(--text-dim);
@@ -136,6 +138,12 @@
       white-space: nowrap;
       transition: all 0.2s;
     }
+    .btn-lang {
+      border-color: #3b4566;
+      color: #cbd5e1;
+      font-weight: 800;
+    }
+    .btn-lang:hover { background: #1c2236; }
     .btn-runoff { border-color: rgba(139, 92, 246, 0.4); color: #c4b5fd; }
     .btn-runoff:hover { background: var(--purple); color: #fff; }
     .btn-reset { border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
@@ -239,6 +247,7 @@
       background: #181d2d;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
     }
     .poster-img {
       width: 100%;
@@ -266,6 +275,24 @@
       background: rgba(59, 130, 246, 0.9);
       color: #fff;
     }
+    .trailer-hint {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .card:hover .trailer-hint { opacity: 1; }
 
     .card-info {
       padding: 0.85rem;
@@ -323,6 +350,49 @@
       border-color: var(--success);
       color: #000;
     }
+
+    /* Trailer Modal */
+    .trailer-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+    .trailer-frame-wrap {
+      width: 100%;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2d354d;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+      background: #000;
+    }
+    .trailer-frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .trailer-close-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 8px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .trailer-close-btn:hover { background: rgba(255, 255, 255, 0.25); }
   </style>
 </head>
 <body>
@@ -337,7 +407,7 @@
       allow="autoplay; encrypted-media">
     </iframe>
   </div>
-  <button onclick="closeIntro()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: background 0.2s;">SKIP INTRO</button>
+  <button onclick="closeIntro()" id="skipIntroBtn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: background 0.2s;">SKIP INTRO</button>
 </div>
 
 <script>
@@ -349,6 +419,14 @@
     }
   }
 </script>
+
+<!-- Interactive Trailer Modal -->
+<div id="trailerModal" class="trailer-modal">
+  <div class="trailer-frame-wrap">
+    <iframe id="trailerIframe" src="" allow="autoplay; encrypted-media; fullscreen"></iframe>
+  </div>
+  <button class="trailer-close-btn" id="closeTrailerBtn">✕ Close Trailer</button>
+</div>
 
 <header>
   <h1>THE <span>VAULT</span></h1>
@@ -369,24 +447,25 @@
         <button class="pill" data-filter="HAR">[HAR] High Aspect Ratio</button>
         <button class="pill" data-filter="Scope">[Scope] 2.39:1 Cinematic</button>
       </div>
-      <div class="admin-actions">
-        <button class="btn-admin btn-runoff" id="adminRunoffBtn">⚔️ Runoff</button>
-        <button class="btn-admin btn-reset" id="adminResetBtn">⚡ New Round</button>
+      <div class="actions-group">
+        <button class="btn-action btn-lang" id="langToggleBtn">🌐 ES</button>
+        <button class="btn-action btn-runoff" id="adminRunoffBtn">⚔️ Runoff</button>
+        <button class="btn-action btn-reset" id="adminResetBtn">⚡ New Round</button>
       </div>
     </div>
   </div>
 </div>
 
 <div class="showdown-banner" id="showdownBanner">
-  <h2>🏆 Final Showdown: The Runoff</h2>
-  <p>1 movie was randomly drafted from each voter's picks. Cast your <strong>1 final vote</strong> to crown tonight's movie!</p>
+  <h2 id="showdownHeading">🏆 Final Showdown: The Runoff</h2>
+  <p id="showdownDesc">1 movie was randomly drafted from each voter's picks. Cast your <strong>1 final vote</strong> to crown tonight's movie!</p>
 </div>
 
 <div class="leaderboard-section">
   <div class="leaderboard-box">
     <h3 id="leaderboardTitle">🔥 Live Leaderboard</h3>
     <div class="leader-list" id="leaderList">
-      <div style="font-size:0.85rem; color: var(--text-dim);">No votes cast yet. Be the first to vote!</div>
+      <div style="font-size:0.85rem; color: var(--text-dim);" id="leaderboardEmpty">No votes cast yet. Be the first to vote!</div>
     </div>
   </div>
 </div>
@@ -410,7 +489,71 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Persistent Anonymous User ID for multi-user ballots
+  // i18n Translation Dictionary
+  const i18n = {
+    en: {
+      subtitle_nom: "Curated High-Bitrate Master Library",
+      subtitle_run: "🏆 RUNOFF IN PROGRESS • 1 random movie drafted per voter",
+      draft_notice: "🎲 <strong>Draft Rule:</strong> Pick as many films as you're in the mood for. When nominations close, the Vault will randomly draft <strong>1 film from each person</strong> for the final Showdown vote!",
+      search_placeholder: "Search by title, audio format, year...",
+      pill_all: "All Titles",
+      pill_har: "[HAR] High Aspect Ratio",
+      pill_scope: "[Scope] 2.39:1 Cinematic",
+      btn_runoff: "⚔️ Runoff",
+      btn_back_nom: "↩ Back to Nominations",
+      btn_new_round: "⚡ New Round",
+      showdown_title: "🏆 Final Showdown: The Runoff",
+      showdown_desc: "1 movie was randomly drafted from each voter's picks. Cast your <strong>1 final vote</strong> to crown tonight's movie!",
+      lb_nominations: "🔥 Live Leaderboard",
+      lb_showdown: "🏆 Runoff Winner Standings",
+      lb_empty: "No votes cast yet. Be the first to vote!",
+      pick_btn: "+ Pick",
+      picked_btn: "✓ Picked",
+      vote_btn: "Vote",
+      voted_btn: "✓ Voted",
+      pick_singular: "pick",
+      pick_plural: "picks",
+      vote_singular: "vote",
+      vote_plural: "votes",
+      trailer_hint: "▶ Trailer",
+      close_trailer: "✕ Close Trailer",
+      skip_intro: "SKIP INTRO",
+      lang_toggle: "🌐 ES"
+    },
+    es: {
+      subtitle_nom: "Biblioteca Maestra Curada en Alta Tasa de Bits",
+      subtitle_run: "🏆 DESEMPATE EN CURSO • 1 película sorteada por participante",
+      draft_notice: "🎲 <strong>Regla del Sorteo:</strong> Elige todas las películas que quieras ver. Al cerrar las nominaciones, The Vault sorteará <strong>1 película de cada persona</strong> para la votación final!",
+      search_placeholder: "Buscar por título, formato de audio, año...",
+      pill_all: "Todos los Títulos",
+      pill_har: "[HAR] Aspecto Abierto / Alto",
+      pill_scope: "[Scope] 2.39:1 Cinemático",
+      btn_runoff: "⚔️ Desempate",
+      btn_back_nom: "↩ Volver a Nominaciones",
+      btn_new_round: "⚡ Nueva Ronda",
+      showdown_title: "🏆 Duelo Final: El Desempate",
+      showdown_desc: "Se sorteó 1 película de la lista de cada participante. ¡Emite tu <strong>único voto final</strong> para elegir la película de hoy!",
+      lb_nominations: "🔥 Tabla de Elecciones en Vivo",
+      lb_showdown: "🏆 Posiciones del Desempate",
+      lb_empty: "Aún no hay votos. ¡Sé el primero en elegir!",
+      pick_btn: "+ Elegir",
+      picked_btn: "✓ Elegida",
+      vote_btn: "Votar",
+      voted_btn: "✓ Votado",
+      pick_singular: "elección",
+      pick_plural: "elecciones",
+      vote_singular: "voto",
+      vote_plural: "votos",
+      trailer_hint: "▶ Tráiler",
+      close_trailer: "✕ Cerrar Tráiler",
+      skip_intro: "SALTAR INTRO",
+      lang_toggle: "🌐 EN"
+    }
+  };
+
+  let currentLang = localStorage.getItem("vault_lang") || "en";
+
+  // Persistent Anonymous User ID
   let userId = localStorage.getItem("vault_user_id");
   if (!userId) {
     userId = "voter_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
@@ -520,15 +663,6 @@
     id: `${m.title}_${m.year}`.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_")
   }));
 
-  function updatePillCounts() {
-    const harTotal = movies.filter(m => m.tag === "HAR").length;
-    const scopeTotal = movies.filter(m => m.tag === "Scope").length;
-    document.querySelector('[data-filter="all"]').textContent = `All Titles (${movies.length})`;
-    document.querySelector('[data-filter="HAR"]').textContent = `[HAR] High Aspect Ratio (${harTotal})`;
-    document.querySelector('[data-filter="Scope"]').textContent = `[Scope] 2.39:1 Cinematic (${scopeTotal})`;
-  }
-  updatePillCounts();
-
   let currentSession = null;
   let sessionData = { phase: "nominations", finalists: [], ballots: {}, votes: {} };
   let currentFilter = "all";
@@ -541,6 +675,49 @@
   const showdownBanner = document.getElementById("showdownBanner");
   const draftNotice = document.getElementById("draftNotice");
   const adminRunoffBtn = document.getElementById("adminRunoffBtn");
+  const langToggleBtn = document.getElementById("langToggleBtn");
+  const trailerModal = document.getElementById("trailerModal");
+  const trailerIframe = document.getElementById("trailerIframe");
+  const closeTrailerBtn = document.getElementById("closeTrailerBtn");
+
+  function applyLanguage() {
+    const t = i18n[currentLang];
+    langToggleBtn.textContent = t.lang_toggle;
+    searchInput.placeholder = t.search_placeholder;
+    closeTrailerBtn.textContent = t.close_trailer;
+    const skipBtn = document.getElementById("skipIntroBtn");
+    if (skipBtn) skipBtn.textContent = t.skip_intro;
+
+    const harTotal = movies.filter(m => m.tag === "HAR").length;
+    const scopeTotal = movies.filter(m => m.tag === "Scope").length;
+    document.querySelector('[data-filter="all"]').textContent = `${t.pill_all} (${movies.length})`;
+    document.querySelector('[data-filter="HAR"]').textContent = `${t.pill_har} (${harTotal})`;
+    document.querySelector('[data-filter="Scope"]').textContent = `${t.pill_scope} (${scopeTotal})`;
+
+    if (sessionData.phase === "showdown") {
+      document.getElementById("vaultSubtitle").textContent = t.subtitle_run;
+      adminRunoffBtn.textContent = t.btn_back_nom;
+      document.getElementById("leaderboardTitle").innerHTML = t.lb_showdown;
+    } else {
+      document.getElementById("vaultSubtitle").textContent = t.subtitle_nom;
+      adminRunoffBtn.textContent = t.btn_runoff;
+      document.getElementById("leaderboardTitle").innerHTML = t.lb_nominations;
+    }
+
+    draftNotice.innerHTML = t.draft_notice;
+    document.getElementById("adminResetBtn").textContent = t.btn_new_round;
+    document.getElementById("showdownHeading").textContent = t.showdown_title;
+    document.getElementById("showdownDesc").innerHTML = t.showdown_desc;
+
+    renderCatalog();
+    renderLeaderboard();
+  }
+
+  langToggleBtn.addEventListener("click", () => {
+    currentLang = currentLang === "en" ? "es" : "en";
+    localStorage.setItem("vault_lang", currentLang);
+    applyLanguage();
+  });
 
   // Real-time Session Sync
   const sessionPointerRef = ref(db, "active_session");
@@ -554,7 +731,6 @@
 
     currentSession = sessionVal;
 
-    // Listen to session state
     const sessionRef = ref(db, `sessions/${currentSession}`);
     onValue(sessionRef, (snap) => {
       const val = snap.val() || {};
@@ -565,23 +741,15 @@
         votes: val.votes || {}
       };
 
-      // UI Phase Toggle
       if (sessionData.phase === "showdown") {
         showdownBanner.style.display = "block";
         draftNotice.style.display = "none";
-        document.getElementById("vaultSubtitle").textContent = "🏆 RUNOFF IN PROGRESS • 1 random movie drafted per voter";
-        adminRunoffBtn.textContent = "↩ Back to Nominations";
-        document.getElementById("leaderboardTitle").innerHTML = "🏆 Runoff Winner Standings";
       } else {
         showdownBanner.style.display = "none";
         draftNotice.style.display = "block";
-        document.getElementById("vaultSubtitle").textContent = "Curated High-Bitrate Master Library";
-        adminRunoffBtn.textContent = "⚔️ Runoff";
-        document.getElementById("leaderboardTitle").innerHTML = "🔥 Live Leaderboard";
       }
 
-      renderCatalog();
-      renderLeaderboard();
+      applyLanguage();
     });
   });
 
@@ -601,29 +769,59 @@
     return `https://via.placeholder.com/300x450/161926/94a3b8?text=${encodeURIComponent(movie.title)}`;
   }
 
-  // Count picks/votes dynamically from live database
   function getMovieMetrics(movieId) {
+    const t = i18n[currentLang];
     if (sessionData.phase === "showdown") {
-      // 1-vote runoff counts
       const voteEntries = Object.values(sessionData.votes || {});
       const count = voteEntries.filter(id => id === movieId).length;
       const isSelected = sessionData.votes?.[userId] === movieId;
-      return { count, isSelected, label: count === 1 ? "vote" : "votes", btnActive: "✓ Voted", btnInactive: "Vote" };
+      return { 
+        count, 
+        isSelected, 
+        label: count === 1 ? t.vote_singular : t.vote_plural, 
+        btnActive: t.voted_btn, 
+        btnInactive: t.vote_btn 
+      };
     } else {
-      // Nomination picks across all user ballots
       let count = 0;
       Object.values(sessionData.ballots || {}).forEach(userBallot => {
         if (userBallot && userBallot[movieId] === true) count++;
       });
       const isSelected = sessionData.ballots?.[userId]?.[movieId] === true;
-      return { count, isSelected, label: count === 1 ? "pick" : "picks", btnActive: "✓ Picked", btnInactive: "+ Pick" };
+      return { 
+        count, 
+        isSelected, 
+        label: count === 1 ? t.pick_singular : t.pick_plural, 
+        btnActive: t.picked_btn, 
+        btnInactive: t.pick_btn 
+      };
     }
   }
 
+  // Trailer Modal Handlers
+  function openTrailer(movie) {
+    const searchQuery = `${movie.title} ${movie.year} official trailer`;
+    trailerIframe.src = `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(searchQuery)}&autoplay=1`;
+    trailerModal.style.display = "flex";
+  }
+
+  function closeTrailer() {
+    trailerIframe.src = "";
+    trailerModal.style.display = "none";
+  }
+
+  closeTrailerBtn.addEventListener("click", closeTrailer);
+  trailerModal.addEventListener("click", (e) => {
+    if (e.target === trailerModal) closeTrailer();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && trailerModal.style.display === "flex") closeTrailer();
+  });
+
   async function renderCatalog() {
     catalogEl.innerHTML = "";
+    const t = i18n[currentLang];
 
-    // Showdown renders ONLY drafted finalists
     let baseList = movies;
     if (sessionData.phase === "showdown" && sessionData.finalists.length > 0) {
       baseList = movies.filter(m => sessionData.finalists.includes(m.id));
@@ -644,9 +842,10 @@
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <div class="poster-wrap">
+        <div class="poster-wrap" title="Click to watch trailer">
           <img src="${cachedPoster}" alt="${m.title}" id="img_${m.id}" class="poster-img" loading="lazy">
           <span class="badge-float ${m.tag === 'HAR' ? 'badge-har' : 'badge-scope'}">${m.tag}</span>
+          <span class="trailer-hint">${t.trailer_hint}</span>
         </div>
         <div class="card-info">
           <div>
@@ -662,7 +861,12 @@
         </div>
       `;
 
-      card.querySelector(".vote-btn").addEventListener("click", () => handleVoteClick(m.id));
+      card.querySelector(".poster-wrap").addEventListener("click", () => openTrailer(m));
+      card.querySelector(".vote-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleVoteClick(m.id);
+      });
+
       catalogEl.appendChild(card);
 
       if (!posterCache[m.id]) {
@@ -675,6 +879,7 @@
   }
 
   function renderLeaderboard() {
+    const t = i18n[currentLang];
     let tallies = [];
 
     if (sessionData.phase === "showdown") {
@@ -699,34 +904,36 @@
       .slice(0, 5);
 
     if (sorted.length === 0) {
-      leaderList.innerHTML = `<div style="font-size:0.85rem; color: var(--text-dim);">No votes cast yet. Be the first to vote!</div>`;
+      leaderList.innerHTML = `<div style="font-size:0.85rem; color: var(--text-dim);">${t.lb_empty}</div>`;
       return;
     }
 
-    const unit = sessionData.phase === "showdown" ? "vote" : "pick";
-    leaderList.innerHTML = sorted.map(item => `
-      <div class="leader-item">
-        <strong>${item.movie.title}</strong>
-        <span class="leader-votes">${item.count} ${item.count === 1 ? unit : unit + 's'}</span>
-      </div>
-    `).join("");
+    const isShowdown = sessionData.phase === "showdown";
+    leaderList.innerHTML = sorted.map(item => {
+      const unit = isShowdown 
+        ? (item.count === 1 ? t.vote_singular : t.vote_plural)
+        : (item.count === 1 ? t.pick_singular : t.pick_plural);
+      return `
+        <div class="leader-item">
+          <strong>${item.movie.title}</strong>
+          <span class="leader-votes">${item.count} ${unit}</span>
+        </div>
+      `;
+    }).join("");
   }
 
-  // Handle Pick / Vote Action
   function handleVoteClick(movieId) {
     if (!currentSession) return;
 
     if (sessionData.phase === "showdown") {
-      // 1-vote limit Showdown logic
       const currentVote = sessionData.votes?.[userId];
       const voteRef = ref(db, `sessions/${currentSession}/votes/${userId}`);
       if (currentVote === movieId) {
-        set(voteRef, null); // Unvote
+        set(voteRef, null);
       } else {
-        set(voteRef, movieId); // Cast or switch single vote
+        set(voteRef, movieId);
       }
     } else {
-      // Unlimited Nominations logic
       const isPicked = sessionData.ballots?.[userId]?.[movieId] === true;
       const ballotItemRef = ref(db, `sessions/${currentSession}/ballots/${userId}/${movieId}`);
       if (isPicked) {
@@ -750,7 +957,6 @@
       const activeUserIds = Object.keys(ballots);
       const drafted = [];
 
-      // 1. Randomly draw 1 movie from each user's ballot
       activeUserIds.forEach(uid => {
         const userPicks = Object.keys(ballots[uid] || {}).filter(mId => ballots[uid][mId] === true);
         if (userPicks.length > 0) {
@@ -761,14 +967,13 @@
 
       let uniqueFinalists = [...new Set(drafted)];
 
-      // 2. Safeguard: If duplicate drafts resulted in < 2 films, draft other nominated films to ensure competition
       if (uniqueFinalists.length < 2) {
         const allNominated = [...new Set(activeUserIds.flatMap(uid => 
           Object.keys(ballots[uid] || {}).filter(mId => ballots[uid][mId] === true)
         ))];
 
         if (allNominated.length < 2) {
-          alert("Need at least 2 distinct movie nominations across all voters to initiate a Runoff!");
+          alert(currentLang === "es" ? "¡Se necesitan al menos 2 películas distintas nominadas!" : "Need at least 2 distinct movie nominations across all voters!");
           return;
         }
 
@@ -779,27 +984,21 @@
         }
       }
 
-      // 3. Launch Showdown
       set(ref(db, `sessions/${currentSession}/phase`), "showdown");
       set(ref(db, `sessions/${currentSession}/finalists`), uniqueFinalists);
       set(ref(db, `sessions/${currentSession}/votes`), null);
-      alert(`🏆 Runoff Initiated! ${uniqueFinalists.length} contenders drafted (1 from each voter). Ready for votes!`);
     } else {
-      // Revert back to Nominations (preserves all user ballots!)
       set(ref(db, `sessions/${currentSession}/phase`), "nominations");
       set(ref(db, `sessions/${currentSession}/finalists`), null);
       set(ref(db, `sessions/${currentSession}/votes`), null);
-      alert("Reverted to Nominations phase.");
     }
   });
 
-  // Admin New Round Trigger
   document.getElementById("adminResetBtn").addEventListener("click", () => {
     const pin = prompt("Enter Admin PIN to start a fresh movie night round:");
     if (pin === "1234") {
       const nextRound = `round_${Date.now()}`;
       set(sessionPointerRef, nextRound);
-      alert("New round initiated! All ballots and votes reset to 0.");
     } else if (pin !== null) {
       alert("Access Denied");
     }
@@ -819,7 +1018,7 @@
     });
   });
 
-  renderCatalog();
+  applyLanguage();
 </script>
 </body>
 </html>
