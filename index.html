@@ -634,7 +634,7 @@
     { title: "Spider-Man: Far From Home", query: "Spider-Man: Far From Home", year: 2019, tag: "HAR", audio: "7.1  Surround  (IMAX)" },
     { title: "Spider-Man: No Way Home", query: "Spider-Man: No Way Home", year: 2021, tag: "HAR", audio: "7.1  Surround  (IMAX)" },
     { title: "Star Trek Into Darkness", query: "Star Trek Into Darkness", year: 2013, tag: "HAR", audio: "5.1  Atmos  (IMAX)" },
-    { title: "Stranger Things S01", query: "Stranger Things Season 1", year: 2016, tag: "HAR", audio: "5.1 Univisium"},
+    { title: "Stranger Things", query: "Stranger Things", year: 2016, tag: "HAR", audio: "5.1 Univisium" },
     { title: "Sully", query: "Sully", year: 2016, tag: "HAR", audio: "5.1  Surround  (Open Matte)" },
     { title: "Tenet", query: "Tenet", year: 2020, tag: "HAR", audio: "5.1  Surround  (IMAX)" },
     { title: "Terminator 2: Judgment Day", query: "Terminator 2: Judgment Day", year: 1991, tag: "HAR", audio: "5.1  Surround  (IMAX)" },
@@ -791,10 +791,11 @@
   async function fetchPoster(movie) {
     if (posterCache[movie.id]) return posterCache[movie.id];
     try {
-      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
+      const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}`);
       const data = await res.json();
-      if (data.results && data.results.length > 0 && data.results[0].poster_path) {
-        const url = `https://image.tmdb.org/t/p/w500${data.results[0].poster_path}`;
+      const firstResult = data.results?.find(r => r.media_type === "movie" || r.media_type === "tv");
+      if (firstResult && firstResult.poster_path) {
+        const url = `https://image.tmdb.org/t/p/w500${firstResult.poster_path}`;
         posterCache[movie.id] = url;
         localStorage.setItem("vault_poster_cache", JSON.stringify(posterCache));
         return url;
@@ -834,12 +835,13 @@
   async function fetchTrailerKey(movie) {
     if (trailerCache[movie.id]) return trailerCache[movie.id];
     try {
-      const searchRes = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}&year=${movie.year}`);
+      const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}`);
       const searchData = await searchRes.json();
-      if (!searchData.results || searchData.results.length === 0) return null;
+      const match = searchData.results?.find(r => r.media_type === "movie" || r.media_type === "tv");
+      if (!match) return null;
 
-      const tmdbId = searchData.results[0].id;
-      const videoRes = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${TMDB_KEY}`);
+      const mediaType = match.media_type; // "movie" or "tv"
+      const videoRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${match.id}/videos?api_key=${TMDB_KEY}`);
       const videoData = await videoRes.json();
 
       if (videoData.results && videoData.results.length > 0) {
