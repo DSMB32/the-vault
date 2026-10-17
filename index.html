@@ -415,23 +415,72 @@
     .trailer-close-btn:hover {
       background: rgba(255, 255, 255, 0.28);
     }
+    .lang-gate-btn {
+      background: #171b29;
+      border: 1px solid #363f5e;
+      color: #fff;
+      padding: 1rem 2.2rem;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 165px;
+    }
+    .lang-gate-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
 
-<div id="introModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.25rem;">
-  <div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #1f2537;">
-    <iframe 
-      style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
-      src="https://www.youtube.com/embed/KIUhDod8WlI?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3" 
-      frameborder="0" 
-      allow="autoplay; encrypted-media">
-    </iframe>
+<div id="introModal" style="position: fixed; inset: 0; background: rgba(9,10,15,0.97); backdrop-filter: blur(12px); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.25rem; padding: 1.5rem;">
+  
+  <!-- Step 1: Language Selection Gate -->
+  <div id="langSelectStep" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+    <h1 style="font-size: 2.8rem; margin: 0;">THE <span style="color: #f59e0b;">VAULT</span></h1>
+    <p style="color: #94a3b8; font-size: 1rem;">Select your language / Selecciona tu idioma</p>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+      <button class="lang-gate-btn" onclick="startIntroWithLang('en')">🇺🇸 English</button>
+      <button class="lang-gate-btn" onclick="startIntroWithLang('es')">🇬🇹 Español</button>
+    </div>
   </div>
-  <button onclick="closeIntro()" id="skipIntroBtn" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.88rem;">SKIP INTRO</button>
+
+  <!-- Step 2: Intro Video Player (Hidden until language is picked) -->
+  <div id="videoStep" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 1.25rem;">
+    <div style="width: 90%; max-width: 800px; aspect-ratio: 16/9; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #1f2537; background: #000;">
+      <iframe 
+        id="introIframe"
+        style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
+        src="about:blank" 
+        frameborder="0" 
+        allow="autoplay; encrypted-media">
+      </iframe>
+    </div>
+    <button onclick="closeIntro()" id="skipIntroBtn" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.88rem;">SKIP INTRO</button>
+  </div>
+
 </div>
 
 <script>
+  // PASTE YOUR YOUTUBE VIDEO IDs HERE:
+  const INTRO_VIDEO_EN = "KIUhDod8WlI";
+  const INTRO_VIDEO_ES = "em8Gy2BRUd4";
+
+  function startIntroWithLang(lang) {
+    localStorage.setItem("vault_lang", lang);
+    if (window.setVaultLanguage) {
+      window.setVaultLanguage(lang);
+    }
+    const videoId = lang === "es" ? INTRO_VIDEO_ES : INTRO_VIDEO_EN;
+    document.getElementById("langSelectStep").style.display = "none";
+    const videoStep = document.getElementById("videoStep");
+    videoStep.style.display = "flex";
+    document.getElementById("introIframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3`;
+  }
+
   function closeIntro() {
     const modal = document.getElementById('introModal');
     if (modal) modal.remove();
@@ -701,11 +750,13 @@
 
   const TMDB_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
   localStorage.removeItem("vault_poster_cache");
-  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache_v2") || "{}");
+  localStorage.removeItem("vault_poster_cache_v2");
+  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache_v3") || "{}");
 
   localStorage.removeItem("vault_trailer_cache");
   localStorage.removeItem("vault_trailer_cache_v2");
-  const trailerCache = JSON.parse(localStorage.getItem("vault_trailer_cache_v3") || "{}");
+  localStorage.removeItem("vault_trailer_cache_v3");
+  const trailerCache = JSON.parse(localStorage.getItem("vault_trailer_cache_v4") || "{}");
 
   const catalogEl = document.getElementById("catalog");
   const searchInput = document.getElementById("searchInput");
@@ -757,6 +808,12 @@
     renderLeaderboard();
   }
 
+  window.setVaultLanguage = (lang) => {
+    currentLang = lang;
+    localStorage.setItem("vault_lang", currentLang);
+    applyLanguage();
+  };
+
   langToggleBtn.addEventListener("click", () => {
     currentLang = currentLang === "en" ? "es" : "en";
     localStorage.setItem("vault_lang", currentLang);
@@ -802,17 +859,32 @@
     });
   });
 
+  function findBestTmdbMatch(results, movie) {
+    if (!results || !results.length) return null;
+    const valid = results.filter(r => r.media_type === "movie" || r.media_type === "tv");
+    const targetYear = String(movie.year);
+    const expectTv = movie.title === "Stranger Things";
+    const preferredType = expectTv ? "tv" : "movie";
+
+    return (
+      valid.find(r => r.media_type === preferredType && (r.release_date || r.first_air_date || "").startsWith(targetYear)) ||
+      valid.find(r => (r.release_date || r.first_air_date || "").startsWith(targetYear)) ||
+      valid.find(r => r.media_type === preferredType) ||
+      valid[0]
+    );
+  }
+
   async function fetchPoster(movie) {
     if (movie.poster) return movie.poster;
     if (posterCache[movie.id]) return posterCache[movie.id];
     try {
       const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}`);
       const data = await res.json();
-      const firstResult = data.results?.find(r => r.media_type === "movie" || r.media_type === "tv");
-      if (firstResult && firstResult.poster_path) {
-        const url = `https://image.tmdb.org/t/p/w500${firstResult.poster_path}`;
+      const bestMatch = findBestTmdbMatch(data.results, movie);
+      if (bestMatch && bestMatch.poster_path) {
+        const url = `https://image.tmdb.org/t/p/w500${bestMatch.poster_path}`;
         posterCache[movie.id] = url;
-        localStorage.setItem("vault_poster_cache_v2", JSON.stringify(posterCache));
+        localStorage.setItem("vault_poster_cache_v3", JSON.stringify(posterCache));
         return url;
       }
     } catch (e) {}
@@ -852,7 +924,7 @@
     try {
       const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}`);
       const searchData = await searchRes.json();
-      const match = searchData.results?.find(r => r.media_type === "movie" || r.media_type === "tv");
+      const match = findBestTmdbMatch(searchData.results, movie);
       if (!match) return null;
 
       const mediaType = match.media_type;
@@ -868,7 +940,7 @@
 
         if (chosen) {
           trailerCache[movie.id] = chosen;
-          localStorage.setItem("vault_trailer_cache_v3", JSON.stringify(trailerCache));
+          localStorage.setItem("vault_trailer_cache_v4", JSON.stringify(trailerCache));
           return chosen;
         }
       }
