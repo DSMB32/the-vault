@@ -331,11 +331,9 @@
     .card-title {
       font-size: 0.92rem;
       font-weight: 700;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      line-height: 1.35;
+      white-space: normal;
+      overflow: visible;
     }
     .card-meta {
       font-size: 0.75rem;
@@ -451,7 +449,7 @@
   <h1>THE <span>VAULT</span></h1>
   <p class="subtitle" id="vaultSubtitle">Curated High-Bitrate Master Library</p>
   <div class="notice-bar" id="draftNotice">
-    🎲 <strong>Draft Rule:</strong> Pick as many films as you want. When closed, 1 movie per person is randomly drafted for the Runoff!
+    🎲 <strong>Draft Rule:</strong> Pick up to 3 films. When closed, 1 movie per person is randomly drafted for the Runoff!
   </div>
 </header>
 
@@ -510,11 +508,13 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
+  const MAX_PICKS = 3;
+
   const i18n = {
     en: {
       subtitle_nom: "Curated High-Bitrate Master Library",
       subtitle_run: "🏆 RUNOFF IN PROGRESS • 1 random film drafted per person",
-      draft_notice: "🎲 <strong>Draft Rule:</strong> Pick as many films as you want. When closed, 1 movie per person is randomly drafted for the Runoff!",
+      draft_notice: "🎲 <strong>Draft Rule:</strong> Pick up to 3 films (33% odds each). When closed, 1 movie per person is randomly drafted for the Runoff!",
       search_placeholder: "Search by title, audio format, year...",
       pill_all: "All Titles",
       pill_har: "[HAR] High Aspect Ratio",
@@ -539,12 +539,13 @@
       close_trailer: "✕ Close Trailer",
       skip_intro: "SKIP INTRO",
       lang_toggle: "🌐 ES",
-      trailer_unavailable: "Official theatrical trailer unavailable for this title."
+      trailer_unavailable: "Official theatrical trailer unavailable for this title.",
+      max_picks_alert: "Maximum 3 picks reached! Unpick one of your current selections first."
     },
     es: {
       subtitle_nom: "Biblioteca Maestra Curada en Alta Tasa de Bits",
       subtitle_run: "🏆 DESEMPATE EN CURSO • 1 película sorteada por persona",
-      draft_notice: "🎲 <strong>Regla del Sorteo:</strong> Elige todas las películas que quieras. Al cerrar, se sorteará 1 de cada persona para el Desempate!",
+      draft_notice: "🎲 <strong>Regla del Sorteo:</strong> Elige hasta 3 películas. ¡Al cerrar, se sorteará 1 de cada persona para el Desempate!",
       search_placeholder: "Buscar por título, formato de audio, año...",
       pill_all: "Todos los Títulos",
       pill_har: "[HAR] Aspecto Abierto",
@@ -569,7 +570,8 @@
       close_trailer: "✕ Cerrar Tráiler",
       skip_intro: "SALTAR INTRO",
       lang_toggle: "🌐 EN",
-      trailer_unavailable: "Tráiler oficial cinematográfico no disponible."
+      trailer_unavailable: "Tráiler oficial cinematográfico no disponible.",
+      max_picks_alert: "¡Límite de 3 elecciones alcanzado! Deselecciona una película primero."
     }
   };
 
@@ -680,9 +682,9 @@
     { title: "The Hunger Games: Ballad of Songbirds & Snakes", query: "The Ballad of Songbirds & Snakes", year: 2023, tag: "Scope", audio: "7.1  Surround" },
     { title: "The Hunger Games: Mockingjay Part 1", query: "The Hunger Games: Mockingjay - Part 1", year: 2014, tag: "Scope", audio: "7.1  Surround" },
     { title: "The Hunger Games: Mockingjay Part 2", query: "The Hunger Games: Mockingjay - Part 2", year: 2015, tag: "Scope", audio: "7.1  Surround" },
-    { title: "The Twilight Saga: Eclipse", query: "The Twilight Saga: Eclipse", year: 2010, tag: "Scope", audio: "5.1 Surround"},
-    { title: "The Twilight Saga: Breaking Dawn Part 1 Extended", query: "The Twilight Saga: Breaking Dawn - Part I Extended", year: 2011, tag: "Scope", audio: "7.1 Surround"},
-    { title: "The Twilight Saga: Breaking Dawn Part 2", query: "The Twilight Saga: Breaking Dawn - Part 2", year: 2012, tag: "Scope", audio: "7.1 Surround", poster: "https://m.media-amazon.com/images/M/MV5BMTcyMzUyMzY1OF5BMl5BanBnXkFtZTcwNDQ4ODk1OA@@._V1_.jpg"},
+    { title: "The Twilight Saga: Eclipse", query: "The Twilight Saga: Eclipse", year: 2010, tag: "Scope", audio: "5.1 Surround" },
+    { title: "The Twilight Saga: Breaking Dawn Part 1 Extended", query: "The Twilight Saga: Breaking Dawn - Part 1", year: 2011, tag: "Scope", audio: "7.1 Surround" },
+    { title: "The Twilight Saga: Breaking Dawn Part 2", query: "The Twilight Saga: Breaking Dawn - Part 2", year: 2012, tag: "Scope", audio: "7.1 Surround", poster: "https://m.media-amazon.com/images/M/MV5BMTcyMzUyMzY1OF5BMl5BanBnXkFtZTcwNDQ4ODk1OA@@._V1_.jpg" },
     { title: "Thunderbolts*", query: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1  Surround" }
   ];
 
@@ -698,7 +700,8 @@
   let renderedPhase = null;
 
   const TMDB_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
-  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache") || "{}");
+  localStorage.removeItem("vault_poster_cache");
+  const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache_v2") || "{}");
 
   localStorage.removeItem("vault_trailer_cache");
   localStorage.removeItem("vault_trailer_cache_v2");
@@ -715,6 +718,11 @@
   const trailerModal = document.getElementById("trailerModal");
   const trailerIframe = document.getElementById("trailerIframe");
   const closeTrailerBtn = document.getElementById("closeTrailerBtn");
+
+  function getUserNominationCount() {
+    const userBallot = sessionData.ballots?.[userId] || {};
+    return Object.keys(userBallot).filter(id => userBallot[id] === true).length;
+  }
 
   function applyLanguage() {
     const t = i18n[currentLang];
@@ -795,6 +803,7 @@
   });
 
   async function fetchPoster(movie) {
+    if (movie.poster) return movie.poster;
     if (posterCache[movie.id]) return posterCache[movie.id];
     try {
       const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.query || movie.title)}`);
@@ -803,7 +812,7 @@
       if (firstResult && firstResult.poster_path) {
         const url = `https://image.tmdb.org/t/p/w500${firstResult.poster_path}`;
         posterCache[movie.id] = url;
-        localStorage.setItem("vault_poster_cache", JSON.stringify(posterCache));
+        localStorage.setItem("vault_poster_cache_v2", JSON.stringify(posterCache));
         return url;
       }
     } catch (e) {}
@@ -846,7 +855,7 @@
       const match = searchData.results?.find(r => r.media_type === "movie" || r.media_type === "tv");
       if (!match) return null;
 
-      const mediaType = match.media_type; // "movie" or "tv"
+      const mediaType = match.media_type;
       const videoRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${match.id}/videos?api_key=${TMDB_KEY}`);
       const videoData = await videoRes.json();
 
@@ -912,11 +921,12 @@
         if (userBallot && userBallot[movieId] === true) count++;
       });
       const isSelected = sessionData.ballots?.[userId]?.[movieId] === true;
+      const myCount = getUserNominationCount();
       return { 
         count, 
         isSelected, 
         label: count === 1 ? t.pick_singular : t.pick_plural, 
-        btnActive: t.picked_btn, 
+        btnActive: `${t.picked_btn} (${myCount}/${MAX_PICKS})`, 
         btnInactive: t.pick_btn 
       };
     }
@@ -963,7 +973,7 @@
 
     for (const m of filtered) {
       const metric = getMovieMetrics(m.id);
-      const cachedPoster = posterCache[m.id] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%2312151f'/%3E%3C/svg%3E";
+      const cachedPoster = m.poster || posterCache[m.id] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%2312151f'/%3E%3C/svg%3E";
 
       const card = document.createElement("div");
       card.className = "card";
@@ -996,7 +1006,7 @@
 
       catalogEl.appendChild(card);
 
-      if (!posterCache[m.id]) {
+      if (!m.poster && !posterCache[m.id]) {
         fetchPoster(m).then(url => {
           const el = document.getElementById(`img_${m.id}`);
           if (el) el.src = url;
@@ -1065,6 +1075,11 @@
       if (isPicked) {
         set(ballotItemRef, null);
       } else {
+        const currentCount = getUserNominationCount();
+        if (currentCount >= MAX_PICKS) {
+          alert(i18n[currentLang].max_picks_alert);
+          return;
+        }
         set(ballotItemRef, true);
       }
     }
