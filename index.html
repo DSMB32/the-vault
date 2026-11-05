@@ -121,14 +121,17 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      opacity: 0.6;
-      transition: opacity 0.3s;
+      transition: transform 0.4s ease, filter 0.4s ease;
+      filter: brightness(0.7);
     }
-    .saga-card:hover .saga-bg { opacity: 0.8; }
+    .saga-card:hover .saga-bg { 
+      filter: brightness(1); 
+      transform: scale(1.05);
+    }
     .saga-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
+      background: linear-gradient(to top, rgba(15,16,20,1) 0%, rgba(15,16,20,0.6) 50%, rgba(15,16,20,0.1) 100%);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -137,7 +140,7 @@
       text-align: center;
     }
     .saga-logo-text {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 900;
       color: #fff;
       text-transform: uppercase;
@@ -153,9 +156,7 @@
     }
 
     /* MOVIE CATALOG GRID */
-    .catalog-container {
-      display: none; /* Hidden until a saga is selected */
-    }
+    .catalog-container { display: none; }
     .catalog {
       max-width: 1200px;
       margin: 2rem auto;
@@ -165,7 +166,6 @@
       gap: 1.5rem;
     }
     
-    /* EXISTING MOVIE CARD STYLES */
     .card {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
@@ -324,7 +324,6 @@
   </div>
 </div>
 
-<!-- LEADERBOARD (SHOPPING CART) -->
 <div class="leaderboard-section" id="leaderboardSection">
   <div class="leaderboard-box">
     <h3 id="leaderboardTitle" style="font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.5rem;">🔥 Live Shopping Cart</h3>
@@ -334,7 +333,6 @@
   </div>
 </div>
 
-<!-- WINNER DISPLAY SCREEN -->
 <div class="winner-section" id="winnerSection">
   <h2 style="color: #fff; font-size: 1.2rem; letter-spacing: 0.1em;" id="winnerText">🍿 TONIGHT'S MOVIE</h2>
   <img src="" id="winnerPoster" class="winner-poster" alt="Winner Poster">
@@ -343,15 +341,12 @@
   <p class="winner-votes" id="winnerVotes">Won with X picks!</p>
 </div>
 
-<!-- SAGAS GRID (DISNEY+ HOME) -->
 <main class="sagas-grid" id="sagasGrid"></main>
 
-<!-- CATALOG GRID (DRILL DOWN) -->
 <div class="catalog-container" id="catalogContainer">
   <main class="catalog" id="catalog"></main>
 </div>
 
-<!-- TRAILER MODAL -->
 <div id="trailerModal" class="trailer-modal">
   <div class="trailer-frame-wrap">
     <iframe id="trailerIframe" src="" allow="autoplay; encrypted-media; fullscreen"></iframe>
@@ -418,12 +413,15 @@
   let userId = localStorage.getItem("vault_user_id") || ("voter_" + Math.random().toString(36).substring(2, 9));
   localStorage.setItem("vault_user_id", userId);
 
+  // FULL RESTORED MOVIE LIST WITH SAGAS MAPPED
   const rawMovies = [
+    // === THE DARK KNIGHT TRILOGY (SEPARATED) ===
+    { title: "Batman Begins", year: 2005, tag: "Scope", audio: "5.1 Surround", saga: "The Dark Knight Trilogy" },
+    { title: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "The Dark Knight Trilogy" },
+    { title: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "The Dark Knight Trilogy" },
+
     // === CHRISTOPHER NOLAN COLLECTION ===
     { title: "Memento", year: 2000, tag: "Scope", audio: "5.1 Surround", saga: "Christopher Nolan" },
-    { title: "Batman Begins", year: 2005, tag: "Scope", audio: "5.1 Surround", saga: "Christopher Nolan" },
-    { title: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Christopher Nolan" },
-    { title: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Christopher Nolan" },
     { title: "Interstellar", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Christopher Nolan" },
     { title: "Dunkirk", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Christopher Nolan" },
     { title: "Tenet", year: 2020, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Christopher Nolan" },
@@ -433,43 +431,164 @@
     { title: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
     { title: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Marvel Cinematic Universe" },
     { title: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Marvel Cinematic Universe" },
+    { title: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
     { title: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
     { title: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-    
+    { title: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
+    { title: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround", saga: "Marvel Cinematic Universe" },
+
     // === SPIDER-MAN UNIVERSE ===
     { title: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Spider-Man Universe" },
     { title: "Spider-Man 2", year: 2004, tag: "Scope", audio: "5.1 Surround", saga: "Spider-Man Universe" },
+    { title: "Spider-Man 3", year: 2007, tag: "Scope", audio: "5.1 Surround", saga: "Spider-Man Universe" },
+    { title: "The Amazing Spider-Man", year: 2012, tag: "Scope", audio: "5.1 Surround", saga: "Spider-Man Universe" },
+    { title: "The Amazing Spider-Man 2", year: 2014, tag: "Scope", audio: "5.1 Surround", saga: "Spider-Man Universe" },
+    { title: "Spider-Man: Homecoming", year: 2017, tag: "Scope", audio: "5.1 Surround", saga: "Spider-Man Universe" },
+    { title: "Spider-Man: Far From Home", year: 2019, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Spider-Man Universe" },
     { title: "Spider-Man: No Way Home", year: 2021, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Spider-Man Universe" },
+    { title: "Spider-Man: Brand New Day", year: 2026, tag: "HAR", audio: "5.1 Atmos Surround (IMAX)", saga: "Spider-Man Universe" },
+
+    // === MARVEL / X-MEN & SONY UNIVERSE ===
+    { title: "X-Men: Days of Future Past", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "X-Men & Sony Universe" },
+    { title: "Logan", year: 2017, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "X-Men & Sony Universe" },
+    { title: "Venom: Let There Be Carnage", year: 2021, tag: "HAR", audio: "5.1 Surround (Native)", saga: "X-Men & Sony Universe" },
 
     // === DC UNIVERSE ===
     { title: "Batman v Superman: Dawn of Justice", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "DC Universe" },
-    { title: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full)", saga: "DC Universe" },
+    { title: "Aquaman", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "DC Universe" },
+    { title: "Joker", year: 2019, tag: "HAR", audio: "7.1 Surround (Native)", saga: "DC Universe" },
+    { title: "The Suicide Squad", year: 2021, tag: "HAR", audio: "5.1 Dolby Surround (IMAX)", saga: "DC Universe" },
+    { title: "Zack Snyder's Justice League", year: 2021, tag: "HAR", audio: "7.1 Surround (1.33:1 Full IMAX)", saga: "DC Universe" },
+    { title: "Aquaman and the Lost Kingdom", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "DC Universe" },
 
-    // === TRANSFORMERS ===
-    { title: "Transformers", year: 2007, tag: "Scope", audio: "7.1 Surround", saga: "Transformers" },
-    { title: "Transformers: Age of Extinction", year: 2014, tag: "HAR", audio: "7.1 Dolby Surround (IMAX)", saga: "Transformers" },
+    // === TRANSFORMERS FRANCHISE ===
+    { title: "Transformers", year: 2007, tag: "Scope", audio: "7.1 Surround", saga: "Transformers Franchise" },
+    { title: "Transformers: Revenge of the Fallen", year: 2009, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Transformers Franchise" },
+    { title: "Transformers: Age of Extinction", year: 2014, tag: "HAR", audio: "7.1 Dolby Surround (IMAX)", saga: "Transformers Franchise" },
+    { title: "Transformers: The Last Knight", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Transformers Franchise" },
+    { title: "Bumblebee", year: 2018, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Transformers Franchise" },
 
-    // === THE HUNGER GAMES ===
+    // === TERMINATOR FRANCHISE ===
+    { title: "The Terminator", year: 1984, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Terminator Franchise" },
+    { title: "Terminator 2: Judgment Day", year: 1991, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Terminator Franchise" },
+    { title: "Terminator 3: Rise of the Machines", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Terminator Franchise" },
+
+    // === THE HUNGER GAMES FRANCHISE ===
     { title: "The Hunger Games", year: 2012, tag: "Scope", audio: "7.1 Surround", saga: "The Hunger Games" },
     { title: "The Hunger Games: Catching Fire", year: 2013, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "The Hunger Games" },
+    { title: "The Hunger Games: Mockingjay Part 1", year: 2014, tag: "Scope", audio: "7.1 Surround", saga: "The Hunger Games" },
+    { title: "The Hunger Games: Mockingjay Part 2", year: 2015, tag: "Scope", audio: "7.1 Surround", saga: "The Hunger Games" },
+    { title: "The Hunger Games: Ballad of Songbirds & Snakes", year: 2023, tag: "Scope", audio: "7.1 Surround", saga: "The Hunger Games" },
 
-    // === STANDALONE / MASTERPIECES ===
+    // === THE MATRIX TRILOGY ===
+    { title: "The Matrix", year: 1999, tag: "HAR", audio: "7.1 Surround (Open Matte)", saga: "The Matrix Trilogy" },
+    { title: "The Matrix Reloaded", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Matrix Trilogy" },
+    { title: "The Matrix Revolutions", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Matrix Trilogy" },
+
+    // === MAZE RUNNER TRILOGY ===
+    { title: "The Maze Runner", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Maze Runner" },
+    { title: "Maze Runner: The Scorch Trials", year: 2015, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Maze Runner" },
+    { title: "Maze Runner: The Death Cure", year: 2018, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Maze Runner" },
+
+    // === A QUIET PLACE FRANCHISE ===
+    { title: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish", saga: "A Quiet Place" },
+    { title: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround", saga: "A Quiet Place" },
+    { title: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround", saga: "A Quiet Place" },
+
+    // === DUNE FRANCHISE ===
+    { title: "Dune: Part One", year: 2021, tag: "Scope", audio: "7.1 Surround", saga: "Dune" },
+    { title: "Dune: Part Two", year: 2024, tag: "Scope", audio: "7.1 Surround", saga: "Dune" },
+
+    // === TOP GUN FRANCHISE ===
+    { title: "Top Gun", year: 1986, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Top Gun" },
+    { title: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Top Gun" },
+
+    // === MISSION: IMPOSSIBLE FRANCHISE ===
+    { title: "Mission: Impossible - Ghost Protocol", year: 2011, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Mission: Impossible" },
+    { title: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Mission: Impossible" },
+
+    // === AVATAR FRANCHISE ===
+    { title: "Avatar (Extended)", year: 2009, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Avatar" },
+    { title: "Avatar: The Way of Water", year: 2022, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Avatar" },
+
+    // === THE TWILIGHT SAGA ===
+    { title: "Twilight", year: 2008, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Twilight Saga" },
+    { title: "The Twilight Saga: New Moon", year: 2009, tag: "Scope", audio: "5.1 Surround", saga: "The Twilight Saga" },
+    { title: "The Twilight Saga: Eclipse", year: 2010, tag: "Scope", audio: "5.1 Surround", saga: "The Twilight Saga" },
+    { title: "The Twilight Saga: Breaking Dawn Part 1 Extended", year: 2011, tag: "Scope", audio: "7.1 Surround", saga: "The Twilight Saga" },
+    { title: "The Twilight Saga: Breaking Dawn Part 2", year: 2012, tag: "Scope", audio: "7.1 Surround", saga: "The Twilight Saga" },
+
+    // === BACK TO THE FUTURE TRILOGY ===
+    { title: "Back to the Future", year: 1985, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Back to the Future" },
+    { title: "Back to the Future Part II", year: 1989, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Back to the Future" },
+    { title: "Back to the Future Part III", year: 1990, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Back to the Future" },
+
+    // === STANDALONE FILMS & MASTERPIECES ===
+    { title: "Aliens (Special Edition)", year: 1986, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Standalone Films" },
     { title: "Jurassic Park", year: 1993, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Standalone Films" },
+    { title: "Titanic", year: 1997, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Saving Private Ryan", year: 1998, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Standalone Films" },
     { title: "Gladiator", year: 2000, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Drumline", year: 2002, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Pride & Prejudice", year: 2005, tag: "Scope", audio: "2.0 Stereo", saga: "Standalone Films" },
+    { title: "The Hurt Locker", year: 2008, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Standalone Films" },
     { title: "TRON: Legacy", year: 2010, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Standalone Films" },
+    { title: "Kill Bill: The Whole Bloody Affair", year: 2011, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Skyfall", year: 2012, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Oblivion", year: 2013, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
     { title: "Pacific Rim", year: 2013, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Standalone Films" },
-    { title: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Standalone Films" }
+    { title: "Star Trek Into Darkness", year: 2013, tag: "HAR", audio: "5.1 Atmos (IMAX)", saga: "Standalone Films" },
+    { title: "American Sniper", year: 2014, tag: "Scope", audio: "5.1 Atmos Surround", saga: "Standalone Films" },
+    { title: "Star Wars: The Force Awakens", year: 2015, tag: "Scope", audio: "5.1 Surround", saga: "Standalone Films" },
+    { title: "Arrival", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Stranger Things", year: 2016, tag: "HAR", audio: "All Seasons 5.1 Surround", saga: "Standalone Films" },
+    { title: "Sully", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Blade Runner 2049", year: 2017, tag: "HAR", audio: "7.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "First Man", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Standalone Films" },
+    { title: "Alita: Battle Angel", year: 2019, tag: "HAR", audio: "7.1 Surround (Open Matte)", saga: "Standalone Films" },
+    { title: "Nope", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Standalone Films" },
+    { title: "Civil War", year: 2024, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Standalone Films" },
+    { title: "Michael", year: 2026, tag: "HAR", audio: "7.1 Dolby Surround (Native)", saga: "Standalone Films" },
+    { title: "The Dog Stars", year: 2026, tag: "Scope", audio: "7.1 Surround", saga: "Standalone Films" }
   ];
 
-  // Map collections to gradient backgrounds (Disney+ Style)
+  // TMDB Cinematic Backdrops for the Disney+ Style Cards
   const sagaStyles = {
-    "Christopher Nolan": "linear-gradient(135deg, #1a1c29 0%, #303545 100%)",
-    "Marvel Cinematic Universe": "linear-gradient(135deg, #4a0000 0%, #a11414 100%)",
-    "Spider-Man Universe": "linear-gradient(135deg, #0b1c47 0%, #b21818 100%)",
-    "DC Universe": "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)",
-    "Transformers": "linear-gradient(135deg, #182029 0%, #4a5d23 100%)",
-    "The Hunger Games": "linear-gradient(135deg, #2b1100 0%, #d46300 100%)",
-    "Standalone Films": "linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)"
+    "The Dark Knight Trilogy": "url('https://image.tmdb.org/t/p/w1280/xfSAoBQiZXOXNjmZXq0Zk9D09J9.jpg')",
+    "Christopher Nolan": "url('https://image.tmdb.org/t/p/w1280/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg')",
+    "Marvel Cinematic Universe": "url('https://image.tmdb.org/t/p/w1280/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg')",
+    "Spider-Man Universe": "url('https://image.tmdb.org/t/p/w1280/14QbnygCuTO0vl7CAFmZ733Jle2.jpg')",
+    "X-Men & Sony Universe": "url('https://image.tmdb.org/t/p/w1280/29BkVgwB2X719F604jUqP3c7e75.jpg')",
+    "DC Universe": "url('https://image.tmdb.org/t/p/w1280/jOgbnNhtTIEdDPeaOEQELzABWPR.jpg')",
+    "Transformers Franchise": "url('https://image.tmdb.org/t/p/w1280/2u0yOaL8Mstq4t4PweY4K8z4H9Q.jpg')",
+    "Terminator Franchise": "url('https://image.tmdb.org/t/p/w1280/aAmfIX3TT40zUHGcCKrlOZRKC7u.jpg')",
+    "The Hunger Games": "url('https://image.tmdb.org/t/p/w1280/5y8b0T2P1L8cO3c3Rz5D8t66C05.jpg')",
+    "The Matrix Trilogy": "url('https://image.tmdb.org/t/p/w1280/l41ZESeRkGg2aGq5gAOp6JzJz9L.jpg')",
+    "Maze Runner": "url('https://image.tmdb.org/t/p/w1280/6xKCYgEQ8h4yT9cWbH18fH0qJ1o.jpg')",
+    "A Quiet Place": "url('https://image.tmdb.org/t/p/w1280/AsAmjzGidMBqL20j39n2y8G2Kj2.jpg')",
+    "Dune": "url('https://image.tmdb.org/t/p/w1280/5a4JdoFwll5qI52D3kHnN6OqD4B.jpg')",
+    "Top Gun": "url('https://image.tmdb.org/t/p/w1280/odJ4hx6g6vBt4lBWKFD1tI8WS4x.jpg')",
+    "Mission: Impossible": "url('https://image.tmdb.org/t/p/w1280/aw4FOsWr2FY373nKS73gqOKmlk6.jpg')",
+    "Avatar": "url('https://image.tmdb.org/t/p/w1280/8rpDcsfLJypbO6vtecsozsPbwK3.jpg')",
+    "The Twilight Saga": "url('https://image.tmdb.org/t/p/w1280/b0J8pE0R4V2R30x6J8tI0W4vK3.jpg')",
+    "Back to the Future": "url('https://image.tmdb.org/t/p/w1280/hB8C1eHjX92Xq3P2YwVdO9gEivc.jpg')",
+    "Standalone Films": "url('https://image.tmdb.org/t/p/w1280/aJd34GrycQ5qC2vDOPvJ7yLgI2U.jpg')"
   };
 
   const movies = rawMovies.map(m => ({
@@ -490,8 +609,7 @@
   
   const TMDB_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
   const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache_v3") || "{}");
-  const trailerCache = JSON.parse(localStorage.getItem("vault_trailer_cache_v4") || "{}");
-
+  
   const sagasGrid = document.getElementById("sagasGrid");
   const catalogContainer = document.getElementById("catalogContainer");
   const catalogEl = document.getElementById("catalog");
@@ -503,7 +621,6 @@
   const winnerSection = document.getElementById("winnerSection");
   const leaderboardSection = document.getElementById("leaderboardSection");
   
-  // --- UI RENDERING ---
   function applyLanguage() {
     const t = i18n[currentLang];
     langToggleBtn.textContent = t.lang_toggle;
@@ -539,11 +656,11 @@
     const t = i18n[currentLang];
 
     Object.keys(sagasMap).forEach(sagaName => {
-      const bgStyle = sagaStyles[sagaName] || "linear-gradient(135deg, #111 0%, #333 100%)";
+      const bgImg = sagaStyles[sagaName] || "none";
       const card = document.createElement("div");
       card.className = "saga-card";
       card.innerHTML = `
-        <div class="saga-bg" style="background: ${bgStyle};"></div>
+        <div class="saga-bg" style="background-image: ${bgImg}; background-color: #333;"></div>
         <div class="saga-overlay">
           <h3 class="saga-logo-text">${sagaName}</h3>
           <span class="saga-label">${t.collection_label}</span>
