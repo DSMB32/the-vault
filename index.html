@@ -37,6 +37,23 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* PAGE TRANSITION ANIMATION */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
     /* HEADER & NAVIGATION */
     header {
       padding: 2.75rem 1.5rem 1.75rem;
@@ -345,6 +362,7 @@
       margin-top: 0.25rem;
     }
 
+    /* UPDATED REVERSE LAYOUT FOR VOTE ACTIONS */
     .card-action {
       display: flex;
       align-items: center;
@@ -388,6 +406,8 @@
       max-width: 1200px;
       margin: 1.5rem auto 0;
       padding: 0 1.5rem;
+      display: none;
+      /* Initially hidden on home screen */
     }
 
     .leaderboard-box {
@@ -865,9 +885,14 @@
     function renderSagas() {
       currentView = "sagas";
       sagasGrid.style.display = "grid";
+      sagasGrid.classList.remove("fade-in");
+      void sagasGrid.offsetWidth;
+      sagasGrid.classList.add("fade-in");
+
       catalogContainer.style.display = "none";
       backBtn.style.display = "none";
       currentCollectionTitle.style.display = "none";
+      leaderboardSection.style.display = "none";
       sagasGrid.innerHTML = "";
 
       Object.keys(sagasMap).forEach(sagaName => {
@@ -890,7 +915,13 @@
       activeSaga = sagaName;
       currentView = "movies";
       sagasGrid.style.display = "none";
+
       catalogContainer.style.display = "block";
+      catalogContainer.classList.remove("fade-in");
+      void catalogContainer.offsetWidth;
+      catalogContainer.classList.add("fade-in");
+
+      leaderboardSection.style.display = "block";
       backBtn.style.display = "inline-block";
       currentCollectionTitle.style.display = "inline-block";
       currentCollectionTitle.textContent = sagaName;
@@ -938,11 +969,11 @@
             <div class="card-title">${m.title}</div>
             <div class="card-meta">${m.year} • ${m.audio}</div>
           </div>
-          <div>
-            <button class="vote-btn ${isSelected ? 'voted' : ''}" onclick="handleVoteClick('${m.id}')">
+          <div class="card-action">
+            <div class="vote-count">${count} ${count === 1 ? t.pick_singular : t.pick_plural}</div>
+            <button class="vote-btn ${isSelected ? 'voted' : ''}" onclick="handleVoteClick('${m.id}')" style="width: auto; padding: 0.4rem 1rem;">
               ${isSelected ? t.picked_btn : t.pick_btn}
             </button>
-            <div class="vote-count">${count} ${count === 1 ? t.pick_singular : t.pick_plural}</div>
           </div>
         </div>
       `;
