@@ -20,6 +20,7 @@
       --text-dim: #94a3b8;
       --primary: #6366f1;
       --success: #10b981;
+      --danger: #ef4444;
     }
 
     * {
@@ -51,7 +52,7 @@
     }
 
     .fade-in {
-      animation: fadeIn 0.4s ease-out forwards;
+      animation: fadeIn 0.35s ease-out forwards;
     }
 
     /* HEADER & NAVIGATION */
@@ -311,38 +312,8 @@
       z-index: 10;
     }
 
-    /* DUAL AUDIO BADGES */
-    .badge-audio {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      display: flex;
-      gap: 4px;
-      z-index: 10;
-    }
-
-    .audio-tag {
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      backdrop-filter: blur(8px);
-      letter-spacing: 0.05em;
-      color: #fff;
-    }
-
-    .audio-eng {
-      background: rgba(59, 130, 246, 0.8);
-      border: 1px solid rgba(59, 130, 246, 0.4);
-    }
-
-    .audio-lat {
-      background: rgba(16, 185, 129, 0.8);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-
     .card-info {
-      padding: 1rem;
+      padding: 0.9rem;
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -359,10 +330,27 @@
     .card-meta {
       font-size: 0.75rem;
       color: var(--text-dim);
-      margin-top: 0.25rem;
+      margin-top: 0.3rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
     }
 
-    /* UPDATED REVERSE LAYOUT FOR VOTE ACTIONS */
+    /* CLEAN STUDIO-STYLE AUDIO TAG */
+    .dual-pill {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
     .card-action {
       display: flex;
       align-items: center;
@@ -382,12 +370,12 @@
       background: #23293e;
       border: 1px solid #363f5e;
       color: #fff;
-      padding: 0.45rem 0.85rem;
+      padding: 0.4rem 0.9rem;
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.8rem;
       font-weight: 700;
-      transition: background 0.15s;
+      transition: background 0.15s, border-color 0.15s;
     }
 
     .vote-btn:hover {
@@ -407,32 +395,39 @@
       margin: 1.5rem auto 0;
       padding: 0 1.5rem;
       display: none;
-      /* Initially hidden on home screen */
+      /* Hidden until first vote is cast */
     }
 
     .leaderboard-box {
       background: linear-gradient(135deg, #151826 0%, #0f121d 100%);
       border: 1px solid #232a3d;
       border-radius: 12px;
-      padding: 1.2rem 1.4rem;
+      padding: 1.1rem 1.4rem;
     }
 
     .leader-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
       gap: 0.75rem;
-      margin-top: 0.85rem;
+      margin-top: 0.75rem;
     }
 
     .leader-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       font-size: 0.85rem;
-      padding: 0.65rem 0.9rem;
+      padding: 0.6rem 0.9rem;
       background: #1b2030;
       border-radius: 8px;
-      border-left: 3px solid var(--primary);
+      border-left: 3px solid var(--accent-har);
       color: #f1f5f9;
+    }
+
+    .leader-votes {
+      font-weight: 800;
+      color: var(--success);
+      margin-left: 0.5rem;
     }
 
     .winner-section {
@@ -587,7 +582,7 @@
 
   <header id="mainHeader">
     <h1>THE <span>VAULT</span></h1>
-    <p class="subtitle" id="vaultSubtitle">Curated High-Bitrate Master Library</p>
+    <p class="subtitle" id="vaultSubtitle">Pick your favorites. Most votes wins tonight.</p>
   </header>
 
   <div class="sticky-top" id="controlsContainer">
@@ -606,12 +601,10 @@
 
   <div class="leaderboard-section" id="leaderboardSection">
     <div class="leaderboard-box">
-      <h3 id="leaderboardTitle" style="font-size: 0.85rem; color: var(--accent-har); text-transform: uppercase;">🔥 Live
-        Shopping Cart</h3>
-      <div class="leader-list" id="leaderList">
-        <div style="font-size:0.85rem; color: var(--text-dim);" id="leaderboardEmpty">No picks yet. Open a collection to
-          start!</div>
-      </div>
+      <h3 id="leaderboardTitle"
+        style="font-size: 0.85rem; color: var(--accent-har); text-transform: uppercase; letter-spacing: 0.06em;">🔥 Top
+        Picks</h3>
+      <div class="leader-list" id="leaderList"></div>
     </div>
   </div>
 
@@ -653,8 +646,46 @@
     const db = getDatabase(app);
 
     const i18n = {
-      en: { subtitle_nom: "Curated High-Bitrate Master Library", subtitle_win: "🍿 TONIGHT'S MOVIE IS LOCKED IN!", btn_decide: "🎯 Pick Winner", btn_back_nom: "↩ Restart Voting", btn_back_sagas: "↩ Back to Collections", collection_label: "COLLECTION", lb_nominations: "🔥 Live Shopping Cart", lb_empty: "No picks yet. Open a collection to start!", pick_btn: "+ Pick", picked_btn: "✓ Picked", pick_singular: "pick", pick_plural: "picks", lang_toggle: "🌐 ES", tonights_movie: "🍿 TONIGHT'S MOVIE", won_with: "Won with", tie_breaker: "(Tie-breaker won!)", trailer_hint: "▶ Trailer", trailer_unavailable: "Official trailer unavailable." },
-      es: { subtitle_nom: "Biblioteca Maestra Curada en Alta Tasa de Bits", subtitle_win: "🍿 ¡LA PELÍCULA DE HOY ESTÁ LISTA!", btn_decide: "🎯 Elegir Ganador", btn_back_nom: "↩ Reiniciar Votación", btn_back_sagas: "↩ Colecciones", collection_label: "COLECCIÓN", lb_nominations: "🔥 Carrito en Vivo", lb_empty: "Aún no hay elecciones. ¡Abre una colección!", pick_btn: "+ Elegir", picked_btn: "✓ Elegida", pick_singular: "voto", pick_plural: "votos", lang_toggle: "🌐 EN", tonights_movie: "🍿 LA PELÍCULA DE HOY", won_with: "¡Ganó con", tie_breaker: "(¡Ganó el desempate!)", trailer_hint: "▶ Tráiler", trailer_unavailable: "Tráiler oficial no disponible." }
+      en: {
+        subtitle_nom: "Pick your favorites. Most votes wins tonight.",
+        subtitle_win: "🍿 TONIGHT'S MOVIE IS LOCKED IN!",
+        btn_decide: "🎯 Pick Winner",
+        btn_back_nom: "↩ Restart Voting",
+        btn_back_sagas: "↩ Back to Collections",
+        collection_label: "COLLECTION",
+        lb_nominations: "🔥 Top Picks",
+        pick_btn: "+ Pick",
+        picked_btn: "✓ Picked",
+        pick_singular: "vote",
+        pick_plural: "votes",
+        lang_toggle: "🌐 ES",
+        tonights_movie: "🍿 TONIGHT'S MOVIE",
+        won_with: "Won with",
+        tie_breaker: "(Tie-breaker won!)",
+        trailer_hint: "▶ Trailer",
+        close_trailer: "✕ Close Trailer",
+        trailer_unavailable: "Official trailer unavailable."
+      },
+      es: {
+        subtitle_nom: "Elige tus favoritas. La más votada gana hoy.",
+        subtitle_win: "🍿 ¡LA PELÍCULA DE HOY ESTÁ LISTA!",
+        btn_decide: "🎯 Elegir Ganador",
+        btn_back_nom: "↩ Reiniciar Votación",
+        btn_back_sagas: "↩ Colecciones",
+        collection_label: "COLECCIÓN",
+        lb_nominations: "🔥 Más Votadas",
+        pick_btn: "+ Elegir",
+        picked_btn: "✓ Elegida",
+        pick_singular: "voto",
+        pick_plural: "votos",
+        lang_toggle: "🌐 EN",
+        tonights_movie: "🍿 LA PELÍCULA DE HOY",
+        won_with: "¡Ganó con",
+        tie_breaker: "(¡Ganó el desempate!)",
+        trailer_hint: "▶ Tráiler",
+        close_trailer: "✕ Cerrar Tráiler",
+        trailer_unavailable: "Tráiler oficial no disponible."
+      }
     };
 
     let currentLang = localStorage.getItem("vault_lang") || "en";
@@ -663,7 +694,7 @@
 
     const rawMovies = [
       { title: "Batman Begins", year: 2005, tag: "Scope", audio: "5.1 Surround", saga: "The Dark Knight Trilogy", trailer: "neY2xVmOfUM" },
-      { title: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "The Dark Knight Trilogy", trailer: "EXeTwQWrcwY", audioTags: ["ENG", "LAT"] },
+      { title: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "The Dark Knight Trilogy", trailer: "EXeTwQWrcwY", audioTags: ["EN", "ES"] },
       { title: "The Dark Knight Rises", year: 2012, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "The Dark Knight Trilogy" },
 
       { title: "Memento", year: 2000, tag: "Scope", audio: "5.1 Surround", saga: "Christopher Nolan" },
@@ -745,7 +776,7 @@
       { title: "Maze Runner: The Scorch Trials", year: 2015, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Maze Runner" },
       { title: "Maze Runner: The Death Cure", year: 2018, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Maze Runner" },
 
-      { title: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 SS Eng / 5.1 Spanish", saga: "A Quiet Place" },
+      { title: "A Quiet Place", year: 2018, tag: "Scope", audio: "7.1 Surround", saga: "A Quiet Place", audioTags: ["EN", "ES"] },
       { title: "A Quiet Place Part II", year: 2020, tag: "Scope", audio: "5.1 Atmos Surround", saga: "A Quiet Place" },
       { title: "A Quiet Place: Day One", year: 2024, tag: "Scope", audio: "5.1 Surround", saga: "A Quiet Place" },
 
@@ -856,7 +887,7 @@
     window.setVaultLanguage = function (lang) {
       currentLang = lang;
       applyLanguage();
-    }
+    };
 
     function applyLanguage() {
       const t = i18n[currentLang];
@@ -892,7 +923,6 @@
       catalogContainer.style.display = "none";
       backBtn.style.display = "none";
       currentCollectionTitle.style.display = "none";
-      leaderboardSection.style.display = "none";
       sagasGrid.innerHTML = "";
 
       Object.keys(sagasMap).forEach(sagaName => {
@@ -900,15 +930,17 @@
         const card = document.createElement("div");
         card.className = "saga-card";
         card.innerHTML = `
-        <div class="saga-bg" style="background-image: ${bgImg}; background-color: #1a1d29;"></div>
-        <div class="saga-overlay">
-          <h3 class="saga-logo-text">${sagaName}</h3>
-          <span class="saga-label">${i18n[currentLang].collection_label}</span>
-        </div>
-      `;
+          <div class="saga-bg" style="background-image: ${bgImg}; background-color: #1a1d29;"></div>
+          <div class="saga-overlay">
+            <h3 class="saga-logo-text">${sagaName}</h3>
+            <span class="saga-label">${i18n[currentLang].collection_label}</span>
+          </div>
+        `;
         card.onclick = () => openSaga(sagaName);
         sagasGrid.appendChild(card);
       });
+
+      renderLeaderboard();
     }
 
     function openSaga(sagaName) {
@@ -921,11 +953,11 @@
       void catalogContainer.offsetWidth;
       catalogContainer.classList.add("fade-in");
 
-      leaderboardSection.style.display = "block";
       backBtn.style.display = "inline-block";
       currentCollectionTitle.style.display = "inline-block";
       currentCollectionTitle.textContent = sagaName;
       renderMoviesInSaga(sagaName);
+      renderLeaderboard();
     }
 
     backBtn.addEventListener("click", renderSagas);
@@ -952,31 +984,27 @@
         card.className = "card";
         card.id = `card_${m.id}`;
         card.innerHTML = `
-        <div class="poster-wrap" onclick="openTrailer('${m.id}')">
-          <img src="${cachedPoster}" alt="${m.title}" id="img_${m.id}" class="poster-img" loading="lazy">
-          <span class="badge-float ${m.tag === 'HAR' ? 'badge-har' : 'badge-scope'}">[${m.tag}]</span>
-          
-          <div class="badge-audio">
-            ${m.audioTags ? m.audioTags.map(tag =>
-          `<span class="audio-tag ${tag === 'ENG' ? 'audio-eng' : 'audio-lat'}">${tag}</span>`
-        ).join('') : ''}
+          <div class="poster-wrap" onclick="openTrailer('${m.id}')">
+            <img src="${cachedPoster}" alt="${m.title}" id="img_${m.id}" class="poster-img" loading="lazy">
+            <span class="badge-float ${m.tag === 'HAR' ? 'badge-har' : 'badge-scope'}">[${m.tag}]</span>
+            <span class="trailer-hint">${t.trailer_hint}</span>
           </div>
-
-          <span class="trailer-hint">${t.trailer_hint}</span>
-        </div>
-        <div class="card-info">
-          <div>
-            <div class="card-title">${m.title}</div>
-            <div class="card-meta">${m.year} • ${m.audio}</div>
+          <div class="card-info">
+            <div>
+              <div class="card-title">${m.title}</div>
+              <div class="card-meta">
+                <span>${m.year} • ${m.audio}</span>
+                ${m.audioTags ? `<span class="dual-pill">${m.audioTags.join(' / ')}</span>` : ''}
+              </div>
+            </div>
+            <div class="card-action">
+              <div class="vote-count">${count} ${count === 1 ? t.pick_singular : t.pick_plural}</div>
+              <button class="vote-btn ${isSelected ? 'voted' : ''}" onclick="handleVoteClick('${m.id}')">
+                ${isSelected ? t.picked_btn : t.pick_btn}
+              </button>
+            </div>
           </div>
-          <div class="card-action">
-            <div class="vote-count">${count} ${count === 1 ? t.pick_singular : t.pick_plural}</div>
-            <button class="vote-btn ${isSelected ? 'voted' : ''}" onclick="handleVoteClick('${m.id}')" style="width: auto; padding: 0.4rem 1rem;">
-              ${isSelected ? t.picked_btn : t.pick_btn}
-            </button>
-          </div>
-        </div>
-      `;
+        `;
         catalogEl.appendChild(card);
 
         if (!m.poster && !posterCache[m.id]) {
@@ -986,7 +1014,8 @@
                 const url = `https://image.tmdb.org/t/p/w500${d.results[0].poster_path}`;
                 posterCache[m.id] = url;
                 localStorage.setItem("vault_poster_cache_v3", JSON.stringify(posterCache));
-                document.getElementById(`img_${m.id}`).src = url;
+                const imgEl = document.getElementById(`img_${m.id}`);
+                if (imgEl) imgEl.src = url;
               }
             });
         }
@@ -994,21 +1023,29 @@
     }
 
     function renderLeaderboard() {
-      if (sessionData.phase === "winner_declared") return;
-      const t = i18n[currentLang];
-      let tallies = movies.map(m => ({ movie: m, count: getMoviePicksCount(m.id) }))
-        .filter(item => item.count > 0).sort((a, b) => b.count - a.count);
-
-      if (tallies.length === 0) {
-        leaderList.innerHTML = `<div style="font-size:0.85rem; color: var(--text-dim);">${t.lb_empty}</div>`;
+      if (sessionData.phase === "winner_declared") {
+        leaderboardSection.style.display = "none";
         return;
       }
+
+      const t = i18n[currentLang];
+      const tallies = movies
+        .map(m => ({ movie: m, count: getMoviePicksCount(m.id) }))
+        .filter(item => item.count > 0)
+        .sort((a, b) => b.count - a.count);
+
+      if (tallies.length === 0) {
+        leaderboardSection.style.display = "none";
+        return;
+      }
+
+      leaderboardSection.style.display = "block";
       leaderList.innerHTML = tallies.map(item => `
-      <div class="leader-item">
-        <strong>${item.movie.title}</strong>
-        <span class="leader-votes">${item.count}</span>
-      </div>
-    `).join("");
+        <div class="leader-item">
+          <strong>${item.movie.title}</strong>
+          <span class="leader-votes">${item.count} ${item.count === 1 ? t.pick_singular : t.pick_plural}</span>
+        </div>
+      `).join("");
     }
 
     function scoreVideo(v) {
@@ -1088,7 +1125,6 @@
           winnerSection.style.display = "flex";
         } else {
           winnerSection.style.display = "none";
-          leaderboardSection.style.display = "block";
           document.querySelector(".nav-left").style.display = "flex";
           if (currentView === "sagas") renderSagas();
           if (currentView === "movies") renderMoviesInSaga(activeSaga);
