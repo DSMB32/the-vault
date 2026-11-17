@@ -5,7 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Vault | Movie Night Picker</title>
+  <meta name="description" content="The Vault — browse the collection, pick your favorites, and let the votes decide tonight's movie.">
+  <meta name="theme-color" content="#090a0f">
+  <meta property="og:title" content="The Vault | Movie Night Picker">
+  <meta property="og:description" content="Pick your favorites. Most votes wins tonight.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://image.tmdb.org">
+  <link rel="preconnect" href="https://api.themoviedb.org">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet">
   <style>
@@ -14,13 +22,18 @@
       --card-bg: #12151f;
       --card-border: #1f2537;
       --card-hover-border: #3b4566;
+      --surface: #171b29;
       --accent-har: #f59e0b;
       --accent-scope: #3b82f6;
       --text: #f8fafc;
       --text-dim: #94a3b8;
       --primary: #6366f1;
+      --violet: #8b5cf6;
       --success: #10b981;
       --danger: #ef4444;
+      --radius: 12px;
+      --gutter: 1.5rem;
+      --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     * {
@@ -29,13 +42,36 @@
       padding: 0;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
+    html {
+      scroll-padding-top: 120px;
+    }
+
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
       padding-bottom: 80px;
       -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent-har);
+      outline-offset: 3px;
     }
 
     /* PAGE TRANSITION ANIMATION */
@@ -52,21 +88,162 @@
     }
 
     .fade-in {
-      animation: fadeIn 0.35s ease-out forwards;
+      animation: fadeIn 0.35s ease-out both;
     }
 
-    /* HEADER & NAVIGATION */
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
+      }
+
+      70% {
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    @keyframes pop {
+      50% {
+        transform: scale(1.08);
+      }
+    }
+
+    @keyframes flash {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+      }
+
+      30% {
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.85);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* INTRO GATE */
+    .intro-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 10, 15, 0.97);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.5rem;
+    }
+
+    .intro-step {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .intro-step h1 {
+      font-size: clamp(2.2rem, 8vw, 2.8rem);
+      margin: 0;
+    }
+
+    .intro-step p {
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    .lang-options {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .lang-gate-btn {
+      background: var(--surface);
+      border: 1px solid #363f5e;
+      color: #fff;
+      padding: 1rem 2.2rem;
+      border-radius: var(--radius);
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 165px;
+    }
+
+    .lang-gate-btn.is-last {
+      border-color: rgba(245, 158, 11, 0.6);
+    }
+
+    .lang-gate-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .video-step {
+      width: 100%;
+    }
+
+    .intro-frame {
+      width: 90%;
+      max-width: 800px;
+      aspect-ratio: 16/9;
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background: #000;
+    }
+
+    .intro-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .ghost-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+
+    .ghost-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    /* HEADER */
     header {
-      padding: 2.75rem 1.5rem 1.75rem;
+      padding: 2.75rem var(--gutter) 1.75rem;
       text-align: center;
       background: radial-gradient(circle at top, #1e1b4b 0%, var(--bg) 75%);
     }
 
     h1 {
-      font-size: 2.6rem;
+      font-size: clamp(2rem, 7vw, 2.6rem);
       font-weight: 800;
       text-transform: uppercase;
       margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
     }
 
     h1 span {
@@ -78,13 +255,46 @@
       font-size: 0.95rem;
     }
 
+    .vault-stats {
+      margin-top: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #64748b;
+      flex: none;
+    }
+
+    .live-dot.on {
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .stats-sep {
+      opacity: 0.4;
+    }
+
+    /* STICKY CONTROLS */
     .sticky-top {
       position: sticky;
       top: 0;
       background: rgba(9, 10, 15, 0.94);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 50;
-      padding: 1.15rem 1.5rem;
+      padding: 0.9rem var(--gutter);
       border-bottom: 1px solid var(--card-border);
     }
 
@@ -92,34 +302,106 @@
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
-      justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 0.75rem 1rem;
     }
 
     .nav-left {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       align-items: center;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .collection-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .collection-count {
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-left: 0.4rem;
+    }
+
+    .search {
+      flex: 0 1 300px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0 0.75rem;
+      transition: border-color 0.2s;
+    }
+
+    .search:focus-within {
+      border-color: var(--card-hover-border);
+    }
+
+    .search svg {
+      flex: none;
+      color: var(--text-dim);
+    }
+
+    .search input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: 0;
+      outline: none;
+      color: var(--text);
+      font: inherit;
+      font-size: 0.88rem;
+      padding: 0.55rem 0;
+    }
+
+    .search input::placeholder {
+      color: #64748b;
+    }
+
+    .search kbd {
+      font-family: inherit;
+      font-size: 0.7rem;
+      color: #64748b;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      padding: 0 0.35rem;
+    }
+
+    .search:focus-within kbd {
+      display: none;
     }
 
     .nav-right {
       display: flex;
-      gap: 0.6rem;
+      gap: 0.5rem;
       align-items: center;
+      flex: none;
     }
 
     .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       background: transparent;
       border: 1px solid var(--card-border);
       color: var(--text-dim);
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.9rem;
       border-radius: 8px;
       font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .btn-action:hover {
@@ -133,9 +415,9 @@
     }
 
     .btn-decide:hover {
-      background: #8b5cf6;
+      background: var(--violet);
       color: #fff;
-      border-color: #8b5cf6;
+      border-color: var(--violet);
     }
 
     .btn-reset {
@@ -145,18 +427,142 @@
 
     .btn-reset:hover {
       background: var(--danger);
+      border-color: var(--danger);
       color: #fff;
     }
 
-    #backBtn {
-      display: none;
+    .btn-back {
+      flex: none;
     }
 
-    /* VERTICAL SAGA GRID (DISNEY+ STYLE) */
+    /* LEADERBOARD */
+    .leaderboard-section {
+      max-width: 1200px;
+      margin: 1.5rem auto 0;
+      padding: 0 var(--gutter);
+    }
+
+    .leaderboard-box {
+      background: linear-gradient(135deg, #151826 0%, #0f121d 100%);
+      border: 1px solid #232a3d;
+      border-radius: var(--radius);
+      padding: 1.1rem 1.4rem;
+    }
+
+    .leaderboard-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .leaderboard-head h3 {
+      font-size: 0.85rem;
+      color: var(--accent-har);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .my-picks {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+
+    .my-picks strong {
+      color: var(--success);
+    }
+
+    .leader-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.85rem;
+    }
+
+    .leader-item {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.85rem;
+      padding: 0.6rem 0.9rem;
+      background: #1b2030;
+      border: 0;
+      border-left: 3px solid #3b4566;
+      border-radius: 8px;
+      color: #f1f5f9;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .leader-item:hover {
+      background: #222839;
+    }
+
+    .leader-item.is-lead {
+      border-left-color: var(--accent-har);
+    }
+
+    .leader-bar {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--pct);
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.03));
+      pointer-events: none;
+      transition: width 0.4s var(--ease);
+    }
+
+    .leader-rank {
+      position: relative;
+      font-weight: 800;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      min-width: 1.1rem;
+    }
+
+    .leader-item.is-lead .leader-rank {
+      color: var(--accent-har);
+    }
+
+    .leader-name {
+      position: relative;
+      flex: 1;
+      font-weight: 700;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .leader-votes {
+      position: relative;
+      font-weight: 800;
+      color: var(--success);
+    }
+
+    .leader-more {
+      margin-top: 0.75rem;
+      background: none;
+      border: 0;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .leader-more:hover {
+      color: #fff;
+    }
+
+    /* SAGA GRID */
     .sagas-grid {
       max-width: 1200px;
       margin: 2rem auto;
-      padding: 0 1.5rem;
+      padding: 0 var(--gutter);
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 1.5rem;
@@ -164,32 +570,43 @@
 
     .saga-card {
       position: relative;
+      display: block;
+      width: 100%;
       aspect-ratio: 2 / 3;
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: var(--radius);
       overflow: hidden;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      padding: 0;
+      text-align: center;
+      transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     }
 
-    .saga-card:hover {
+    .saga-card:hover,
+    .saga-card:focus-visible {
       transform: translateY(-6px) scale(1.02);
       border-color: var(--card-hover-border);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
+    .saga-card.has-picks {
+      border-color: rgba(16, 185, 129, 0.55);
+    }
+
     .saga-bg {
       position: absolute;
       inset: 0;
+      background-color: #1a1d29;
       background-size: cover;
       background-position: center;
       transition: transform 0.4s ease, filter 0.4s ease;
       filter: brightness(0.6);
     }
 
-    .saga-card:hover .saga-bg {
+    .saga-card:hover .saga-bg,
+    .saga-card:focus-visible .saga-bg {
       filter: brightness(0.9);
       transform: scale(1.05);
     }
@@ -203,7 +620,6 @@
       justify-content: flex-end;
       align-items: center;
       padding: 1.5rem 1rem;
-      text-align: center;
     }
 
     .saga-logo-text {
@@ -219,21 +635,32 @@
 
     .saga-label {
       font-size: 0.65rem;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.2em;
       color: var(--accent-har);
       text-transform: uppercase;
       font-weight: 700;
     }
 
-    /* MOVIE CATALOG GRID */
-    .catalog-container {
-      display: none;
+    .saga-votes {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(9, 10, 15, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(6px);
+      color: #fff;
     }
 
+    /* MOVIE CATALOG GRID */
     .catalog {
       max-width: 1200px;
       margin: 2rem auto;
-      padding: 0 1.5rem;
+      padding: 0 var(--gutter);
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
       gap: 1.6rem;
@@ -242,7 +669,7 @@
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: var(--radius);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -255,16 +682,28 @@
       border-color: var(--card-hover-border);
     }
 
+    .card.is-picked {
+      border-color: rgba(16, 185, 129, 0.6);
+    }
+
+    .card.flash {
+      animation: flash 1.6s ease-out 2;
+    }
+
     .poster-wrap {
+      display: block;
       width: 100%;
       aspect-ratio: 2 / 3;
       background: #181d2d;
       position: relative;
       cursor: pointer;
       overflow: hidden;
+      border: 0;
+      padding: 0;
     }
 
     .poster-img {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -273,6 +712,24 @@
 
     .card:hover .poster-img {
       transform: scale(1.04);
+    }
+
+    .poster-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #475569;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .poster-img[data-loaded]+.poster-fallback {
+      display: none;
     }
 
     .badge-float {
@@ -310,6 +767,12 @@
       padding: 0.25rem 0.5rem;
       border-radius: 6px;
       z-index: 10;
+      transition: background 0.2s;
+    }
+
+    .poster-wrap:hover .trailer-hint,
+    .poster-wrap:focus-visible .trailer-hint {
+      background: var(--danger);
     }
 
     .card-info {
@@ -319,6 +782,15 @@
       flex: 1;
       justify-content: space-between;
       gap: 0.75rem;
+    }
+
+    .card-saga {
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent-har);
+      margin-bottom: 0.25rem;
     }
 
     .card-title {
@@ -355,6 +827,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 0.5rem;
       padding-top: 0.65rem;
       border-top: 1px solid #1c2236;
       margin-top: auto;
@@ -364,6 +837,10 @@
       font-size: 0.78rem;
       font-weight: 700;
       color: var(--text-dim);
+    }
+
+    .card.has-votes .vote-count {
+      color: var(--success);
     }
 
     .vote-btn {
@@ -376,6 +853,7 @@
       font-size: 0.8rem;
       font-weight: 700;
       transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
     }
 
     .vote-btn:hover {
@@ -389,48 +867,22 @@
       color: #000;
     }
 
-    /* LEADERBOARD & WINNER */
-    .leaderboard-section {
-      max-width: 1200px;
-      margin: 1.5rem auto 0;
-      padding: 0 1.5rem;
-      display: none;
-      /* Hidden until first vote is cast */
+    .vote-btn.pop {
+      animation: pop 0.25s ease-out;
     }
 
-    .leaderboard-box {
-      background: linear-gradient(135deg, #151826 0%, #0f121d 100%);
-      border: 1px solid #232a3d;
-      border-radius: 12px;
-      padding: 1.1rem 1.4rem;
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--text-dim);
+      padding: 3rem 1rem;
+      font-weight: 600;
     }
 
-    .leader-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-
-    .leader-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      padding: 0.6rem 0.9rem;
-      background: #1b2030;
-      border-radius: 8px;
-      border-left: 3px solid var(--accent-har);
-      color: #f1f5f9;
-    }
-
-    .leader-votes {
-      font-weight: 800;
-      color: var(--success);
-      margin-left: 0.5rem;
-    }
-
+    /* WINNER */
     .winner-section {
+      position: relative;
+      isolation: isolate;
       max-width: 800px;
       margin: 3rem auto;
       text-align: center;
@@ -438,32 +890,55 @@
       flex-direction: column;
       align-items: center;
       gap: 1.5rem;
-      padding: 0 1.5rem;
+      padding: 0 var(--gutter);
+    }
+
+    .winner-section::before {
+      content: "";
+      position: absolute;
+      inset: 4rem 10% auto;
+      height: 70%;
+      background: var(--winner-bg, none) center / cover;
+      filter: blur(70px) saturate(1.4);
+      opacity: 0.35;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .winner-kicker {
+      color: #fff;
+      font-size: 1.2rem;
+      letter-spacing: 0.1em;
     }
 
     .winner-poster {
       width: 100%;
       max-width: 350px;
-      border-radius: 12px;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      background: var(--surface);
+      border-radius: var(--radius);
       box-shadow: 0 0 60px rgba(99, 102, 241, 0.3);
       border: 2px solid var(--primary);
+      animation: fadeIn 0.6s ease-out both;
     }
 
     .winner-title {
-      font-size: 2.5rem;
+      font-size: clamp(1.8rem, 6vw, 2.5rem);
+      line-height: 1.15;
       font-weight: 900;
       text-transform: uppercase;
       color: var(--accent-har);
     }
 
     .winner-meta {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-dim);
       font-weight: 600;
     }
 
     .winner-votes {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--success);
       font-weight: 800;
       background: rgba(16, 185, 129, 0.15);
@@ -472,14 +947,31 @@
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
-    /* MODALS */
+    /* PHASE: WINNER DECLARED */
+    body.is-winner .winner-section {
+      display: flex;
+    }
+
+    body.is-winner #sagasGrid,
+    body.is-winner #catalogContainer,
+    body.is-winner #leaderboardSection,
+    body.is-winner .nav-left,
+    body.is-winner .search {
+      display: none !important;
+    }
+
+    body.is-winner .controls {
+      justify-content: flex-end;
+    }
+
+    /* TRAILER MODAL */
     .trailer-modal {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.92);
       backdrop-filter: blur(10px);
       z-index: 500;
-      display: none;
+      display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -487,77 +979,190 @@
       gap: 1rem;
     }
 
+    .trailer-title {
+      font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
     .trailer-frame-wrap {
+      position: relative;
       width: 100%;
       max-width: 900px;
       aspect-ratio: 16/9;
-      border-radius: 12px;
+      border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid #2d354d;
       background: #000;
     }
 
+    .trailer-frame-wrap::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 36px;
+      height: 36px;
+      margin: -18px 0 0 -18px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
     .trailer-frame-wrap iframe {
+      position: relative;
       width: 100%;
       height: 100%;
       border: 0;
     }
 
-    .trailer-close-btn {
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
-      padding: 10px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.88rem;
-    }
-
-    .lang-gate-btn {
-      background: #171b29;
+    /* TOAST */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 20px);
+      background: #1e2333;
       border: 1px solid #363f5e;
       color: #fff;
-      padding: 1rem 2.2rem;
-      border-radius: 12px;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s;
-      min-width: 165px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 2000;
+      max-width: calc(100% - 32px);
+      text-align: center;
     }
 
-    .lang-gate-btn:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-      transform: translateY(-2px);
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 920px) {
+      .search {
+        order: 3;
+        flex: 1 1 100%;
+      }
+
+      .search kbd {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      :root {
+        --gutter: 1rem;
+      }
+
+      header {
+        padding: 2rem var(--gutter) 1.25rem;
+      }
+
+      .sagas-grid,
+      .catalog {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem;
+        margin: 1.25rem auto;
+      }
+
+      .saga-logo-text {
+        font-size: 0.95rem;
+      }
+
+      .saga-label {
+        font-size: 0.55rem;
+        letter-spacing: 0.12em;
+      }
+
+      .saga-overlay {
+        padding: 1rem 0.6rem;
+      }
+
+      .card-info {
+        padding: 0.7rem;
+      }
+
+      .card-title {
+        font-size: 0.85rem;
+      }
+
+      .card-action {
+        flex-wrap: wrap;
+      }
+
+      .vote-btn {
+        flex: 1 1 100%;
+      }
+
+      .nav-right .btn-label,
+      .btn-back .btn-label {
+        display: none;
+      }
+
+      .nav-left {
+        flex: 1 1 0;
+        gap: 0.5rem;
+      }
+
+      .collection-title {
+        font-size: 1rem;
+      }
+
+      .sticky-top {
+        padding: 0.7rem var(--gutter);
+      }
+
+      .controls {
+        gap: 0.6rem;
+      }
+
+      .btn-action {
+        padding: 0.5rem 0.7rem;
+      }
+
+      .leaderboard-box {
+        padding: 1rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
 
-<body>
+<body class="modal-open">
 
-  <div id="introModal"
-    style="position: fixed; inset: 0; background: rgba(9,10,15,0.97); backdrop-filter: blur(12px); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.25rem; padding: 1.5rem;">
-    <div id="langSelectStep"
-      style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
-      <h1 style="font-size: 2.8rem; margin: 0;">THE <span style="color: #f59e0b;">VAULT</span></h1>
-      <p style="color: #94a3b8; font-size: 1rem;">Select your language / Selecciona tu idioma</p>
-      <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-        <button class="lang-gate-btn" onclick="startIntroWithLang('en')">🇺🇸 English</button>
-        <button class="lang-gate-btn" onclick="startIntroWithLang('es')">🇬🇹 Español</button>
+  <div id="introModal" class="intro-modal" role="dialog" aria-modal="true" aria-label="The Vault">
+    <div id="langSelectStep" class="intro-step">
+      <h1>THE <span>VAULT</span></h1>
+      <p>Select your language / Selecciona tu idioma</p>
+      <div class="lang-options">
+        <button class="lang-gate-btn" data-lang="en" onclick="startIntroWithLang('en')">🇺🇸 English</button>
+        <button class="lang-gate-btn" data-lang="es" onclick="startIntroWithLang('es')">🇬🇹 Español</button>
       </div>
     </div>
 
-    <div id="videoStep" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 1.25rem;">
-      <div
-        style="width: 90%; max-width: 800px; aspect-ratio: 16/9; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #1f2537; background: #000;">
-        <iframe id="introIframe" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;"
-          src="about:blank" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+    <div id="videoStep" class="intro-step video-step" hidden>
+      <div class="intro-frame">
+        <iframe id="introIframe" src="about:blank" title="Intro" allow="autoplay; encrypted-media"></iframe>
       </div>
-      <button onclick="closeIntro()" id="skipIntroBtn"
-        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.88rem;">SKIP
-        INTRO</button>
+      <button onclick="closeIntro()" id="skipIntroBtn" class="ghost-btn">SKIP INTRO</button>
     </div>
   </div>
 
@@ -565,73 +1170,115 @@
     const INTRO_VIDEO_EN = "KIUhDod8WlI";
     const INTRO_VIDEO_ES = "em8Gy2BRUd4";
 
+    (function highlightLastLang() {
+      let last = null;
+      try { last = localStorage.getItem("vault_lang"); } catch (e) { }
+      const btn = last && document.querySelector(`.lang-gate-btn[data-lang="${last}"]`);
+      if (btn) btn.classList.add("is-last");
+    })();
+
     function startIntroWithLang(lang) {
-      localStorage.setItem("vault_lang", lang);
+      try { localStorage.setItem("vault_lang", lang); } catch (e) { }
       if (window.setVaultLanguage) window.setVaultLanguage(lang);
       const videoId = lang === "es" ? INTRO_VIDEO_ES : INTRO_VIDEO_EN;
 
-      document.getElementById("langSelectStep").style.display = "none";
-      document.getElementById("videoStep").style.display = "flex";
+      document.getElementById("langSelectStep").hidden = true;
+      document.getElementById("videoStep").hidden = false;
+      document.getElementById("skipIntroBtn").textContent = lang === "es" ? "OMITIR INTRO" : "SKIP INTRO";
       document.getElementById("introIframe").src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3`;
+      document.getElementById("skipIntroBtn").focus();
     }
+
     function closeIntro() {
-      const modal = document.getElementById('introModal');
+      const modal = document.getElementById("introModal");
       if (modal) modal.remove();
+      if (!document.querySelector(".trailer-modal:not([hidden])")) document.body.classList.remove("modal-open");
     }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.getElementById("introModal") && document.getElementById("langSelectStep").hidden) closeIntro();
+    });
   </script>
 
   <header id="mainHeader">
     <h1>THE <span>VAULT</span></h1>
     <p class="subtitle" id="vaultSubtitle">Pick your favorites. Most votes wins tonight.</p>
+    <p class="vault-stats" aria-live="polite">
+      <span class="live-dot" id="liveDot"></span>
+      <span id="liveLabel">Connecting…</span>
+      <span class="stats-sep" id="statsSep" hidden>•</span>
+      <span id="statsText"></span>
+    </p>
   </header>
 
   <div class="sticky-top" id="controlsContainer">
     <div class="controls">
       <div class="nav-left">
-        <button class="btn-action" id="backBtn">↩ Back to Collections</button>
-        <h2 id="currentCollectionTitle" style="font-size: 1.2rem; font-weight: 800; display: none;"></h2>
+        <button class="btn-action btn-back" id="backBtn" hidden><span aria-hidden="true">←</span><span
+            class="btn-label">Collections</span></button>
+        <h2 id="currentCollectionTitle" class="collection-title"></h2>
       </div>
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input type="search" id="searchInput" placeholder="Search the vault…" autocomplete="off" spellcheck="false"
+          aria-label="Search movies">
+        <kbd>/</kbd>
+      </label>
       <div class="nav-right">
-        <button class="btn-action" id="langToggleBtn">🌐 ES</button>
-        <button class="btn-action btn-decide" id="adminDecideBtn">🎯 Pick Winner</button>
-        <button class="btn-action btn-reset" id="adminResetBtn">⚡ Reset</button>
+        <button class="btn-action" id="langToggleBtn" aria-label="Cambiar a español">🌐 ES</button>
+        <button class="btn-action btn-decide" id="adminDecideBtn"><span class="btn-icon" aria-hidden="true">🎯</span><span
+            class="btn-label">Pick Winner</span></button>
+        <button class="btn-action btn-reset" id="adminResetBtn"><span class="btn-icon" aria-hidden="true">⚡</span><span
+            class="btn-label">Reset</span></button>
       </div>
     </div>
   </div>
 
-  <div class="leaderboard-section" id="leaderboardSection">
+  <section class="leaderboard-section" id="leaderboardSection" hidden>
     <div class="leaderboard-box">
-      <h3 id="leaderboardTitle"
-        style="font-size: 0.85rem; color: var(--accent-har); text-transform: uppercase; letter-spacing: 0.06em;">🔥 Top
-        Picks</h3>
+      <div class="leaderboard-head">
+        <h3 id="leaderboardTitle">🔥 Top Picks</h3>
+        <span class="my-picks" id="myPicks"></span>
+      </div>
       <div class="leader-list" id="leaderList"></div>
+      <button class="leader-more" id="leaderMoreBtn" hidden></button>
     </div>
-  </div>
+  </section>
 
-  <div class="winner-section" id="winnerSection">
-    <h2 style="color: #fff; font-size: 1.2rem; letter-spacing: 0.1em;" id="winnerText">🍿 TONIGHT'S MOVIE</h2>
-    <img src="" id="winnerPoster" class="winner-poster" alt="Winner Poster">
-    <div class="winner-title" id="winnerTitle">Movie Title</div>
-    <div class="winner-meta" id="winnerMeta">Year • Audio</div>
-    <p class="winner-votes" id="winnerVotes">Won with X picks!</p>
-  </div>
+  <section class="winner-section" id="winnerSection" aria-live="polite">
+    <h2 class="winner-kicker" id="winnerText">🍿 TONIGHT'S MOVIE</h2>
+    <img id="winnerPoster" class="winner-poster" alt="">
+    <div class="winner-title" id="winnerTitle"></div>
+    <div class="winner-meta" id="winnerMeta"></div>
+    <p class="winner-votes" id="winnerVotes"></p>
+    <button class="ghost-btn" id="winnerTrailerBtn" data-action="trailer">▶ Watch Trailer</button>
+  </section>
 
-  <main class="sagas-grid" id="sagasGrid"></main>
+  <main id="content">
+    <div class="sagas-grid" id="sagasGrid"></div>
+    <div class="catalog-container" id="catalogContainer" hidden>
+      <div class="catalog" id="catalog"></div>
+    </div>
+  </main>
 
-  <div class="catalog-container" id="catalogContainer">
-    <main class="catalog" id="catalog"></main>
-  </div>
-
-  <div id="trailerModal" class="trailer-modal">
+  <div id="trailerModal" class="trailer-modal" role="dialog" aria-modal="true" aria-labelledby="trailerTitle" hidden>
+    <div class="trailer-title" id="trailerTitle"></div>
     <div class="trailer-frame-wrap">
-      <iframe id="trailerIframe" src="" allow="autoplay; encrypted-media; fullscreen"></iframe>
+      <iframe id="trailerIframe" src="about:blank" title="Trailer" allow="autoplay; encrypted-media; fullscreen"
+        allowfullscreen></iframe>
     </div>
-    <button class="trailer-close-btn" id="closeTrailerBtn">✕ Close Trailer</button>
+    <button class="ghost-btn" id="closeTrailerBtn">✕ Close Trailer</button>
   </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB0XqKMTAKjv3ImnzIgvJPGRMS4SwcI7go",
@@ -645,53 +1292,124 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    const ADMIN_PIN = "1234";
+    const LEADERBOARD_PREVIEW = 8;
+
     const i18n = {
       en: {
         subtitle_nom: "Pick your favorites. Most votes wins tonight.",
         subtitle_win: "🍿 TONIGHT'S MOVIE IS LOCKED IN!",
-        btn_decide: "🎯 Pick Winner",
-        btn_back_nom: "↩ Restart Voting",
-        btn_back_sagas: "↩ Back to Collections",
-        collection_label: "COLLECTION",
+        btn_decide: "Pick Winner",
+        btn_back_nom: "Restart Voting",
+        btn_reset: "Reset",
+        btn_back_sagas: "Collections",
+        collections: "Collections",
+        results: "Results",
+        collection_label: "Collection",
+        film_singular: "film",
+        film_plural: "films",
         lb_nominations: "🔥 Top Picks",
+        your_picks: "Your picks",
+        show_all: (n) => `Show all ${n} ↓`,
+        show_less: "Show less ↑",
         pick_btn: "+ Pick",
         picked_btn: "✓ Picked",
         pick_singular: "vote",
         pick_plural: "votes",
+        voter_singular: "voter",
+        voter_plural: "voters",
+        live: "Live",
+        connecting: "Connecting…",
+        offline: "Offline",
         lang_toggle: "🌐 ES",
+        lang_toggle_label: "Cambiar a español",
+        search_placeholder: "Search the vault…",
+        no_results: (q) => `Nothing in the vault matches “${q}”.`,
         tonights_movie: "🍿 TONIGHT'S MOVIE",
         won_with: "Won with",
         tie_breaker: "(Tie-breaker won!)",
         trailer_hint: "▶ Trailer",
+        play_trailer: "Play trailer",
+        watch_trailer: "▶ Watch Trailer",
         close_trailer: "✕ Close Trailer",
-        trailer_unavailable: "Official trailer unavailable."
+        trailer_unavailable: "Official trailer unavailable.",
+        admin_pin: "Enter Admin PIN:",
+        wrong_pin: "Wrong PIN.",
+        no_votes: "No movies selected yet!",
+        reset_done: "New round started — all votes cleared.",
+        still_connecting: "Still connecting to the vault…",
+        write_failed: "Couldn't save that. Check your connection."
       },
       es: {
         subtitle_nom: "Elige tus favoritas. La más votada gana hoy.",
         subtitle_win: "🍿 ¡LA PELÍCULA DE HOY ESTÁ LISTA!",
-        btn_decide: "🎯 Elegir Ganador",
-        btn_back_nom: "↩ Reiniciar Votación",
-        btn_back_sagas: "↩ Colecciones",
-        collection_label: "COLECCIÓN",
+        btn_decide: "Elegir Ganador",
+        btn_back_nom: "Reiniciar Votación",
+        btn_reset: "Reiniciar",
+        btn_back_sagas: "Colecciones",
+        collections: "Colecciones",
+        results: "Resultados",
+        collection_label: "Colección",
+        film_singular: "película",
+        film_plural: "películas",
         lb_nominations: "🔥 Más Votadas",
+        your_picks: "Tus votos",
+        show_all: (n) => `Ver las ${n} ↓`,
+        show_less: "Ver menos ↑",
         pick_btn: "+ Elegir",
         picked_btn: "✓ Elegida",
         pick_singular: "voto",
         pick_plural: "votos",
+        voter_singular: "votante",
+        voter_plural: "votantes",
+        live: "En vivo",
+        connecting: "Conectando…",
+        offline: "Sin conexión",
         lang_toggle: "🌐 EN",
+        lang_toggle_label: "Switch to English",
+        search_placeholder: "Buscar en la bóveda…",
+        no_results: (q) => `Nada en la bóveda coincide con “${q}”.`,
         tonights_movie: "🍿 LA PELÍCULA DE HOY",
         won_with: "¡Ganó con",
         tie_breaker: "(¡Ganó el desempate!)",
         trailer_hint: "▶ Tráiler",
+        play_trailer: "Ver tráiler",
+        watch_trailer: "▶ Ver Tráiler",
         close_trailer: "✕ Cerrar Tráiler",
-        trailer_unavailable: "Tráiler oficial no disponible."
+        trailer_unavailable: "Tráiler oficial no disponible.",
+        admin_pin: "Ingrese PIN de Admin:",
+        wrong_pin: "PIN incorrecto.",
+        no_votes: "¡Aún no hay películas elegidas!",
+        reset_done: "Nueva ronda — se borraron todos los votos.",
+        still_connecting: "Conectando con la bóveda…",
+        write_failed: "No se pudo guardar. Revisa tu conexión."
       }
     };
 
-    let currentLang = localStorage.getItem("vault_lang") || "en";
-    let userId = localStorage.getItem("vault_user_id") || ("voter_" + Math.random().toString(36).substring(2, 9));
-    localStorage.setItem("vault_user_id", userId);
+    // ---------- Safe storage helpers ----------
+    const store = {
+      get(key, fallback = null) {
+        try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch (e) { return fallback; }
+      },
+      set(key, value) {
+        try { localStorage.setItem(key, value); } catch (e) { }
+      },
+      json(key) {
+        try { return JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch (e) { return {}; }
+      }
+    };
 
+    let currentLang = store.get("vault_lang", "en") === "es" ? "es" : "en";
+    let userId = store.get("vault_user_id") || ("voter_" + Math.random().toString(36).substring(2, 9));
+    store.set("vault_user_id", userId);
+
+    const t = () => i18n[currentLang];
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+    const $ = (id) => document.getElementById(id);
+
+    // NOTE: a movie's `id` is derived from title + year and is what ballots are stored under in Firebase.
+    // If you rename a title, give it an explicit `id` with the old value so existing votes keep working.
     const rawMovies = [
       { title: "Batman Begins", year: 2005, tag: "Scope", audio: "5.1 Surround", saga: "The Dark Knight", trailer: "neY2xVmOfUM" },
       { title: "The Dark Knight", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "The Dark Knight", trailer: "EXeTwQWrcwY", audioTags: ["EN", "ES"] },
@@ -778,8 +1496,8 @@
       { title: "The Matrix Revolutions", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Matrix" },
 
       { title: "The Lord of the Rings: The Fellowship of the Ring", year: 2001, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Lord of the Rings" },
-      { title: "The Lord of the Rings: The Two Towers (Extended)", year: 2002, tag: "Scope", audio: "7.1 Surround", saga: "The Lord of the Rings" },
-      { title: "The Lord of the Rings: The Return of the King (Extended)", year: 2003, tag: "Scope", audio: "7.1 Surround", saga: "The Lord of the Rings" },
+      { title: "The Lord of the Rings: The Two Towers", id: "the_lord_of_the_rings_the_two_towers_extended_2002", year: 2002, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Lord of the Rings" },
+      { title: "The Lord of the Rings: The Return of the King", id: "the_lord_of_the_rings_the_return_of_the_king_extended_2003", year: 2003, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Lord of the Rings" },
 
       { title: "The Hobbit: An Unexpected Journey", year: 2012, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Hobbit" },
       { title: "The Hobbit: The Desolation of Smaug", year: 2013, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Hobbit" },
@@ -803,7 +1521,7 @@
       { title: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Mission: Impossible" },
       { title: "Mission: Impossible - The Final Reckoning", year: 2025, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Mission: Impossible" },
 
-      { title: "Avatar (Extended)", year: 2009, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Avatar" },
+      { title: "Avatar", id: "avatar_extended_2009", year: 2009, tag: "HAR", audio: "5.1 Surround (Native, Extended)", saga: "Avatar" },
       { title: "Avatar: The Way of Water", year: 2022, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Avatar" },
       { title: "Avatar: Fire and Ash", year: 2025, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Avatar" },
 
@@ -817,7 +1535,7 @@
       { title: "Back to the Future Part II", year: 1989, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Back to the Future" },
       { title: "Back to the Future Part III", year: 1990, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Back to the Future" },
 
-      { title: "Aliens (Special Edition)", year: 1986, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Standalone Films" },
+      { title: "Aliens", id: "aliens_special_edition_1986", year: 1986, tag: "HAR", audio: "5.1 Surround (Native, Special Edition)", saga: "Standalone Films" },
       { title: "Jurassic Park", year: 1993, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Standalone Films" },
       { title: "Titanic", year: 1997, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
       { title: "Saving Private Ryan", year: 1998, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Standalone Films" },
@@ -835,7 +1553,7 @@
       { title: "American Sniper", year: 2014, tag: "Scope", audio: "5.1 Atmos Surround", saga: "Standalone Films" },
       { title: "Star Wars: The Force Awakens", year: 2015, tag: "Scope", audio: "5.1 Surround", saga: "Standalone Films" },
       { title: "Arrival", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
-      { title: "Stranger Things", year: 2016, tag: "HAR", audio: "All Seasons 5.1 Surround", saga: "Standalone Films" },
+      { title: "Stranger Things", year: 2016, tag: "HAR", audio: "All Seasons 5.1 Surround", saga: "Standalone Films", media: "tv" },
       { title: "Sully", year: 2016, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Standalone Films" },
       { title: "Hacksaw Ridge", year: 2016, tag: "Scope", audio: "7.1 Surround", saga: "Standalone Films" },
       { title: "Blade Runner 2049", year: 2017, tag: "HAR", audio: "7.1 Surround (Open Matte)", saga: "Standalone Films" },
@@ -872,202 +1590,132 @@
       "Standalone Films": "url('https://image.tmdb.org/t/p/w500/b9gTXYI8aTWxG3iA1JqHovhG0Fw.jpg')"
     };
 
+    const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_");
+    const normalize = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
     const movies = rawMovies.map(m => ({
-      ...m, query: m.title, id: `${m.title}_${m.year}`.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_")
+      ...m,
+      id: m.id || slug(`${m.title}_${m.year}`),
+      haystack: normalize(`${m.title} ${m.saga} ${m.year}`)
     }));
+    const movieById = Object.fromEntries(movies.map(m => [m.id, m]));
 
     const sagasMap = {};
     movies.forEach(m => {
-      if (!sagasMap[m.saga]) sagasMap[m.saga] = [];
-      sagasMap[m.saga].push(m);
+      (sagasMap[m.saga] ||= []).push(m);
     });
 
+    // ---------- State ----------
     let currentSession = null;
+    let unsubscribeSession = null;
     let sessionData = { phase: "nominations", winner: null, ballots: {} };
     let currentView = "sagas";
     let activeSaga = null;
+    let searchQuery = "";
+    let sagasScrollY = 0;
+    let leaderboardExpanded = false;
+    let isConnected = false;
+    let hasLoadedSession = false;
 
     const TMDB_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
-    const posterCache = JSON.parse(localStorage.getItem("vault_poster_cache_v3") || "{}");
-    const trailerCache = JSON.parse(localStorage.getItem("vault_trailer_cache_v5") || "{}");
+    const TMDB_API = "https://api.themoviedb.org/3";
+    const POSTER_CACHE_KEY = "vault_poster_cache_v3";
+    const TRAILER_CACHE_KEY = "vault_trailer_cache_v5";
+    const posterCache = store.json(POSTER_CACHE_KEY);
+    const trailerCache = store.json(TRAILER_CACHE_KEY);
+    const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%231a1d29'/%3E%3C/svg%3E";
 
-    const sagasGrid = document.getElementById("sagasGrid");
-    const catalogContainer = document.getElementById("catalogContainer");
-    const catalogEl = document.getElementById("catalog");
-    const backBtn = document.getElementById("backBtn");
-    const currentCollectionTitle = document.getElementById("currentCollectionTitle");
-    const adminDecideBtn = document.getElementById("adminDecideBtn");
-    const langToggleBtn = document.getElementById("langToggleBtn");
-    const leaderList = document.getElementById("leaderList");
-    const winnerSection = document.getElementById("winnerSection");
-    const leaderboardSection = document.getElementById("leaderboardSection");
+    const sagasGrid = $("sagasGrid");
+    const catalogContainer = $("catalogContainer");
+    const catalogEl = $("catalog");
+    const backBtn = $("backBtn");
+    const collectionTitle = $("currentCollectionTitle");
+    const adminDecideBtn = $("adminDecideBtn");
+    const adminResetBtn = $("adminResetBtn");
+    const langToggleBtn = $("langToggleBtn");
+    const searchInput = $("searchInput");
+    const leaderList = $("leaderList");
+    const leaderMoreBtn = $("leaderMoreBtn");
+    const leaderboardSection = $("leaderboardSection");
+    const winnerSection = $("winnerSection");
+    const trailerModal = $("trailerModal");
+    const trailerIframe = $("trailerIframe");
 
-    window.setVaultLanguage = function (lang) {
-      currentLang = lang;
-      applyLanguage();
-    };
-
-    function applyLanguage() {
-      const t = i18n[currentLang];
-      langToggleBtn.textContent = t.lang_toggle;
-      document.getElementById("closeTrailerBtn").textContent = t.close_trailer;
-
-      if (sessionData.phase === "winner_declared") {
-        document.getElementById("vaultSubtitle").textContent = t.subtitle_win;
-        adminDecideBtn.textContent = t.btn_back_nom;
-        document.getElementById("winnerText").textContent = t.tonights_movie;
-        if (sessionData.winner) renderWinnerScreen(movies.find(m => m.id === sessionData.winner.id), sessionData.winner.votes, sessionData.winner.wasTie);
-      } else {
-        document.getElementById("vaultSubtitle").textContent = t.subtitle_nom;
-        adminDecideBtn.textContent = t.btn_decide;
-        document.getElementById("leaderboardTitle").textContent = t.lb_nominations;
-        backBtn.textContent = t.btn_back_sagas;
-      }
-
-      if (sessionData.phase !== "winner_declared") {
-        if (currentView === "sagas") renderSagas();
-        if (currentView === "movies") renderMoviesInSaga(activeSaga);
-        renderLeaderboard();
-      }
+    // ---------- Toast ----------
+    let toastTimer = null;
+    function showToast(message) {
+      const el = $("toast");
+      el.textContent = message;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
     }
 
-    function renderSagas() {
-      currentView = "sagas";
-      sagasGrid.style.display = "grid";
-      sagasGrid.classList.remove("fade-in");
-      void sagasGrid.offsetWidth;
-      sagasGrid.classList.add("fade-in");
-
-      catalogContainer.style.display = "none";
-      backBtn.style.display = "none";
-      currentCollectionTitle.style.display = "none";
-      sagasGrid.innerHTML = "";
-
-      Object.keys(sagasMap).forEach(sagaName => {
-        const bgImg = sagaStyles[sagaName] || "none";
-        const card = document.createElement("div");
-        card.className = "saga-card";
-        card.innerHTML = `
-          <div class="saga-bg" style="background-image: ${bgImg}; background-color: #1a1d29;"></div>
-          <div class="saga-overlay">
-            <h3 class="saga-logo-text">${sagaName}</h3>
-            <span class="saga-label">${i18n[currentLang].collection_label}</span>
-          </div>
-        `;
-        card.onclick = () => openSaga(sagaName);
-        sagasGrid.appendChild(card);
+    // ---------- Tallies ----------
+    function computeTally() {
+      const tally = {};
+      Object.values(sessionData.ballots || {}).forEach(ballot => {
+        if (!ballot) return;
+        Object.keys(ballot).forEach(id => { if (ballot[id] === true) tally[id] = (tally[id] || 0) + 1; });
       });
-
-      renderLeaderboard();
+      return tally;
     }
 
-    function openSaga(sagaName) {
-      activeSaga = sagaName;
-      currentView = "movies";
-      sagasGrid.style.display = "none";
+    const myBallot = () => sessionData.ballots?.[userId] || {};
 
-      catalogContainer.style.display = "block";
-      catalogContainer.classList.remove("fade-in");
-      void catalogContainer.offsetWidth;
-      catalogContainer.classList.add("fade-in");
+    // ---------- TMDB lookups (posters + trailers) ----------
+    const tmdbLookups = {};
+    const cleanQuery = (title) => title.replace(/\s*\([^)]*\)/g, "").replace(/\*/g, "").trim();
+    const yearOf = (r) => parseInt((r.release_date || r.first_air_date || "").slice(0, 4), 10);
 
-      backBtn.style.display = "inline-block";
-      currentCollectionTitle.style.display = "inline-block";
-      currentCollectionTitle.textContent = sagaName;
-      renderMoviesInSaga(sagaName);
-      renderLeaderboard();
+    async function searchTmdb(type, movie, strictYear) {
+      const yearParam = strictYear ? `&${type === "tv" ? "first_air_date_year" : "year"}=${movie.year}` : "";
+      const res = await fetch(`${TMDB_API}/search/${type}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanQuery(movie.title))}${yearParam}`);
+      const data = await res.json();
+      const results = data.results || [];
+      // Without a strict year filter, only accept a result released within a year of ours.
+      return strictYear ? results[0] : results.find(r => Math.abs(yearOf(r) - movie.year) <= 1);
     }
 
-    backBtn.addEventListener("click", renderSagas);
-
-    function getMoviePicksCount(movieId) {
-      let count = 0;
-      Object.values(sessionData.ballots || {}).forEach(userBallot => {
-        if (userBallot && userBallot[movieId] === true) count++;
-      });
-      return count;
-    }
-
-    function renderMoviesInSaga(sagaName) {
-      if (sessionData.phase === "winner_declared") return;
-      catalogEl.innerHTML = "";
-      const t = i18n[currentLang];
-
-      (sagasMap[sagaName] || []).forEach(m => {
-        const count = getMoviePicksCount(m.id);
-        const isSelected = sessionData.ballots?.[userId]?.[m.id] === true;
-        const cachedPoster = m.poster || posterCache[m.id] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%231a1d29'/%3E%3C/svg%3E";
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.id = `card_${m.id}`;
-        card.innerHTML = `
-          <div class="poster-wrap" onclick="openTrailer('${m.id}')">
-            <img src="${cachedPoster}" alt="${m.title}" id="img_${m.id}" class="poster-img" loading="lazy">
-            <span class="badge-float ${m.tag === 'HAR' ? 'badge-har' : 'badge-scope'}">[${m.tag}]</span>
-            <span class="trailer-hint">${t.trailer_hint}</span>
-          </div>
-          <div class="card-info">
-            <div>
-              <div class="card-title">${m.title}</div>
-              <div class="card-meta">
-                <span>${m.year} • ${m.audio}</span>
-                ${m.audioTags ? `<span class="dual-pill">${m.audioTags.join(' / ')}</span>` : ''}
-              </div>
-            </div>
-            <div class="card-action">
-              <div class="vote-count">${count} ${count === 1 ? t.pick_singular : t.pick_plural}</div>
-              <button class="vote-btn ${isSelected ? 'voted' : ''}" onclick="handleVoteClick('${m.id}')">
-                ${isSelected ? t.picked_btn : t.pick_btn}
-              </button>
-            </div>
-          </div>
-        `;
-        catalogEl.appendChild(card);
-
-        if (!m.poster && !posterCache[m.id]) {
-          fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(m.title)}&year=${m.year}`)
-            .then(r => r.json()).then(d => {
-              if (d.results && d.results[0] && d.results[0].poster_path) {
-                const url = `https://image.tmdb.org/t/p/w500${d.results[0].poster_path}`;
-                posterCache[m.id] = url;
-                localStorage.setItem("vault_poster_cache_v3", JSON.stringify(posterCache));
-                const imgEl = document.getElementById(`img_${m.id}`);
-                if (imgEl) imgEl.src = url;
-              }
-            });
-        }
-      });
-    }
-
-    function renderLeaderboard() {
-      if (sessionData.phase === "winner_declared") {
-        leaderboardSection.style.display = "none";
-        return;
+    function resolveTmdb(movie) {
+      if (!tmdbLookups[movie.id]) {
+        const order = movie.media === "tv" ? ["tv", "movie"] : ["movie", "tv"];
+        tmdbLookups[movie.id] = (async () => {
+          for (const type of order) {
+            for (const strict of [true, false]) {
+              try {
+                const hit = await searchTmdb(type, movie, strict);
+                if (hit) return { type, id: hit.id, poster: hit.poster_path };
+              } catch (e) { }
+            }
+          }
+          return null;
+        })();
+        // Don't cache network failures forever — allow a retry on the next attempt.
+        tmdbLookups[movie.id].then(r => { if (!r) delete tmdbLookups[movie.id]; });
       }
+      return tmdbLookups[movie.id];
+    }
 
-      const t = i18n[currentLang];
-      const tallies = movies
-        .map(m => ({ movie: m, count: getMoviePicksCount(m.id) }))
-        .filter(item => item.count > 0)
-        .sort((a, b) => b.count - a.count);
+    async function getPoster(movie) {
+      if (movie.poster) return movie.poster;
+      if (posterCache[movie.id]) return posterCache[movie.id];
+      const hit = await resolveTmdb(movie);
+      if (!hit || !hit.poster) return null;
+      const url = `https://image.tmdb.org/t/p/w500${hit.poster}`;
+      posterCache[movie.id] = url;
+      store.set(POSTER_CACHE_KEY, JSON.stringify(posterCache));
+      return url;
+    }
 
-      if (tallies.length === 0) {
-        leaderboardSection.style.display = "none";
-        return;
-      }
-
-      leaderboardSection.style.display = "block";
-      leaderList.innerHTML = tallies.map(item => `
-        <div class="leader-item">
-          <strong>${item.movie.title}</strong>
-          <span class="leader-votes">${item.count} ${item.count === 1 ? t.pick_singular : t.pick_plural}</span>
-        </div>
-      `).join("");
+    function loadPoster(movie) {
+      getPoster(movie).then(url => {
+        if (!url) return;
+        document.querySelectorAll(`img[data-poster="${movie.id}"]`).forEach(img => { img.src = url; });
+      });
     }
 
     function scoreVideo(v) {
-      if (v.site !== "YouTube") return -9999;
       let score = 0; const name = (v.name || "").toLowerCase();
       const badWords = ["promo", "teaser", "tv spot", "clip", "featurette", "behind the scenes", "preview", "sneak peek"];
       for (const word of badWords) { if (name.includes(word)) return -5000; }
@@ -1081,127 +1729,474 @@
     async function fetchTrailerKey(movie) {
       if (movie.trailer) return movie.trailer;
       if (trailerCache[movie.id]) return trailerCache[movie.id];
-
       try {
-        const searchRes = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(movie.title)}&year=${movie.year}`);
-        const searchData = await searchRes.json();
-        if (!searchData.results || searchData.results.length === 0) return null;
-
-        const videoRes = await fetch(`https://api.themoviedb.org/3/movie/${searchData.results[0].id}/videos?api_key=${TMDB_KEY}`);
-        const videoData = await videoRes.json();
-
-        if (videoData.results && videoData.results.length > 0) {
-          const sorted = videoData.results.map(v => ({ video: v, score: scoreVideo(v) })).sort((a, b) => b.score - a.score);
-          const chosen = sorted[0]?.video?.key || videoData.results.find(v => v.site === "YouTube")?.key;
-          if (chosen) {
-            trailerCache[movie.id] = chosen;
-            localStorage.setItem("vault_trailer_cache_v5", JSON.stringify(trailerCache));
-            return chosen;
-          }
-        }
-      } catch (e) { }
-      return null;
+        const hit = await resolveTmdb(movie);
+        if (!hit) return null;
+        const res = await fetch(`${TMDB_API}/${hit.type}/${hit.id}/videos?api_key=${TMDB_KEY}`);
+        const data = await res.json();
+        const youtube = (data.results || []).filter(v => v.site === "YouTube");
+        if (!youtube.length) return null;
+        const chosen = youtube.sort((a, b) => scoreVideo(b) - scoreVideo(a))[0].key;
+        trailerCache[movie.id] = chosen;
+        store.set(TRAILER_CACHE_KEY, JSON.stringify(trailerCache));
+        return chosen;
+      } catch (e) {
+        return null;
+      }
     }
 
-    window.openTrailer = async function (movieId) {
-      const movie = movies.find(m => m.id === movieId);
-      const modal = document.getElementById("trailerModal");
-      const iframe = document.getElementById("trailerIframe");
+    // ---------- Rendering ----------
+    function replayFade(el) {
+      el.classList.remove("fade-in");
+      void el.offsetWidth;
+      el.classList.add("fade-in");
+    }
 
-      modal.style.display = "flex";
-      iframe.src = "about:blank";
+    function renderSagas() {
+      const tr = t();
+      sagasGrid.innerHTML = Object.keys(sagasMap).map(name => {
+        const count = sagasMap[name].length;
+        const films = plural(count, tr.film_singular, tr.film_plural);
+        return `
+          <button class="saga-card" data-action="open-saga" data-saga="${esc(name)}" aria-label="${esc(name)} — ${films}">
+            <span class="saga-bg" style="background-image: ${sagaStyles[name] || "none"};"></span>
+            <span class="saga-votes" hidden></span>
+            <span class="saga-overlay">
+              <span class="saga-logo-text">${esc(name)}</span>
+              <span class="saga-label">${tr.collection_label} · ${films}</span>
+            </span>
+          </button>`;
+      }).join("");
+    }
+
+    function cardHTML(m, showSaga) {
+      const tr = t();
+      const poster = m.poster || posterCache[m.id] || PLACEHOLDER;
+      return `
+        <article class="card" data-id="${m.id}">
+          <button class="poster-wrap" data-action="trailer" data-id="${m.id}" aria-label="${tr.play_trailer}: ${esc(m.title)}">
+            <img src="${poster}" alt="" data-poster="${m.id}" class="poster-img" loading="lazy" decoding="async"
+              onload="if (!this.src.startsWith('data:')) this.dataset.loaded = '1'">
+            <span class="poster-fallback">${esc(m.title)}</span>
+            <span class="badge-float ${m.tag === "HAR" ? "badge-har" : "badge-scope"}">[${m.tag}]</span>
+            <span class="trailer-hint">${tr.trailer_hint}</span>
+          </button>
+          <div class="card-info">
+            <div>
+              ${showSaga ? `<div class="card-saga">${esc(m.saga)}</div>` : ""}
+              <h3 class="card-title">${esc(m.title)}</h3>
+              <div class="card-meta">
+                <span>${m.year} • ${esc(m.audio)}</span>
+                ${m.audioTags ? `<span class="dual-pill">${m.audioTags.join(" / ")}</span>` : ""}
+              </div>
+            </div>
+            <div class="card-action">
+              <span class="vote-count"></span>
+              <button class="vote-btn" data-action="vote" data-id="${m.id}" aria-pressed="false"></button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function renderCatalog(list, showSaga) {
+      if (!list.length) {
+        catalogEl.innerHTML = `<p class="empty-state">${t().no_results(esc(searchQuery))}</p>`;
+        return;
+      }
+      catalogEl.innerHTML = list.map(m => cardHTML(m, showSaga)).join("");
+      list.forEach(m => { if (!m.poster && !posterCache[m.id]) loadPoster(m); });
+    }
+
+    function currentMode() {
+      return searchQuery ? "search" : currentView;
+    }
+
+    function renderView(animate = false) {
+      const tr = t();
+      const mode = currentMode();
+      sagasGrid.hidden = mode !== "sagas";
+      catalogContainer.hidden = mode === "sagas";
+      backBtn.hidden = mode === "sagas";
+
+      if (mode === "sagas") {
+        renderSagas();
+        collectionTitle.innerHTML = `${tr.collections}<span class="collection-count">${Object.keys(sagasMap).length}</span>`;
+        if (animate) replayFade(sagasGrid);
+      } else if (mode === "movies") {
+        renderCatalog(sagasMap[activeSaga] || [], false);
+        collectionTitle.innerHTML = `${esc(activeSaga)}<span class="collection-count">${(sagasMap[activeSaga] || []).length}</span>`;
+        if (animate) replayFade(catalogContainer);
+      } else {
+        const q = normalize(searchQuery);
+        const results = movies.filter(m => m.haystack.includes(q));
+        renderCatalog(results, true);
+        collectionTitle.innerHTML = `${tr.results}<span class="collection-count">${results.length}</span>`;
+      }
+      updateVoteUI();
+    }
+
+    function updateVoteUI() {
+      const tr = t();
+      const tally = computeTally();
+      const mine = myBallot();
+
+      catalogEl.querySelectorAll(".card").forEach(card => {
+        const id = card.dataset.id;
+        const count = tally[id] || 0;
+        const picked = mine[id] === true;
+        card.classList.toggle("is-picked", picked);
+        card.classList.toggle("has-votes", count > 0);
+        card.querySelector(".vote-count").textContent = plural(count, tr.pick_singular, tr.pick_plural);
+        const btn = card.querySelector(".vote-btn");
+        btn.classList.toggle("voted", picked);
+        btn.setAttribute("aria-pressed", String(picked));
+        btn.textContent = picked ? tr.picked_btn : tr.pick_btn;
+      });
+
+      sagasGrid.querySelectorAll(".saga-card").forEach(card => {
+        const list = sagasMap[card.dataset.saga] || [];
+        const total = list.reduce((sum, m) => sum + (tally[m.id] || 0), 0);
+        const chip = card.querySelector(".saga-votes");
+        chip.hidden = total === 0;
+        chip.textContent = `🔥 ${total}`;
+        card.classList.toggle("has-picks", list.some(m => mine[m.id] === true));
+      });
+
+      renderLeaderboard(tally, mine);
+      renderStats(tally);
+    }
+
+    function renderLeaderboard(tally, mine) {
+      const tr = t();
+      const items = movies
+        .map(m => ({ movie: m, count: tally[m.id] || 0 }))
+        .filter(item => item.count > 0)
+        .sort((a, b) => b.count - a.count || a.movie.title.localeCompare(b.movie.title));
+
+      leaderboardSection.hidden = items.length === 0;
+      if (!items.length) return;
+
+      const max = items[0].count;
+      const visible = leaderboardExpanded ? items : items.slice(0, LEADERBOARD_PREVIEW);
+      leaderList.innerHTML = visible.map(item => {
+        const rank = 1 + items.filter(other => other.count > item.count).length;
+        return `
+          <button class="leader-item ${item.count === max ? "is-lead" : ""}" data-action="focus" data-id="${item.movie.id}">
+            <span class="leader-bar" style="--pct: ${(item.count / max) * 100}%"></span>
+            <span class="leader-rank">${rank}</span>
+            <span class="leader-name">${esc(item.movie.title)}</span>
+            <span class="leader-votes">${item.count}</span>
+          </button>`;
+      }).join("");
+
+      const extra = items.length > LEADERBOARD_PREVIEW;
+      leaderMoreBtn.hidden = !extra;
+      if (extra) leaderMoreBtn.textContent = leaderboardExpanded ? tr.show_less : tr.show_all(items.length);
+
+      const myCount = Object.values(mine).filter(v => v === true).length;
+      $("myPicks").innerHTML = `${tr.your_picks}: <strong>${myCount}</strong>`;
+    }
+
+    function renderStats(tally) {
+      const tr = t();
+      const liveDot = $("liveDot");
+      liveDot.classList.toggle("on", isConnected);
+      $("liveLabel").textContent = isConnected ? tr.live : (hasLoadedSession ? tr.offline : tr.connecting);
+
+      const voters = Object.values(sessionData.ballots || {}).filter(b => b && Object.values(b).some(v => v === true)).length;
+      const votes = Object.values(tally).reduce((a, b) => a + b, 0);
+      const show = hasLoadedSession;
+      $("statsSep").hidden = !show;
+      $("statsText").textContent = show
+        ? `${plural(voters, tr.voter_singular, tr.voter_plural)} · ${plural(votes, tr.pick_singular, tr.pick_plural)}`
+        : "";
+    }
+
+    function setButton(btn, icon, label) {
+      btn.querySelector(".btn-icon").textContent = icon;
+      btn.querySelector(".btn-label").textContent = label;
+      btn.title = label;
+      btn.setAttribute("aria-label", label);
+    }
+
+    function applyStaticTexts() {
+      const tr = t();
+      const winnerPhase = isWinnerPhase();
+      document.documentElement.lang = currentLang;
+      langToggleBtn.textContent = tr.lang_toggle;
+      langToggleBtn.setAttribute("aria-label", tr.lang_toggle_label);
+      $("closeTrailerBtn").textContent = tr.close_trailer;
+      $("leaderboardTitle").textContent = tr.lb_nominations;
+      $("winnerText").textContent = tr.tonights_movie;
+      $("winnerTrailerBtn").textContent = tr.watch_trailer;
+      $("vaultSubtitle").textContent = winnerPhase ? tr.subtitle_win : tr.subtitle_nom;
+      backBtn.querySelector(".btn-label").textContent = tr.btn_back_sagas;
+      searchInput.placeholder = tr.search_placeholder;
+      setButton(adminDecideBtn, winnerPhase ? "↩" : "🎯", winnerPhase ? tr.btn_back_nom : tr.btn_decide);
+      setButton(adminResetBtn, "⚡", tr.btn_reset);
+    }
+
+    function applyLanguage() {
+      applyStaticTexts();
+      renderView(false);
+      if (isWinnerPhase()) renderWinnerScreen();
+    }
+
+    window.setVaultLanguage = function (lang) {
+      currentLang = lang === "es" ? "es" : "en";
+      applyLanguage();
+    };
+
+    // ---------- Navigation ----------
+    function openSaga(sagaName) {
+      if (currentView === "sagas" && !searchQuery) sagasScrollY = window.scrollY;
+      activeSaga = sagaName;
+      currentView = "movies";
+      clearSearch(false);
+      renderView(true);
+      const top = $("mainHeader").offsetHeight;
+      if (window.scrollY > top) window.scrollTo({ top, behavior: "auto" });
+    }
+
+    function goToCollections() {
+      currentView = "sagas";
+      activeSaga = null;
+      renderView(true);
+      window.scrollTo({ top: sagasScrollY, behavior: "auto" });
+    }
+
+    function clearSearch(rerender = true) {
+      if (!searchQuery && !searchInput.value) return;
+      searchQuery = "";
+      searchInput.value = "";
+      if (rerender) renderView(true);
+    }
+
+    function focusMovie(movieId) {
+      const movie = movieById[movieId];
+      if (!movie) return;
+      openSaga(movie.saga);
+      requestAnimationFrame(() => {
+        const card = catalogEl.querySelector(`.card[data-id="${movieId}"]`);
+        if (!card) return;
+        card.scrollIntoView({ block: "center", behavior: "smooth" });
+        card.classList.remove("flash");
+        void card.offsetWidth;
+        card.classList.add("flash");
+      });
+    }
+
+    backBtn.addEventListener("click", () => {
+      if (searchQuery) clearSearch(true);
+      else goToCollections();
+    });
+
+    searchInput.addEventListener("input", () => {
+      const wasSearching = !!searchQuery;
+      searchQuery = searchInput.value.trim();
+      renderView(!wasSearching && !!searchQuery);
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        clearSearch(true);
+        searchInput.blur();
+      }
+    });
+
+    leaderMoreBtn.addEventListener("click", () => {
+      leaderboardExpanded = !leaderboardExpanded;
+      updateVoteUI();
+    });
+
+    // ---------- Trailer modal ----------
+    let trailerRequest = 0;
+    let trailerReturnFocus = null;
+
+    async function openTrailer(movieId) {
+      const movie = movieById[movieId];
+      if (!movie) return;
+      const request = ++trailerRequest;
+      trailerReturnFocus = document.activeElement;
+
+      $("trailerTitle").textContent = `${movie.title} (${movie.year})`;
+      trailerIframe.src = "about:blank";
+      trailerModal.hidden = false;
+      document.body.classList.add("modal-open");
+      $("closeTrailerBtn").focus();
 
       const key = await fetchTrailerKey(movie);
+      if (request !== trailerRequest || trailerModal.hidden) return;
       if (key) {
-        iframe.src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&vq=hd1080&rel=0&modestbranding=1`;
+        trailerIframe.src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&vq=hd1080&rel=0&modestbranding=1`;
       } else {
-        alert(i18n[currentLang].trailer_unavailable);
-        modal.style.display = "none";
+        closeTrailer();
+        showToast(t().trailer_unavailable);
       }
-    };
+    }
 
-    document.getElementById("closeTrailerBtn").onclick = () => {
-      document.getElementById("trailerModal").style.display = "none";
-      document.getElementById("trailerIframe").src = "about:blank";
-    };
+    function closeTrailer() {
+      if (trailerModal.hidden) return;
+      trailerRequest++;
+      trailerModal.hidden = true;
+      trailerIframe.src = "about:blank";
+      if (!$("introModal")) document.body.classList.remove("modal-open");
+      if (trailerReturnFocus && document.contains(trailerReturnFocus)) trailerReturnFocus.focus();
+    }
 
-    const sessionPointerRef = ref(db, "active_session");
-    onValue(sessionPointerRef, (snapshot) => {
-      let sessionVal = snapshot.val();
-      if (!sessionVal) { sessionVal = "round_init"; set(sessionPointerRef, sessionVal); return; }
-      currentSession = sessionVal;
+    $("closeTrailerBtn").addEventListener("click", closeTrailer);
+    trailerModal.addEventListener("click", (e) => { if (e.target === trailerModal) closeTrailer(); });
 
-      onValue(ref(db, `sessions/${currentSession}`), (snap) => {
-        const val = snap.val() || {};
-        sessionData = { phase: val.phase || "nominations", winner: val.winner || null, ballots: val.ballots || {} };
-
-        if (sessionData.phase === "winner_declared" && sessionData.winner) {
-          sagasGrid.style.display = "none";
-          catalogContainer.style.display = "none";
-          leaderboardSection.style.display = "none";
-          document.querySelector(".nav-left").style.display = "none";
-          winnerSection.style.display = "flex";
-        } else {
-          winnerSection.style.display = "none";
-          document.querySelector(".nav-left").style.display = "flex";
-          if (currentView === "sagas") renderSagas();
-          if (currentView === "movies") renderMoviesInSaga(activeSaga);
-        }
-        applyLanguage();
-      });
+    // ---------- Global interactions ----------
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-action]");
+      if (!el) return;
+      const { action, id, saga } = el.dataset;
+      if (action === "open-saga") openSaga(saga);
+      else if (action === "trailer") openTrailer(id);
+      else if (action === "vote") handleVoteClick(id, el);
+      else if (action === "focus") focusMovie(id);
     });
 
-    window.handleVoteClick = function (movieId) {
-      if (!currentSession || sessionData.phase === "winner_declared") return;
-      const isPicked = sessionData.ballots?.[userId]?.[movieId] === true;
-      set(ref(db, `sessions/${currentSession}/ballots/${userId}/${movieId}`), isPicked ? null : true);
-    };
-
-    adminDecideBtn.addEventListener("click", () => {
-      const pin = prompt(currentLang === "en" ? "Enter Admin PIN:" : "Ingrese PIN de Admin:");
-      if (pin !== "1234") return;
-
-      if (sessionData.phase === "nominations") {
-        const ballots = sessionData.ballots || {};
-        const tally = {};
-        Object.values(ballots).forEach(userBallot => {
-          Object.keys(userBallot).forEach(mId => { if (userBallot[mId]) tally[mId] = (tally[mId] || 0) + 1; });
-        });
-
-        const nominated = Object.keys(tally);
-        if (nominated.length === 0) return alert("No movies selected!");
-
-        const maxVotes = Math.max(...Object.values(tally));
-        const tops = nominated.filter(id => tally[id] === maxVotes);
-        const winnerId = tops[Math.floor(Math.random() * tops.length)];
-
-        set(ref(db, `sessions/${currentSession}/winner`), { id: winnerId, votes: maxVotes, wasTie: tops.length > 1 });
-        set(ref(db, `sessions/${currentSession}/phase`), "winner_declared");
-      } else {
-        set(ref(db, `sessions/${currentSession}/phase`), "nominations");
-        set(ref(db, `sessions/${currentSession}/winner`), null);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !trailerModal.hidden) {
+        closeTrailer();
+        return;
       }
-    });
-
-    document.getElementById("adminResetBtn").addEventListener("click", () => {
-      if (prompt("PIN:") === "1234") set(sessionPointerRef, `round_${Date.now()}`);
+      const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
+      if (e.key === "/" && !typing && !$("introModal") && trailerModal.hidden && !isWinnerPhase()) {
+        e.preventDefault();
+        searchInput.focus();
+      }
     });
 
     langToggleBtn.addEventListener("click", () => {
       currentLang = currentLang === "en" ? "es" : "en";
-      localStorage.setItem("vault_lang", currentLang);
+      store.set("vault_lang", currentLang);
       applyLanguage();
     });
 
-    function renderWinnerScreen(movie, votes, wasTie) {
-      if (!movie) return;
-      const t = i18n[currentLang];
-      document.getElementById("winnerTitle").textContent = movie.title;
-      document.getElementById("winnerMeta").textContent = `${movie.year} • ${movie.audio} • [${movie.tag}]`;
-      document.getElementById("winnerVotes").textContent = `${t.won_with} ${votes} ${votes === 1 ? t.pick_singular : t.pick_plural}! ${wasTie ? t.tie_breaker : ''}`;
-      const imgEl = document.getElementById("winnerPoster");
-      if (movie.poster || posterCache[movie.id]) imgEl.src = movie.poster || posterCache[movie.id];
+    // ---------- Winner screen ----------
+    function isWinnerPhase() {
+      return sessionData.phase === "winner_declared" && !!sessionData.winner;
     }
+
+    async function renderWinnerScreen() {
+      const { id, votes, wasTie } = sessionData.winner || {};
+      const movie = movieById[id];
+      if (!movie) return;
+      const tr = t();
+      $("winnerTitle").textContent = movie.title;
+      $("winnerMeta").textContent = `${movie.year} • ${movie.audio} • [${movie.tag}]`;
+      $("winnerVotes").textContent = `${tr.won_with} ${plural(votes, tr.pick_singular, tr.pick_plural)}! ${wasTie ? tr.tie_breaker : ""}`.trim();
+      $("winnerTrailerBtn").dataset.id = movie.id;
+
+      const img = $("winnerPoster");
+      img.alt = movie.title;
+      if (img.dataset.movie !== movie.id) {
+        img.dataset.movie = movie.id;
+        img.src = PLACEHOLDER;
+        winnerSection.style.removeProperty("--winner-bg");
+      }
+      const url = await getPoster(movie);
+      if (url && img.dataset.movie === movie.id) {
+        img.src = url;
+        winnerSection.style.setProperty("--winner-bg", `url("${url}")`);
+      }
+    }
+
+    // ---------- Firebase sync ----------
+    function onSessionData() {
+      const wasWinner = document.body.classList.contains("is-winner");
+      const winnerPhase = isWinnerPhase();
+      document.body.classList.toggle("is-winner", winnerPhase);
+      applyStaticTexts();
+
+      if (winnerPhase) {
+        if (!wasWinner) {
+          closeTrailer();
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }
+        renderWinnerScreen();
+      }
+      updateVoteUI();
+    }
+
+    onValue(ref(db, ".info/connected"), (snap) => {
+      isConnected = snap.val() === true;
+      renderStats(computeTally());
+    });
+
+    const sessionPointerRef = ref(db, "active_session");
+    onValue(sessionPointerRef, (snapshot) => {
+      const sessionVal = snapshot.val();
+      if (!sessionVal) { set(sessionPointerRef, "round_init"); return; }
+      if (sessionVal === currentSession) return;
+
+      // Detach the old round's listener so a stale round can't overwrite the new one.
+      if (unsubscribeSession) unsubscribeSession();
+      currentSession = sessionVal;
+
+      unsubscribeSession = onValue(ref(db, `sessions/${currentSession}`), (snap) => {
+        const val = snap.val() || {};
+        sessionData = { phase: val.phase || "nominations", winner: val.winner || null, ballots: val.ballots || {} };
+        hasLoadedSession = true;
+        onSessionData();
+      });
+    });
+
+    function handleVoteClick(movieId, button) {
+      if (isWinnerPhase()) return;
+      if (!currentSession) { showToast(t().still_connecting); return; }
+      const isPicked = myBallot()[movieId] === true;
+      if (button) {
+        button.classList.remove("pop");
+        void button.offsetWidth;
+        button.classList.add("pop");
+      }
+      set(ref(db, `sessions/${currentSession}/ballots/${userId}/${movieId}`), isPicked ? null : true)
+        .catch(() => showToast(t().write_failed));
+    }
+
+    function askForPin() {
+      const pin = prompt(t().admin_pin);
+      if (pin === null) return false;
+      if (pin !== ADMIN_PIN) { showToast(t().wrong_pin); return false; }
+      return true;
+    }
+
+    adminDecideBtn.addEventListener("click", () => {
+      if (!currentSession) { showToast(t().still_connecting); return; }
+      if (!askForPin()) return;
+      const sessionRef = ref(db, `sessions/${currentSession}`);
+
+      if (!isWinnerPhase()) {
+        const tally = computeTally();
+        const nominated = Object.keys(tally).filter(id => movieById[id]);
+        if (nominated.length === 0) { showToast(t().no_votes); return; }
+
+        const maxVotes = Math.max(...nominated.map(id => tally[id]));
+        const tops = nominated.filter(id => tally[id] === maxVotes);
+        const winnerId = tops[Math.floor(Math.random() * tops.length)];
+
+        // Single atomic write so other devices never see a winner without the phase change.
+        update(sessionRef, { winner: { id: winnerId, votes: maxVotes, wasTie: tops.length > 1 }, phase: "winner_declared" })
+          .catch(() => showToast(t().write_failed));
+      } else {
+        update(sessionRef, { phase: "nominations", winner: null })
+          .catch(() => showToast(t().write_failed));
+      }
+    });
+
+    adminResetBtn.addEventListener("click", () => {
+      if (!askForPin()) return;
+      set(sessionPointerRef, `round_${Date.now()}`)
+        .then(() => showToast(t().reset_done))
+        .catch(() => showToast(t().write_failed));
+    });
+
+    // First paint right away — votes fill in as soon as Firebase answers.
+    applyLanguage();
   </script>
 </body>
 
