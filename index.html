@@ -64,7 +64,8 @@
       overflow: hidden;
     }
 
-    button {
+    button,
+    select {
       font: inherit;
       color: inherit;
     }
@@ -74,7 +75,7 @@
       outline-offset: 3px;
     }
 
-    /* PAGE TRANSITION ANIMATION */
+    /* ANIMATIONS */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -111,6 +112,19 @@
       }
     }
 
+    @keyframes shake {
+
+      20%,
+      60% {
+        transform: translateX(-4px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(4px);
+      }
+    }
+
     @keyframes flash {
 
       0%,
@@ -126,6 +140,28 @@
     @keyframes spin {
       to {
         transform: rotate(360deg);
+      }
+    }
+
+    @keyframes land {
+      0% {
+        transform: scale(0.92);
+        box-shadow: 0 0 0 rgba(245, 158, 11, 0);
+      }
+
+      60% {
+        transform: scale(1.04);
+        box-shadow: 0 0 90px rgba(245, 158, 11, 0.55);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes fall {
+      to {
+        transform: translate3d(var(--x), 110vh, 0) rotate(var(--r));
       }
     }
 
@@ -259,7 +295,9 @@
       margin-top: 0.9rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.35rem 0.5rem;
       font-size: 0.75rem;
       font-weight: 700;
       color: var(--text-dim);
@@ -284,6 +322,14 @@
 
     .stats-sep {
       opacity: 0.4;
+    }
+
+    .picks-text strong {
+      color: var(--success);
+    }
+
+    .picks-text.full strong {
+      color: var(--accent-har);
     }
 
     /* STICKY CONTROLS */
@@ -381,7 +427,8 @@
       display: none;
     }
 
-    .nav-right {
+    .nav-right,
+    .admin-tools {
       display: flex;
       gap: 0.5rem;
       align-items: center;
@@ -409,6 +456,11 @@
       color: #fff;
     }
 
+    .btn-action.is-active {
+      border-color: rgba(245, 158, 11, 0.6);
+      color: #fde68a;
+    }
+
     .btn-decide {
       border-color: rgba(139, 92, 246, 0.4);
       color: #c4b5fd;
@@ -433,6 +485,63 @@
 
     .btn-back {
       flex: none;
+    }
+
+    .picks-control {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      padding-right: 0.5rem;
+    }
+
+    .picks-control select {
+      background: transparent;
+      border: 0;
+      font-weight: 800;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .picks-control select option {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    /* FILTERS */
+    .filters {
+      max-width: 1200px;
+      margin: 1.25rem auto 0;
+      padding: 0 var(--gutter);
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-dim);
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      border-color: var(--card-hover-border);
+      color: #fff;
+    }
+
+    .chip[aria-pressed="true"] {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.6);
+      color: #fde68a;
+    }
+
+    .chip-clear {
+      border-style: dashed;
     }
 
     /* LEADERBOARD */
@@ -561,7 +670,7 @@
     /* SAGA GRID */
     .sagas-grid {
       max-width: 1200px;
-      margin: 2rem auto;
+      margin: 1.5rem auto 2rem;
       padding: 0 var(--gutter);
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -659,7 +768,7 @@
     /* MOVIE CATALOG GRID */
     .catalog {
       max-width: 1200px;
-      margin: 2rem auto;
+      margin: 1.5rem auto 2rem;
       padding: 0 var(--gutter);
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
@@ -707,11 +816,19 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, filter 0.3s ease;
     }
 
     .card:hover .poster-img {
       transform: scale(1.04);
+    }
+
+    .card.is-watched .poster-img {
+      filter: grayscale(0.4) brightness(0.8);
+    }
+
+    .card.is-watched:hover .poster-img {
+      filter: none;
     }
 
     .poster-fallback {
@@ -755,6 +872,19 @@
       color: #fff;
     }
 
+    .watched-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(16, 185, 129, 0.92);
+      color: #000;
+      font-size: 0.66rem;
+      font-weight: 800;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      z-index: 10;
+    }
+
     .trailer-hint {
       position: absolute;
       bottom: 8px;
@@ -784,13 +914,17 @@
       gap: 0.75rem;
     }
 
-    .card-saga {
+    .card-label {
       font-size: 0.62rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
       font-weight: 700;
       color: var(--accent-har);
       margin-bottom: 0.25rem;
+    }
+
+    .card-label.is-watched-label {
+      color: var(--success);
     }
 
     .card-title {
@@ -807,6 +941,17 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 0.4rem;
+    }
+
+    .card-extra {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-top: 0.3rem;
+    }
+
+    .star {
+      color: var(--accent-har);
     }
 
     /* CLEAN STUDIO-STYLE AUDIO TAG */
@@ -852,7 +997,7 @@
       cursor: pointer;
       font-size: 0.8rem;
       font-weight: 700;
-      transition: background 0.15s, border-color 0.15s;
+      transition: background 0.15s, border-color 0.15s, opacity 0.15s;
       white-space: nowrap;
     }
 
@@ -867,8 +1012,16 @@
       color: #000;
     }
 
+    .vote-btn.is-capped:not(.voted) {
+      opacity: 0.5;
+    }
+
     .vote-btn.pop {
       animation: pop 0.25s ease-out;
+    }
+
+    .vote-btn.shake {
+      animation: shake 0.35s ease-out;
     }
 
     .empty-state {
@@ -920,7 +1073,15 @@
       border-radius: var(--radius);
       box-shadow: 0 0 60px rgba(99, 102, 241, 0.3);
       border: 2px solid var(--primary);
-      animation: fadeIn 0.6s ease-out both;
+    }
+
+    .winner-section.landed .winner-poster {
+      animation: land 0.7s var(--ease) both;
+    }
+
+    .winner-section.is-spinning .winner-poster {
+      border-color: var(--accent-har);
+      transform: scale(0.97);
     }
 
     .winner-title {
@@ -929,6 +1090,10 @@
       font-weight: 900;
       text-transform: uppercase;
       color: var(--accent-har);
+    }
+
+    .winner-section.is-spinning .winner-title {
+      color: #fff;
     }
 
     .winner-meta {
@@ -947,16 +1112,44 @@
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
+    .winner-section.is-spinning .winner-votes {
+      color: #fde68a;
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .winner-section.is-spinning #winnerTrailerBtn {
+      visibility: hidden;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 600;
+      overflow: hidden;
+    }
+
+    .confetti i {
+      position: absolute;
+      top: -16px;
+      width: 8px;
+      height: 14px;
+      border-radius: 2px;
+      animation: fall var(--d) cubic-bezier(0.2, 0.6, 0.4, 1) var(--delay) forwards;
+    }
+
     /* PHASE: WINNER DECLARED */
     body.is-winner .winner-section {
       display: flex;
     }
 
-    body.is-winner #sagasGrid,
-    body.is-winner #catalogContainer,
+    body.is-winner #content,
     body.is-winner #leaderboardSection,
     body.is-winner .nav-left,
-    body.is-winner .search {
+    body.is-winner .search,
+    body.is-winner #historyBtn,
+    body.is-winner #picksControl {
       display: none !important;
     }
 
@@ -1051,6 +1244,10 @@
         flex: 1 1 100%;
       }
 
+      .admin-tools {
+        order: 4;
+      }
+
       .search kbd {
         display: none;
       }
@@ -1069,7 +1266,18 @@
       .catalog {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.9rem;
-        margin: 1.25rem auto;
+        margin: 1rem auto 1.5rem;
+      }
+
+      .filters {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        margin-top: 1rem;
+      }
+
+      .filters::-webkit-scrollbar {
+        display: none;
       }
 
       .saga-logo-text {
@@ -1102,8 +1310,14 @@
       }
 
       .nav-right .btn-label,
+      .admin-tools .btn-label,
       .btn-back .btn-label {
         display: none;
+      }
+
+      .admin-tools {
+        flex: 1 1 100%;
+        justify-content: flex-end;
       }
 
       .nav-left {
@@ -1169,15 +1383,21 @@
   <script>
     const INTRO_VIDEO_EN = "KIUhDod8WlI";
     const INTRO_VIDEO_ES = "em8Gy2BRUd4";
+    const INTRO_SEEN_KEY = "vault_intro_seen";
 
-    (function highlightLastLang() {
-      let last = null;
-      try { last = localStorage.getItem("vault_lang"); } catch (e) { }
-      const btn = last && document.querySelector(`.lang-gate-btn[data-lang="${last}"]`);
-      if (btn) btn.classList.add("is-last");
-    })();
+    function markIntroSeen() {
+      try { sessionStorage.setItem(INTRO_SEEN_KEY, "1"); } catch (e) { }
+    }
+
+    function closeIntro() {
+      markIntroSeen();
+      const modal = document.getElementById("introModal");
+      if (modal) modal.remove();
+      if (!document.querySelector(".trailer-modal:not([hidden])")) document.body.classList.remove("modal-open");
+    }
 
     function startIntroWithLang(lang) {
+      markIntroSeen();
       try { localStorage.setItem("vault_lang", lang); } catch (e) { }
       if (window.setVaultLanguage) window.setVaultLanguage(lang);
       const videoId = lang === "es" ? INTRO_VIDEO_ES : INTRO_VIDEO_EN;
@@ -1189,11 +1409,17 @@
       document.getElementById("skipIntroBtn").focus();
     }
 
-    function closeIntro() {
-      const modal = document.getElementById("introModal");
-      if (modal) modal.remove();
-      if (!document.querySelector(".trailer-modal:not([hidden])")) document.body.classList.remove("modal-open");
-    }
+    // The intro plays once per visit (browser session); refreshes go straight to the vault.
+    (function initIntro() {
+      let seen = false;
+      try { seen = sessionStorage.getItem(INTRO_SEEN_KEY) === "1"; } catch (e) { }
+      if (seen) { closeIntro(); return; }
+
+      let last = null;
+      try { last = localStorage.getItem("vault_lang"); } catch (e) { }
+      const btn = last && document.querySelector(`.lang-gate-btn[data-lang="${last}"]`);
+      if (btn) btn.classList.add("is-last");
+    })();
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && document.getElementById("introModal") && document.getElementById("langSelectStep").hidden) closeIntro();
@@ -1208,6 +1434,8 @@
       <span id="liveLabel">Connecting…</span>
       <span class="stats-sep" id="statsSep" hidden>•</span>
       <span id="statsText"></span>
+      <span class="stats-sep" id="picksSep" hidden>•</span>
+      <span class="picks-text" id="picksText"></span>
     </p>
   </header>
 
@@ -1230,6 +1458,22 @@
       </label>
       <div class="nav-right">
         <button class="btn-action" id="langToggleBtn" aria-label="Cambiar a español">🌐 ES</button>
+        <button class="btn-action" id="historyBtn"><span class="btn-icon" aria-hidden="true">🕘</span><span
+            class="btn-label">History</span></button>
+      </div>
+      <div class="admin-tools" id="adminTools" hidden>
+        <label class="btn-action picks-control" id="picksControl">
+          <span aria-hidden="true">🎟</span><span class="btn-label" id="picksControlLabel">Picks</span>
+          <select id="maxPicksSelect" aria-label="Picks per person">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="0">∞</option>
+          </select>
+        </label>
         <button class="btn-action btn-decide" id="adminDecideBtn"><span class="btn-icon" aria-hidden="true">🎯</span><span
             class="btn-label">Pick Winner</span></button>
         <button class="btn-action btn-reset" id="adminResetBtn"><span class="btn-icon" aria-hidden="true">⚡</span><span
@@ -1259,6 +1503,7 @@
   </section>
 
   <main id="content">
+    <div class="filters" id="filters" role="group" aria-label="Filters"></div>
     <div class="sagas-grid" id="sagasGrid"></div>
     <div class="catalog-container" id="catalogContainer" hidden>
       <div class="catalog" id="catalog"></div>
@@ -1274,11 +1519,13 @@
     <button class="ghost-btn" id="closeTrailerBtn">✕ Close Trailer</button>
   </div>
 
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB0XqKMTAKjv3ImnzIgvJPGRMS4SwcI7go",
@@ -1291,9 +1538,14 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
 
-    const ADMIN_PIN = "1234";
+    // Only used until the database rules in database.rules.json are published (see SETUP.md).
+    // After that, the PIN lives at config/adminPin and is checked by Firebase itself.
+    const DEFAULT_ADMIN_PIN = "1234";
+    const DEFAULT_MAX_PICKS = 3;
     const LEADERBOARD_PREVIEW = 8;
+    const REVEAL_WINDOW_MS = 20000;
 
     const i18n = {
       en: {
@@ -1302,14 +1554,18 @@
         btn_decide: "Pick Winner",
         btn_back_nom: "Restart Voting",
         btn_reset: "Reset",
+        btn_history: "History",
         btn_back_sagas: "Collections",
         collections: "Collections",
         results: "Results",
+        history: "History",
         collection_label: "Collection",
         film_singular: "film",
         film_plural: "films",
         lb_nominations: "🔥 Top Picks",
         your_picks: "Your picks",
+        picks_setting: "Picks",
+        picks_setting_label: "Picks per person",
         show_all: (n) => `Show all ${n} ↓`,
         show_less: "Show less ↑",
         pick_btn: "+ Pick",
@@ -1318,14 +1574,26 @@
         pick_plural: "votes",
         voter_singular: "voter",
         voter_plural: "voters",
+        limit_reached: (n) => `You've used all ${n} picks. Remove one to pick something else.`,
         live: "Live",
         connecting: "Connecting…",
         offline: "Offline",
         lang_toggle: "🌐 ES",
         lang_toggle_label: "Cambiar a español",
         search_placeholder: "Search the vault…",
-        no_results: (q) => `Nothing in the vault matches “${q}”.`,
+        no_results: (q) => q ? `Nothing in the vault matches “${q}”.` : "No movies match these filters.",
+        history_empty: "No movie nights logged yet. Pick a winner to start the history.",
+        f_har: "HAR",
+        f_scope: "Scope",
+        f_71: "7.1 Surround",
+        f_dual: "🇪🇸 Spanish audio",
+        f_unwatched: "Not watched yet",
+        f_clear: "✕ Clear",
+        watched: "✓ Watched",
+        watched_on: (d) => `Watched ${d}`,
+        seasons: (n) => `${n} ${n === 1 ? "season" : "seasons"}`,
         tonights_movie: "🍿 TONIGHT'S MOVIE",
+        tie_spin: "🎲 It's a tie! Breaking it…",
         won_with: "Won with",
         tie_breaker: "(Tie-breaker won!)",
         trailer_hint: "▶ Trailer",
@@ -1337,8 +1605,10 @@
         wrong_pin: "Wrong PIN.",
         no_votes: "No movies selected yet!",
         reset_done: "New round started — all votes cleared.",
+        picks_saved: (n) => n ? `Everyone now gets ${n} ${n === 1 ? "pick" : "picks"}.` : "Picks are now unlimited.",
         still_connecting: "Still connecting to the vault…",
-        write_failed: "Couldn't save that. Check your connection."
+        write_failed: "Couldn't save that. Check your connection.",
+        auth_missing: "Admin note: anonymous sign-in isn't working yet. Don't publish the database rules (see SETUP.md)."
       },
       es: {
         subtitle_nom: "Elige tus favoritas. La más votada gana hoy.",
@@ -1346,14 +1616,18 @@
         btn_decide: "Elegir Ganador",
         btn_back_nom: "Reiniciar Votación",
         btn_reset: "Reiniciar",
+        btn_history: "Historial",
         btn_back_sagas: "Colecciones",
         collections: "Colecciones",
         results: "Resultados",
+        history: "Historial",
         collection_label: "Colección",
         film_singular: "película",
         film_plural: "películas",
         lb_nominations: "🔥 Más Votadas",
         your_picks: "Tus votos",
+        picks_setting: "Votos",
+        picks_setting_label: "Votos por persona",
         show_all: (n) => `Ver las ${n} ↓`,
         show_less: "Ver menos ↑",
         pick_btn: "+ Elegir",
@@ -1362,14 +1636,26 @@
         pick_plural: "votos",
         voter_singular: "votante",
         voter_plural: "votantes",
+        limit_reached: (n) => `Ya usaste tus ${n} votos. Quita uno para elegir otra.`,
         live: "En vivo",
         connecting: "Conectando…",
         offline: "Sin conexión",
         lang_toggle: "🌐 EN",
         lang_toggle_label: "Switch to English",
         search_placeholder: "Buscar en la bóveda…",
-        no_results: (q) => `Nada en la bóveda coincide con “${q}”.`,
+        no_results: (q) => q ? `Nada en la bóveda coincide con “${q}”.` : "Ninguna película coincide con estos filtros.",
+        history_empty: "Aún no hay noches de película. Elige un ganador para empezar el historial.",
+        f_har: "HAR",
+        f_scope: "Scope",
+        f_71: "7.1 Surround",
+        f_dual: "🇪🇸 Audio en español",
+        f_unwatched: "No vistas",
+        f_clear: "✕ Limpiar",
+        watched: "✓ Vista",
+        watched_on: (d) => `Vista el ${d}`,
+        seasons: (n) => `${n} ${n === 1 ? "temporada" : "temporadas"}`,
         tonights_movie: "🍿 LA PELÍCULA DE HOY",
+        tie_spin: "🎲 ¡Empate! Desempatando…",
         won_with: "¡Ganó con",
         tie_breaker: "(¡Ganó el desempate!)",
         trailer_hint: "▶ Tráiler",
@@ -1381,8 +1667,10 @@
         wrong_pin: "PIN incorrecto.",
         no_votes: "¡Aún no hay películas elegidas!",
         reset_done: "Nueva ronda — se borraron todos los votos.",
+        picks_saved: (n) => n ? `Ahora cada persona tiene ${n} ${n === 1 ? "voto" : "votos"}.` : "Ahora los votos son ilimitados.",
         still_connecting: "Conectando con la bóveda…",
-        write_failed: "No se pudo guardar. Revisa tu conexión."
+        write_failed: "No se pudo guardar. Revisa tu conexión.",
+        auth_missing: "Nota de admin: el inicio de sesión anónimo aún no funciona. No publiques las reglas (ver SETUP.md)."
       }
     };
 
@@ -1400,13 +1688,17 @@
     };
 
     let currentLang = store.get("vault_lang", "en") === "es" ? "es" : "en";
-    let userId = store.get("vault_user_id") || ("voter_" + Math.random().toString(36).substring(2, 9));
-    store.set("vault_user_id", userId);
+    // Fallback voter id, used only if anonymous sign-in isn't enabled in Firebase yet.
+    const localVoterId = store.get("vault_user_id") || ("voter_" + Math.random().toString(36).substring(2, 9));
+    store.set("vault_user_id", localVoterId);
+    let userId = localVoterId;
 
     const t = () => i18n[currentLang];
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
     const $ = (id) => document.getElementById(id);
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // NOTE: a movie's `id` is derived from title + year and is what ballots are stored under in Firebase.
     // If you rename a title, give it an explicit `id` with the old value so existing votes keep working.
@@ -1590,6 +1882,14 @@
       "Standalone Films": "url('https://image.tmdb.org/t/p/w500/b9gTXYI8aTWxG3iA1JqHovhG0Fw.jpg')"
     };
 
+    const FILTERS = {
+      har: { label: "f_har", test: (m) => m.tag === "HAR", excludes: "scope" },
+      scope: { label: "f_scope", test: (m) => m.tag === "Scope", excludes: "har" },
+      s71: { label: "f_71", test: (m) => m.audio.includes("7.1") },
+      dual: { label: "f_dual", test: (m) => (m.audioTags || []).includes("ES") },
+      unwatched: { label: "f_unwatched", test: (m) => !watchedMap[m.id] }
+    };
+
     const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_");
     const normalize = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
@@ -1608,30 +1908,48 @@
     // ---------- State ----------
     let currentSession = null;
     let unsubscribeSession = null;
+    let unsubscribeAdmin = null;
     let sessionData = { phase: "nominations", winner: null, ballots: {} };
-    let currentView = "sagas";
+    let settings = {};
+    let historyData = {};
+    let watchedMap = {};
+    let currentView = "sagas"; // sagas | movies | history
     let activeSaga = null;
     let searchQuery = "";
+    const activeFilters = new Set();
     let sagasScrollY = 0;
     let leaderboardExpanded = false;
     let isConnected = false;
     let hasLoadedSession = false;
+    let authSettled = false;
+    let isAdmin = false;
+    let serverOffset = 0;
+    let spinning = false;
+    let revealToken = 0;
+    const adminLink = new URLSearchParams(location.search).has("admin");
 
     const TMDB_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
     const TMDB_API = "https://api.themoviedb.org/3";
     const POSTER_CACHE_KEY = "vault_poster_cache_v3";
     const TRAILER_CACHE_KEY = "vault_trailer_cache_v5";
+    const DETAILS_CACHE_KEY = "vault_details_cache_v1";
+    const DETAILS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
     const posterCache = store.json(POSTER_CACHE_KEY);
     const trailerCache = store.json(TRAILER_CACHE_KEY);
+    const detailsCache = store.json(DETAILS_CACHE_KEY);
     const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'%3E%3Crect width='300' height='450' fill='%231a1d29'/%3E%3C/svg%3E";
 
     const sagasGrid = $("sagasGrid");
     const catalogContainer = $("catalogContainer");
     const catalogEl = $("catalog");
+    const filtersEl = $("filters");
     const backBtn = $("backBtn");
+    const historyBtn = $("historyBtn");
     const collectionTitle = $("currentCollectionTitle");
+    const adminTools = $("adminTools");
     const adminDecideBtn = $("adminDecideBtn");
     const adminResetBtn = $("adminResetBtn");
+    const maxPicksSelect = $("maxPicksSelect");
     const langToggleBtn = $("langToggleBtn");
     const searchInput = $("searchInput");
     const leaderList = $("leaderList");
@@ -1648,10 +1966,10 @@
       el.textContent = message;
       el.classList.add("show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
     }
 
-    // ---------- Tallies ----------
+    // ---------- Tallies & picks ----------
     function computeTally() {
       const tally = {};
       Object.values(sessionData.ballots || {}).forEach(ballot => {
@@ -1662,16 +1980,54 @@
     }
 
     const myBallot = () => sessionData.ballots?.[userId] || {};
+    const myPickCount = () => Object.values(myBallot()).filter(v => v === true).length;
 
-    // ---------- TMDB lookups (posters + trailers) ----------
+    // 0 means unlimited.
+    function maxPicks() {
+      const v = settings?.maxPicks;
+      return typeof v === "number" && v >= 0 ? v : DEFAULT_MAX_PICKS;
+    }
+
+    // ---------- Watched history ----------
+    function rebuildWatched() {
+      watchedMap = {};
+      Object.values(historyData || {}).forEach(entry => {
+        if (!entry || !movieById[entry.id]) return;
+        const at = typeof entry.at === "number" ? entry.at : 0;
+        if (!watchedMap[entry.id] || at > watchedMap[entry.id]) watchedMap[entry.id] = at;
+      });
+    }
+
+    function formatDate(ms) {
+      if (!ms) return "";
+      return new Date(ms).toLocaleDateString(currentLang === "es" ? "es-GT" : "en-US", { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    // ---------- TMDB lookups (posters, trailers, runtime, rating) ----------
+    // Small concurrency limiter so browsing a big filter doesn't burst TMDB's rate limit.
+    const TMDB_CONCURRENCY = 6;
+    let tmdbActive = 0;
+    const tmdbQueue = [];
+    function tmdbFetch(url) {
+      return new Promise((resolve, reject) => {
+        const run = () => {
+          tmdbActive++;
+          fetch(url).then(r => r.json()).then(resolve, reject).finally(() => {
+            tmdbActive--;
+            if (tmdbQueue.length) tmdbQueue.shift()();
+          });
+        };
+        if (tmdbActive < TMDB_CONCURRENCY) run(); else tmdbQueue.push(run);
+      });
+    }
+
     const tmdbLookups = {};
     const cleanQuery = (title) => title.replace(/\s*\([^)]*\)/g, "").replace(/\*/g, "").trim();
     const yearOf = (r) => parseInt((r.release_date || r.first_air_date || "").slice(0, 4), 10);
 
     async function searchTmdb(type, movie, strictYear) {
       const yearParam = strictYear ? `&${type === "tv" ? "first_air_date_year" : "year"}=${movie.year}` : "";
-      const res = await fetch(`${TMDB_API}/search/${type}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanQuery(movie.title))}${yearParam}`);
-      const data = await res.json();
+      const data = await tmdbFetch(`${TMDB_API}/search/${type}?api_key=${TMDB_KEY}&query=${encodeURIComponent(cleanQuery(movie.title))}${yearParam}`);
       const results = data.results || [];
       // Without a strict year filter, only accept a result released within a year of ours.
       return strictYear ? results[0] : results.find(r => Math.abs(yearOf(r) - movie.year) <= 1);
@@ -1726,23 +2082,75 @@
       return score + (v.size || 0);
     }
 
+    function pickTrailer(videos) {
+      const youtube = (videos || []).filter(v => v.site === "YouTube");
+      if (!youtube.length) return null;
+      return youtube.sort((a, b) => scoreVideo(b) - scoreVideo(a))[0].key;
+    }
+
+    const detailsInflight = {};
+    function freshDetails(movie) {
+      const info = detailsCache[movie.id];
+      return info && Date.now() - (info.fetchedAt || 0) < DETAILS_TTL_MS ? info : null;
+    }
+
+    // One call per title gets runtime, rating and the trailer list (append_to_response=videos).
+    function getDetails(movie) {
+      const cached = freshDetails(movie);
+      if (cached) return Promise.resolve(cached);
+      if (!detailsInflight[movie.id]) {
+        detailsInflight[movie.id] = (async () => {
+          const hit = await resolveTmdb(movie);
+          if (!hit) return null;
+          const d = await tmdbFetch(`${TMDB_API}/${hit.type}/${hit.id}?api_key=${TMDB_KEY}&append_to_response=videos`);
+          const info = {
+            runtime: hit.type === "movie" && d.runtime ? d.runtime : null,
+            seasons: hit.type === "tv" && d.number_of_seasons ? d.number_of_seasons : null,
+            rating: d.vote_count > 0 && d.vote_average ? Math.round(d.vote_average * 10) / 10 : null,
+            fetchedAt: Date.now()
+          };
+          detailsCache[movie.id] = info;
+          store.set(DETAILS_CACHE_KEY, JSON.stringify(detailsCache));
+          if (!movie.trailer && !trailerCache[movie.id]) {
+            const key = pickTrailer(d.videos?.results);
+            if (key) {
+              trailerCache[movie.id] = key;
+              store.set(TRAILER_CACHE_KEY, JSON.stringify(trailerCache));
+            }
+          }
+          return info;
+        })().catch(() => null).finally(() => { delete detailsInflight[movie.id]; });
+      }
+      return detailsInflight[movie.id];
+    }
+
+    function formatRuntime(minutes) {
+      const h = Math.floor(minutes / 60), m = minutes % 60;
+      return h ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m`;
+    }
+
+    function extraHTML(info) {
+      if (!info) return "";
+      const parts = [];
+      if (info.runtime) parts.push(formatRuntime(info.runtime));
+      else if (info.seasons) parts.push(t().seasons(info.seasons));
+      if (info.rating) parts.push(`<span class="star">★</span> ${info.rating.toFixed(1)}`);
+      return parts.join(" · ");
+    }
+
+    function fillDetails(movie, info) {
+      const html = extraHTML(info);
+      document.querySelectorAll(`[data-extra="${movie.id}"]`).forEach(el => {
+        el.innerHTML = html;
+        el.hidden = !html;
+      });
+    }
+
     async function fetchTrailerKey(movie) {
       if (movie.trailer) return movie.trailer;
       if (trailerCache[movie.id]) return trailerCache[movie.id];
-      try {
-        const hit = await resolveTmdb(movie);
-        if (!hit) return null;
-        const res = await fetch(`${TMDB_API}/${hit.type}/${hit.id}/videos?api_key=${TMDB_KEY}`);
-        const data = await res.json();
-        const youtube = (data.results || []).filter(v => v.site === "YouTube");
-        if (!youtube.length) return null;
-        const chosen = youtube.sort((a, b) => scoreVideo(b) - scoreVideo(a))[0].key;
-        trailerCache[movie.id] = chosen;
-        store.set(TRAILER_CACHE_KEY, JSON.stringify(trailerCache));
-        return chosen;
-      } catch (e) {
-        return null;
-      }
+      await getDetails(movie);
+      return trailerCache[movie.id] || null;
     }
 
     // ---------- Rendering ----------
@@ -1769,9 +2177,18 @@
       }).join("");
     }
 
-    function cardHTML(m, showSaga) {
+    function renderFilters() {
+      const tr = t();
+      filtersEl.innerHTML = Object.entries(FILTERS).map(([key, f]) =>
+        `<button class="chip" data-filter="${key}" aria-pressed="${activeFilters.has(key)}">${tr[f.label]}</button>`
+      ).join("") + (activeFilters.size ? `<button class="chip chip-clear" data-filter="clear">${tr.f_clear}</button>` : "");
+    }
+
+    function cardHTML(m, label, labelClass = "") {
       const tr = t();
       const poster = m.poster || posterCache[m.id] || PLACEHOLDER;
+      const info = freshDetails(m) || detailsCache[m.id];
+      const extra = extraHTML(info);
       return `
         <article class="card" data-id="${m.id}">
           <button class="poster-wrap" data-action="trailer" data-id="${m.id}" aria-label="${tr.play_trailer}: ${esc(m.title)}">
@@ -1779,16 +2196,18 @@
               onload="if (!this.src.startsWith('data:')) this.dataset.loaded = '1'">
             <span class="poster-fallback">${esc(m.title)}</span>
             <span class="badge-float ${m.tag === "HAR" ? "badge-har" : "badge-scope"}">[${m.tag}]</span>
+            <span class="watched-badge" hidden></span>
             <span class="trailer-hint">${tr.trailer_hint}</span>
           </button>
           <div class="card-info">
             <div>
-              ${showSaga ? `<div class="card-saga">${esc(m.saga)}</div>` : ""}
+              ${label ? `<div class="card-label ${labelClass}">${esc(label)}</div>` : ""}
               <h3 class="card-title">${esc(m.title)}</h3>
               <div class="card-meta">
                 <span>${m.year} • ${esc(m.audio)}</span>
                 ${m.audioTags ? `<span class="dual-pill">${m.audioTags.join(" / ")}</span>` : ""}
               </div>
+              <div class="card-extra" data-extra="${m.id}" ${extra ? "" : "hidden"}>${extra}</div>
             </div>
             <div class="card-action">
               <span class="vote-count"></span>
@@ -1798,17 +2217,38 @@
         </article>`;
     }
 
-    function renderCatalog(list, showSaga) {
+    function renderCatalog(list, labelFor, emptyText) {
       if (!list.length) {
-        catalogEl.innerHTML = `<p class="empty-state">${t().no_results(esc(searchQuery))}</p>`;
+        catalogEl.innerHTML = `<p class="empty-state">${emptyText}</p>`;
         return;
       }
-      catalogEl.innerHTML = list.map(m => cardHTML(m, showSaga)).join("");
-      list.forEach(m => { if (!m.poster && !posterCache[m.id]) loadPoster(m); });
+      catalogEl.innerHTML = list.map(m => {
+        const [label, cls] = labelFor ? labelFor(m) : [];
+        return cardHTML(m, label, cls);
+      }).join("");
+      list.forEach(m => {
+        if (!m.poster && !posterCache[m.id]) loadPoster(m);
+        if (!freshDetails(m)) getDetails(m).then(info => { if (info) fillDetails(m, info); });
+      });
+    }
+
+    function isFiltering() {
+      return !!searchQuery || activeFilters.size > 0;
     }
 
     function currentMode() {
-      return searchQuery ? "search" : currentView;
+      if (currentView === "history") return "history";
+      return isFiltering() ? "search" : currentView;
+    }
+
+    function historyList() {
+      return Object.keys(watchedMap)
+        .sort((a, b) => watchedMap[b] - watchedMap[a])
+        .map(id => movieById[id]);
+    }
+
+    function setTitle(text, count) {
+      collectionTitle.innerHTML = `${esc(text)}<span class="collection-count">${count}</span>`;
     }
 
     function renderView(animate = false) {
@@ -1816,21 +2256,32 @@
       const mode = currentMode();
       sagasGrid.hidden = mode !== "sagas";
       catalogContainer.hidden = mode === "sagas";
+      filtersEl.hidden = mode === "history";
       backBtn.hidden = mode === "sagas";
+      historyBtn.classList.toggle("is-active", mode === "history");
+      historyBtn.setAttribute("aria-pressed", String(mode === "history"));
+      renderFilters();
 
       if (mode === "sagas") {
         renderSagas();
-        collectionTitle.innerHTML = `${tr.collections}<span class="collection-count">${Object.keys(sagasMap).length}</span>`;
+        setTitle(tr.collections, Object.keys(sagasMap).length);
         if (animate) replayFade(sagasGrid);
       } else if (mode === "movies") {
-        renderCatalog(sagasMap[activeSaga] || [], false);
-        collectionTitle.innerHTML = `${esc(activeSaga)}<span class="collection-count">${(sagasMap[activeSaga] || []).length}</span>`;
+        const list = sagasMap[activeSaga] || [];
+        renderCatalog(list, null, "");
+        setTitle(activeSaga, list.length);
+        if (animate) replayFade(catalogContainer);
+      } else if (mode === "history") {
+        const list = historyList();
+        renderCatalog(list, (m) => [tr.watched_on(formatDate(watchedMap[m.id])), "is-watched-label"], tr.history_empty);
+        setTitle(tr.history, list.length);
         if (animate) replayFade(catalogContainer);
       } else {
         const q = normalize(searchQuery);
-        const results = movies.filter(m => m.haystack.includes(q));
-        renderCatalog(results, true);
-        collectionTitle.innerHTML = `${tr.results}<span class="collection-count">${results.length}</span>`;
+        const results = movies.filter(m => m.haystack.includes(q) && [...activeFilters].every(key => FILTERS[key].test(m)));
+        renderCatalog(results, (m) => [m.saga, ""], tr.no_results(esc(searchQuery)));
+        setTitle(tr.results, results.length);
+        if (animate) replayFade(catalogContainer);
       }
       updateVoteUI();
     }
@@ -1839,16 +2290,25 @@
       const tr = t();
       const tally = computeTally();
       const mine = myBallot();
+      const limit = maxPicks();
+      const capped = limit > 0 && myPickCount() >= limit;
 
       catalogEl.querySelectorAll(".card").forEach(card => {
         const id = card.dataset.id;
         const count = tally[id] || 0;
         const picked = mine[id] === true;
+        const watchedAt = watchedMap[id];
         card.classList.toggle("is-picked", picked);
         card.classList.toggle("has-votes", count > 0);
+        card.classList.toggle("is-watched", !!watchedAt);
+        const badge = card.querySelector(".watched-badge");
+        badge.hidden = !watchedAt;
+        badge.textContent = tr.watched;
+        badge.title = watchedAt ? tr.watched_on(formatDate(watchedAt)) : "";
         card.querySelector(".vote-count").textContent = plural(count, tr.pick_singular, tr.pick_plural);
         const btn = card.querySelector(".vote-btn");
         btn.classList.toggle("voted", picked);
+        btn.classList.toggle("is-capped", capped);
         btn.setAttribute("aria-pressed", String(picked));
         btn.textContent = picked ? tr.picked_btn : tr.pick_btn;
       });
@@ -1862,11 +2322,16 @@
         card.classList.toggle("has-picks", list.some(m => mine[m.id] === true));
       });
 
-      renderLeaderboard(tally, mine);
+      renderLeaderboard(tally);
       renderStats(tally);
     }
 
-    function renderLeaderboard(tally, mine) {
+    function picksSummary() {
+      const limit = maxPicks();
+      return limit > 0 ? `${myPickCount()}/${limit}` : `${myPickCount()}`;
+    }
+
+    function renderLeaderboard(tally) {
       const tr = t();
       const items = movies
         .map(m => ({ movie: m, count: tally[m.id] || 0 }))
@@ -1893,14 +2358,12 @@
       leaderMoreBtn.hidden = !extra;
       if (extra) leaderMoreBtn.textContent = leaderboardExpanded ? tr.show_less : tr.show_all(items.length);
 
-      const myCount = Object.values(mine).filter(v => v === true).length;
-      $("myPicks").innerHTML = `${tr.your_picks}: <strong>${myCount}</strong>`;
+      $("myPicks").innerHTML = `${tr.your_picks}: <strong>${picksSummary()}</strong>`;
     }
 
     function renderStats(tally) {
       const tr = t();
-      const liveDot = $("liveDot");
-      liveDot.classList.toggle("on", isConnected);
+      $("liveDot").classList.toggle("on", isConnected);
       $("liveLabel").textContent = isConnected ? tr.live : (hasLoadedSession ? tr.offline : tr.connecting);
 
       const voters = Object.values(sessionData.ballots || {}).filter(b => b && Object.values(b).some(v => v === true)).length;
@@ -1910,6 +2373,14 @@
       $("statsText").textContent = show
         ? `${plural(voters, tr.voter_singular, tr.voter_plural)} · ${plural(votes, tr.pick_singular, tr.pick_plural)}`
         : "";
+
+      const showPicks = show && !isWinnerPhase();
+      const limit = maxPicks();
+      const picksEl = $("picksText");
+      $("picksSep").hidden = !showPicks;
+      picksEl.hidden = !showPicks;
+      picksEl.classList.toggle("full", limit > 0 && myPickCount() >= limit);
+      picksEl.innerHTML = `${tr.your_picks} <strong>${picksSummary()}</strong>`;
     }
 
     function setButton(btn, icon, label) {
@@ -1917,6 +2388,19 @@
       btn.querySelector(".btn-label").textContent = label;
       btn.title = label;
       btn.setAttribute("aria-label", label);
+    }
+
+    function syncPicksSelect() {
+      const value = String(maxPicks());
+      if (![...maxPicksSelect.options].some(o => o.value === value)) {
+        maxPicksSelect.add(new Option(value, value));
+      }
+      maxPicksSelect.value = value;
+    }
+
+    function applyAdminVisibility() {
+      adminTools.hidden = !(adminLink || isAdmin);
+      syncPicksSelect();
     }
 
     function applyStaticTexts() {
@@ -1932,8 +2416,12 @@
       $("vaultSubtitle").textContent = winnerPhase ? tr.subtitle_win : tr.subtitle_nom;
       backBtn.querySelector(".btn-label").textContent = tr.btn_back_sagas;
       searchInput.placeholder = tr.search_placeholder;
+      setButton(historyBtn, "🕘", tr.btn_history);
       setButton(adminDecideBtn, winnerPhase ? "↩" : "🎯", winnerPhase ? tr.btn_back_nom : tr.btn_decide);
       setButton(adminResetBtn, "⚡", tr.btn_reset);
+      $("picksControlLabel").textContent = tr.picks_setting;
+      $("picksControl").title = tr.picks_setting_label;
+      maxPicksSelect.setAttribute("aria-label", tr.picks_setting_label);
     }
 
     function applyLanguage() {
@@ -1948,28 +2436,44 @@
     };
 
     // ---------- Navigation ----------
-    function openSaga(sagaName) {
-      if (currentView === "sagas" && !searchQuery) sagasScrollY = window.scrollY;
-      activeSaga = sagaName;
-      currentView = "movies";
-      clearSearch(false);
-      renderView(true);
+    function rememberSagasScroll() {
+      if (currentMode() === "sagas") sagasScrollY = window.scrollY;
+    }
+
+    function scrollToContent() {
       const top = $("mainHeader").offsetHeight;
       if (window.scrollY > top) window.scrollTo({ top, behavior: "auto" });
+    }
+
+    function resetFiltering() {
+      searchQuery = "";
+      searchInput.value = "";
+      activeFilters.clear();
+    }
+
+    function openSaga(sagaName) {
+      rememberSagasScroll();
+      activeSaga = sagaName;
+      currentView = "movies";
+      resetFiltering();
+      renderView(true);
+      scrollToContent();
+    }
+
+    function openHistory() {
+      rememberSagasScroll();
+      currentView = "history";
+      resetFiltering();
+      renderView(true);
+      scrollToContent();
     }
 
     function goToCollections() {
       currentView = "sagas";
       activeSaga = null;
+      resetFiltering();
       renderView(true);
       window.scrollTo({ top: sagasScrollY, behavior: "auto" });
-    }
-
-    function clearSearch(rerender = true) {
-      if (!searchQuery && !searchInput.value) return;
-      searchQuery = "";
-      searchInput.value = "";
-      if (rerender) renderView(true);
     }
 
     function focusMovie(movieId) {
@@ -1986,22 +2490,59 @@
       });
     }
 
+    // Typing or filtering always searches the whole vault.
+    function leaveHistoryForSearch() {
+      if (currentView === "history") currentView = activeSaga ? "movies" : "sagas";
+    }
+
     backBtn.addEventListener("click", () => {
-      if (searchQuery) clearSearch(true);
-      else goToCollections();
+      if (currentMode() === "search") {
+        resetFiltering();
+        renderView(true);
+      } else {
+        goToCollections();
+      }
+    });
+
+    historyBtn.addEventListener("click", () => {
+      if (currentView === "history") goToCollections();
+      else openHistory();
     });
 
     searchInput.addEventListener("input", () => {
-      const wasSearching = !!searchQuery;
+      const wasSearching = currentMode() === "search";
+      rememberSagasScroll();
+      leaveHistoryForSearch();
       searchQuery = searchInput.value.trim();
-      renderView(!wasSearching && !!searchQuery);
+      renderView(!wasSearching && currentMode() === "search");
     });
 
     searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        clearSearch(true);
+        searchQuery = "";
+        searchInput.value = "";
+        renderView(true);
         searchInput.blur();
       }
+    });
+
+    filtersEl.addEventListener("click", (e) => {
+      const chip = e.target.closest("[data-filter]");
+      if (!chip) return;
+      const key = chip.dataset.filter;
+      const wasSearching = currentMode() === "search";
+      rememberSagasScroll();
+      leaveHistoryForSearch();
+      if (key === "clear") {
+        activeFilters.clear();
+      } else if (activeFilters.has(key)) {
+        activeFilters.delete(key);
+      } else {
+        activeFilters.add(key);
+        if (FILTERS[key].excludes) activeFilters.delete(FILTERS[key].excludes);
+      }
+      renderView(!wasSearching && currentMode() === "search");
+      filtersEl.querySelector(`[data-filter="${key}"]`)?.focus();
     });
 
     leaderMoreBtn.addEventListener("click", () => {
@@ -2082,12 +2623,15 @@
     }
 
     async function renderWinnerScreen() {
+      if (spinning) return;
       const { id, votes, wasTie } = sessionData.winner || {};
       const movie = movieById[id];
       if (!movie) return;
       const tr = t();
       $("winnerTitle").textContent = movie.title;
-      $("winnerMeta").textContent = `${movie.year} • ${movie.audio} • [${movie.tag}]`;
+      const baseMeta = `${movie.year} • ${movie.audio} • [${movie.tag}]`;
+      const metaEl = $("winnerMeta");
+      metaEl.textContent = baseMeta;
       $("winnerVotes").textContent = `${tr.won_with} ${plural(votes, tr.pick_singular, tr.pick_plural)}! ${wasTie ? tr.tie_breaker : ""}`.trim();
       $("winnerTrailerBtn").dataset.id = movie.id;
 
@@ -2095,14 +2639,89 @@
       img.alt = movie.title;
       if (img.dataset.movie !== movie.id) {
         img.dataset.movie = movie.id;
-        img.src = PLACEHOLDER;
+        img.src = posterCache[movie.id] || movie.poster || PLACEHOLDER;
         winnerSection.style.removeProperty("--winner-bg");
       }
+
+      getDetails(movie).then(info => {
+        const extra = extraHTML(info);
+        if (extra && !spinning && img.dataset.movie === movie.id) metaEl.innerHTML = `${esc(baseMeta)} • ${extra}`;
+      });
+
       const url = await getPoster(movie);
-      if (url && img.dataset.movie === movie.id) {
+      if (url && img.dataset.movie === movie.id && !spinning) {
         img.src = url;
         winnerSection.style.setProperty("--winner-bg", `url("${url}")`);
       }
+    }
+
+    function burstConfetti() {
+      if (reducedMotion()) return;
+      const box = $("confetti");
+      const colors = ["#f59e0b", "#6366f1", "#10b981", "#ef4444", "#3b82f6", "#f8fafc", "#8b5cf6"];
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < 110; i++) {
+        const p = document.createElement("i");
+        p.style.left = `${Math.random() * 100}vw`;
+        p.style.background = colors[i % colors.length];
+        p.style.setProperty("--x", `${Math.random() * 240 - 120}px`);
+        p.style.setProperty("--r", `${Math.random() * 1080 - 540}deg`);
+        p.style.setProperty("--d", `${2.4 + Math.random() * 2}s`);
+        p.style.setProperty("--delay", `${Math.random() * 0.5}s`);
+        frag.appendChild(p);
+      }
+      box.replaceChildren(frag);
+      setTimeout(() => box.replaceChildren(), 5200);
+    }
+
+    // Shown on every device when a winner was just declared: ties spin through the tied posters first.
+    async function playReveal() {
+      const token = ++revealToken;
+      const w = sessionData.winner;
+      const winner = movieById[w?.id];
+      if (!winner) return;
+      // Firebase may hand arrays back as {0: …, 1: …} objects, so accept either shape.
+      const tied = (w.tied && typeof w.tied === "object" ? Object.values(w.tied) : []).map(id => movieById[id]).filter(Boolean);
+
+      if (tied.length > 1 && tied.includes(winner) && !reducedMotion()) {
+        spinning = true;
+        winnerSection.classList.add("is-spinning");
+        winnerSection.classList.remove("landed");
+        winnerSection.style.removeProperty("--winner-bg");
+        const img = $("winnerPoster");
+        img.dataset.movie = "";
+        $("winnerVotes").textContent = t().tie_spin;
+        $("winnerMeta").textContent = tied.map(m => m.title).join("  ·  ");
+        const posters = await Promise.all(tied.map(m => getPoster(m).catch(() => null)));
+
+        const winIdx = tied.indexOf(winner);
+        let i = Math.floor(Math.random() * tied.length);
+        let delay = 70;
+        while (true) {
+          if (token !== revealToken || !isWinnerPhase()) {
+            spinning = false;
+            winnerSection.classList.remove("is-spinning");
+            return;
+          }
+          img.src = posters[i] || PLACEHOLDER;
+          img.alt = tied[i].title;
+          $("winnerTitle").textContent = tied[i].title;
+          await sleep(delay);
+          if (delay >= 420 && i === winIdx) break;
+          delay = Math.min(delay * 1.12, 480);
+          i = (i + 1) % tied.length;
+        }
+        img.dataset.movie = winner.id;
+        spinning = false;
+        winnerSection.classList.remove("is-spinning");
+      }
+
+      if (token !== revealToken) return;
+      await renderWinnerScreen();
+      winnerSection.classList.remove("landed");
+      void winnerSection.offsetWidth;
+      winnerSection.classList.add("landed");
+      burstConfetti();
     }
 
     // ---------- Firebase sync ----------
@@ -2112,12 +2731,19 @@
       document.body.classList.toggle("is-winner", winnerPhase);
       applyStaticTexts();
 
-      if (winnerPhase) {
-        if (!wasWinner) {
-          closeTrailer();
-          window.scrollTo({ top: 0, behavior: "auto" });
-        }
+      if (winnerPhase && !wasWinner) {
+        closeTrailer();
+        window.scrollTo({ top: 0, behavior: "auto" });
+        const decidedAt = sessionData.winner.decidedAt;
+        const fresh = typeof decidedAt === "number" && Date.now() + serverOffset - decidedAt < REVEAL_WINDOW_MS;
+        if (fresh) playReveal();
+        else renderWinnerScreen();
+      } else if (winnerPhase) {
         renderWinnerScreen();
+      } else if (wasWinner) {
+        revealToken++;
+        spinning = false;
+        winnerSection.classList.remove("is-spinning", "landed");
       }
       updateVoteUI();
     }
@@ -2127,10 +2753,29 @@
       renderStats(computeTally());
     });
 
+    onValue(ref(db, ".info/serverTimeOffset"), (snap) => {
+      serverOffset = snap.val() || 0;
+    });
+
+    onValue(ref(db, "settings"), (snap) => {
+      settings = snap.val() || {};
+      syncPicksSelect();
+      updateVoteUI();
+    }, () => { });
+
+    onValue(ref(db, "history"), (snap) => {
+      historyData = snap.val() || {};
+      rebuildWatched();
+      const mode = currentMode();
+      if (mode === "history" || (mode === "search" && activeFilters.has("unwatched"))) renderView(false);
+      else updateVoteUI();
+    }, () => { });
+
     const sessionPointerRef = ref(db, "active_session");
     onValue(sessionPointerRef, (snapshot) => {
       const sessionVal = snapshot.val();
-      if (!sessionVal) { set(sessionPointerRef, "round_init"); return; }
+      // Once the rules are live only an admin can create this; that's fine, it already exists.
+      if (!sessionVal) { set(sessionPointerRef, "round_init").catch(() => { }); return; }
       if (sessionVal === currentSession) return;
 
       // Detach the old round's listener so a stale round can't overwrite the new one.
@@ -2145,10 +2790,98 @@
       });
     });
 
+    // ---------- Identity & admin ----------
+    function watchAdmin() {
+      if (unsubscribeAdmin) unsubscribeAdmin();
+      unsubscribeAdmin = onValue(ref(db, `admins/${userId}`), (snap) => {
+        isAdmin = snap.exists();
+        applyAdminVisibility();
+      }, () => {
+        isAdmin = false;
+        applyAdminVisibility();
+      });
+    }
+
+    function settleIdentity(id) {
+      userId = id;
+      authSettled = true;
+      watchAdmin();
+      updateVoteUI();
+    }
+
+    // Anonymous sign-in gives every visitor an invisible, stable ID the database rules can check.
+    // If it isn't enabled in the Firebase console yet, fall back to the old local voter id.
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        settleIdentity(user.uid);
+      } else {
+        signInAnonymously(auth).catch((err) => {
+          console.info("[vault] Anonymous sign-in unavailable, using a local voter id:", err?.code || err);
+          if (!auth.currentUser) settleIdentity(localVoterId);
+          // Admins need to know: publishing database.rules.json now would block all voting.
+          if (adminLink) setTimeout(() => showToast(t().auth_missing), 1500);
+        });
+      }
+    });
+
+    async function claimAdmin(pin) {
+      if (!pin) return false;
+      let rulesLive = false;
+      let expected = DEFAULT_ADMIN_PIN;
+      try {
+        const snap = await get(ref(db, "config/adminPin"));
+        if (snap.exists()) expected = String(snap.val());
+      } catch (e) {
+        rulesLive = true; // config is unreadable once the rules are published
+      }
+
+      if (!rulesLive) {
+        if (pin !== expected) return false;
+        isAdmin = true;
+        applyAdminVisibility();
+        set(ref(db, `admins/${userId}`), pin).catch(() => { });
+        return true;
+      }
+
+      // Rules are live: Firebase itself checks the PIN when we try to register as admin.
+      if (!auth.currentUser) return false;
+      const attempts = /^\d+$/.test(pin) ? [pin, Number(pin)] : [pin];
+      for (const value of attempts) {
+        try {
+          await set(ref(db, `admins/${userId}`), value);
+          isAdmin = true;
+          applyAdminVisibility();
+          return true;
+        } catch (e) { }
+      }
+      return false;
+    }
+
+    async function ensureAdmin() {
+      if (isAdmin) return true;
+      const pin = prompt(t().admin_pin);
+      if (pin === null) return false;
+      const ok = await claimAdmin(pin.trim());
+      if (!ok) showToast(t().wrong_pin);
+      return ok;
+    }
+
     function handleVoteClick(movieId, button) {
       if (isWinnerPhase()) return;
-      if (!currentSession) { showToast(t().still_connecting); return; }
+      if (!currentSession || !authSettled) { showToast(t().still_connecting); return; }
       const isPicked = myBallot()[movieId] === true;
+      const limit = maxPicks();
+
+      if (!isPicked && limit > 0 && myPickCount() >= limit) {
+        if (button) {
+          button.classList.remove("shake");
+          void button.offsetWidth;
+          button.classList.add("shake");
+        }
+        showToast(t().limit_reached(limit));
+        return;
+      }
+
       if (button) {
         button.classList.remove("pop");
         void button.offsetWidth;
@@ -2158,17 +2891,10 @@
         .catch(() => showToast(t().write_failed));
     }
 
-    function askForPin() {
-      const pin = prompt(t().admin_pin);
-      if (pin === null) return false;
-      if (pin !== ADMIN_PIN) { showToast(t().wrong_pin); return false; }
-      return true;
-    }
-
-    adminDecideBtn.addEventListener("click", () => {
+    adminDecideBtn.addEventListener("click", async () => {
       if (!currentSession) { showToast(t().still_connecting); return; }
-      if (!askForPin()) return;
-      const sessionRef = ref(db, `sessions/${currentSession}`);
+      if (!(await ensureAdmin())) return;
+      const session = currentSession;
 
       if (!isWinnerPhase()) {
         const tally = computeTally();
@@ -2179,23 +2905,38 @@
         const tops = nominated.filter(id => tally[id] === maxVotes);
         const winnerId = tops[Math.floor(Math.random() * tops.length)];
 
-        // Single atomic write so other devices never see a winner without the phase change.
-        update(sessionRef, { winner: { id: winnerId, votes: maxVotes, wasTie: tops.length > 1 }, phase: "winner_declared" })
-          .catch(() => showToast(t().write_failed));
+        // One atomic write: winner, phase change and the history log entry land together.
+        update(ref(db), {
+          [`sessions/${session}/winner`]: { id: winnerId, votes: maxVotes, wasTie: tops.length > 1, tied: tops, decidedAt: serverTimestamp() },
+          [`sessions/${session}/phase`]: "winner_declared",
+          [`history/${session}`]: { id: winnerId, votes: maxVotes, at: serverTimestamp() }
+        }).catch(() => showToast(t().write_failed));
       } else {
-        update(sessionRef, { phase: "nominations", winner: null })
-          .catch(() => showToast(t().write_failed));
+        update(ref(db), {
+          [`sessions/${session}/phase`]: "nominations",
+          [`sessions/${session}/winner`]: null,
+          [`history/${session}`]: null
+        }).catch(() => showToast(t().write_failed));
       }
     });
 
-    adminResetBtn.addEventListener("click", () => {
-      if (!askForPin()) return;
+    adminResetBtn.addEventListener("click", async () => {
+      if (!(await ensureAdmin())) return;
       set(sessionPointerRef, `round_${Date.now()}`)
         .then(() => showToast(t().reset_done))
         .catch(() => showToast(t().write_failed));
     });
 
+    maxPicksSelect.addEventListener("change", async () => {
+      const value = Number(maxPicksSelect.value);
+      if (!(await ensureAdmin())) { syncPicksSelect(); return; }
+      set(ref(db, "settings/maxPicks"), value)
+        .then(() => showToast(t().picks_saved(value)))
+        .catch(() => { syncPicksSelect(); showToast(t().write_failed); });
+    });
+
     // First paint right away — votes fill in as soon as Firebase answers.
+    applyAdminVisibility();
     applyLanguage();
   </script>
 </body>

@@ -1,0 +1,62 @@
+{
+  "rules": {
+    "active_session": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".validate": "newData.isString() && newData.val().length < 64"
+    },
+
+    "sessions": {
+      ".read": true,
+      "$session": {
+        "phase": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+          ".validate": "newData.val() === 'nominations' || newData.val() === 'winner_declared'"
+        },
+        "winner": {
+          ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+          ".validate": "newData.hasChildren(['id', 'votes'])"
+        },
+        "ballots": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('sessions').child($session).child('phase').val() !== 'winner_declared'",
+            ".validate": "newData.numChildren() < data.numChildren() || (!root.child('settings/maxPicks').exists() && newData.numChildren() <= 3) || (root.child('settings/maxPicks').exists() && (root.child('settings/maxPicks').val() === 0 || newData.numChildren() <= root.child('settings/maxPicks').val()))",
+            "$movie": {
+              ".validate": "newData.val() === true"
+            }
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    "history": {
+      ".read": true,
+      "$session": {
+        ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+        ".validate": "newData.hasChildren(['id', 'at'])"
+      }
+    },
+
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+      "maxPicks": {
+        ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 50"
+      },
+      "$other": {
+        ".validate": false
+      }
+    },
+
+    "admins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && root.child('config/adminPin').exists()",
+        ".validate": "newData.val() === root.child('config/adminPin').val()"
+      }
+    }
+  }
+}
