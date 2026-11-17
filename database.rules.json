@@ -20,7 +20,6 @@
         "ballots": {
           "$uid": {
             ".write": "auth != null && auth.uid === $uid && root.child('sessions').child($session).child('phase').val() !== 'winner_declared'",
-            ".validate": "newData.numChildren() < data.numChildren() || (!root.child('settings/maxPicks').exists() && newData.numChildren() <= 3) || (root.child('settings/maxPicks').exists() && (root.child('settings/maxPicks').val() === 0 || newData.numChildren() <= root.child('settings/maxPicks').val()))",
             "$movie": {
               ".validate": "newData.val() === true"
             }

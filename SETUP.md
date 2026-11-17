@@ -60,6 +60,10 @@ The default is **3 picks per person**. Admins can change it from the 🎟 menu (
 unlimited). If someone already has more picks than the new limit, they can still remove picks;
 they just can't add new ones until they're under the limit.
 
+The limit is enforced by the site itself. Firebase rules can't count how many picks someone
+has, so the database doesn't double-check it: someone using the browser console could add extra
+picks, but only to their own ballot.
+
 ## Watched history
 
 Every time a winner is picked, it's logged under `history/<round>` with the date. Choosing
