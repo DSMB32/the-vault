@@ -18,7 +18,8 @@ Do them **in this order**. The site keeps working the whole time.
 
 1. **Turn on anonymous sign-in.**
    [Firebase console](https://console.firebase.google.com/) → project **the-vault-c719f** →
-   **Authentication** → **Sign-in method** → **Anonymous** → **Enable** → Save.
+   **Authentication** → **Get started** (only shown the first time) → **Sign-in method** tab →
+   **Anonymous** → **Enable** → Save.
    Visitors get an invisible ID; they don't have to log in.
 
    **Check it worked before going on:** open your live site with `?admin` at the end of the link.
