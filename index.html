@@ -767,6 +767,46 @@
       color: #fff;
     }
 
+    /* COLLECTION SECTIONS (e.g. MCU phases) */
+    .subtabs {
+      max-width: 1200px;
+      margin: 1.25rem auto 0;
+      padding: 0 var(--gutter);
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .subtabs .chip {
+      font-size: 0.82rem;
+      padding: 0.45rem 1rem;
+    }
+
+    .subtabs .chip .chip-count {
+      opacity: 0.55;
+      margin-left: 0.35rem;
+      font-weight: 600;
+    }
+
+    .subtabs .chip.chip-doomsday[aria-pressed="true"] {
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.6);
+      color: #bbf7d0;
+    }
+
+    .subtab-note {
+      max-width: 1200px;
+      margin: 0.9rem auto 0;
+      padding: 0 var(--gutter);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .subtab-note b {
+      color: #fff;
+    }
+
     /* MOVIE CATALOG GRID */
     .catalog {
       max-width: 1200px;
@@ -1282,6 +1322,17 @@
         display: none;
       }
 
+      .subtabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        margin-top: 1rem;
+      }
+
+      .subtabs::-webkit-scrollbar {
+        display: none;
+      }
+
       .saga-logo-text {
         font-size: 0.95rem;
       }
@@ -1508,6 +1559,8 @@
     <div class="filters" id="filters" role="group" aria-label="Filters"></div>
     <div class="sagas-grid" id="sagasGrid"></div>
     <div class="catalog-container" id="catalogContainer" hidden>
+      <div class="subtabs" id="subtabs" role="group" aria-label="Sections" hidden></div>
+      <p class="subtab-note" id="subtabNote" hidden></p>
       <div class="catalog" id="catalog"></div>
     </div>
   </main>
@@ -1591,6 +1644,12 @@
         f_dual: "🇪🇸 Spanish audio",
         f_unwatched: "Not watched yet",
         f_clear: "✕ Clear",
+        sec_doomsday: "🔥 Road to Doomsday",
+        sec_phase: (n) => `Phase ${n}`,
+        sec_all: "All",
+        doomsday_note: (days) => days > 0
+          ? `The must-watch list before <b>Avengers: Doomsday</b> hits theaters Dec 18 · <b>${days} ${days === 1 ? "day" : "days"} to go</b>`
+          : `The must-watch list for <b>Avengers: Doomsday</b>, now in theaters`,
         watched: "✓ Watched",
         watched_on: (d) => `Watched ${d}`,
         seasons: (n) => `${n} ${n === 1 ? "season" : "seasons"}`,
@@ -1653,6 +1712,12 @@
         f_dual: "🇪🇸 Audio en español",
         f_unwatched: "No vistas",
         f_clear: "✕ Limpiar",
+        sec_doomsday: "🔥 Camino a Doomsday",
+        sec_phase: (n) => `Fase ${n}`,
+        sec_all: "Todas",
+        doomsday_note: (days) => days > 0
+          ? `Lo que tienes que ver antes de que <b>Avengers: Doomsday</b> llegue a cines el 18 de diciembre · <b>${days === 1 ? "falta 1 día" : `faltan ${days} días`}</b>`
+          : `Lo que tienes que ver para <b>Avengers: Doomsday</b>, ya en cines`,
         watched: "✓ Vista",
         watched_on: (d) => `Vista el ${d}`,
         seasons: (n) => `${n} ${n === 1 ? "temporada" : "temporadas"}`,
@@ -1718,38 +1783,38 @@
       { title: "Oppenheimer", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Christopher Nolan" },
       { title: "The Odyssey", year: 2026, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Christopher Nolan" },
 
-      { title: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "The Incredible Hulk", year: 2008, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", audioTags: ["EN", "ES"] },
-      { title: "Iron Man 2", year: 2010, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Marvel Cinematic Universe" },
-      { title: "Thor", year: 2011, tag: "Scope", audio: "5.1 Surround (DTS)", saga: "Marvel Cinematic Universe", audioTags: ["EN", "ES"] },
-      { title: "Captain America: The First Avenger", year: 2011, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", audioTags: ["EN", "ES"] },
-      { title: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Marvel Cinematic Universe" },
-      { title: "Captain America: The Winter Soldier", year: 2014, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", audioTags: ["EN", "ES"] },
-      { title: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Avengers: Age of Ultron", year: 2015, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", audioTags: ["EN", "ES"] },
-      { title: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Marvel Cinematic Universe" },
-      { title: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", audioTags: ["EN", "ES"] },
-      { title: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", audioTags: ["EN", "ES"] },
-      { title: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround", saga: "Marvel Cinematic Universe" },
-      { title: "The Fantastic Four: First Steps", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe" },
-      { title: "Avengers Endgame: Encore", year: 2026, tag: "HAR", audio: "5.1 Dolby Atmos Surround (IMAX)", saga: "Marvel Cinematic Universe", poster: "https://m.media-amazon.com/images/M/MV5BMWEyNDM2ZmQtMmFkNi00MTQ1LTk1MjItMzdlZGJlYmIyYzZlXkEyXkFqcGc@._V1_.jpg", audioTags: ["EN", "ES"] },
+      { title: "Iron Man", year: 2008, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 1 },
+      { title: "The Incredible Hulk", year: 2008, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", phase: 1, audioTags: ["EN", "ES"] },
+      { title: "Iron Man 2", year: 2010, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Marvel Cinematic Universe", phase: 1 },
+      { title: "Thor", year: 2011, tag: "Scope", audio: "5.1 Surround (DTS)", saga: "Marvel Cinematic Universe", phase: 1, audioTags: ["EN", "ES"] },
+      { title: "Captain America: The First Avenger", year: 2011, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", phase: 1, audioTags: ["EN", "ES"] },
+      { title: "The Avengers", year: 2012, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Marvel Cinematic Universe", phase: 1 },
+      { title: "Captain America: The Winter Soldier", year: 2014, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", phase: 2, audioTags: ["EN", "ES"] },
+      { title: "Guardians of the Galaxy", year: 2014, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 2 },
+      { title: "Avengers: Age of Ultron", year: 2015, tag: "Scope", audio: "5.1 Surround", saga: "Marvel Cinematic Universe", phase: 2, audioTags: ["EN", "ES"] },
+      { title: "Ant-Man", year: 2015, tag: "HAR", audio: "7.1 Surround (Native)", saga: "Marvel Cinematic Universe", phase: 2 },
+      { title: "Captain America: Civil War", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3 },
+      { title: "Doctor Strange", year: 2016, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3 },
+      { title: "Guardians of the Galaxy Vol. 2", year: 2017, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3 },
+      { title: "Thor: Ragnarok", year: 2017, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3 },
+      { title: "Ant-Man and the Wasp", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3 },
+      { title: "Avengers: Infinity War", year: 2018, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3, audioTags: ["EN", "ES"] },
+      { title: "Black Panther", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3 },
+      { title: "Captain Marvel", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3 },
+      { title: "Avengers: Endgame", year: 2019, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3, audioTags: ["EN", "ES"] },
+      { title: "Black Widow", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 4 },
+      { title: "Eternals", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 4 },
+      { title: "Shang-Chi and the Legend of the Ten Rings", year: 2021, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 4 },
+      { title: "Black Panther: Wakanda Forever", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 4 },
+      { title: "Doctor Strange in the Multiverse of Madness", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 4 },
+      { title: "Thor: Love and Thunder", year: 2022, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 4 },
+      { title: "Ant-Man and the Wasp: Quantumania", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 5 },
+      { title: "Guardians of the Galaxy Vol. 3", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 5 },
+      { title: "The Marvels", year: 2023, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 5 },
+      { title: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 5 },
+      { title: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround", saga: "Marvel Cinematic Universe", phase: 5 },
+      { title: "The Fantastic Four: First Steps", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 6 },
+      { title: "Avengers Endgame: Encore", year: 2026, tag: "HAR", audio: "5.1 Dolby Atmos Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3, poster: "https://m.media-amazon.com/images/M/MV5BMWEyNDM2ZmQtMmFkNi00MTQ1LTk1MjItMzdlZGJlYmIyYzZlXkEyXkFqcGc@._V1_.jpg", audioTags: ["EN", "ES"] },
 
       { title: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Spider-Man" },
       { title: "Spider-Man 2", year: 2004, tag: "Scope", audio: "5.1 Surround", saga: "Spider-Man" },
@@ -1808,13 +1873,12 @@
       { title: "The Matrix Reloaded", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Matrix" },
       { title: "The Matrix Revolutions", year: 2003, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Matrix" },
 
-      { title: "The Lord of the Rings: The Fellowship of the Ring", year: 2001, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Lord of the Rings" },
-      { title: "The Lord of the Rings: The Two Towers", id: "the_lord_of_the_rings_the_two_towers_extended_2002", year: 2002, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Lord of the Rings" },
-      { title: "The Lord of the Rings: The Return of the King", id: "the_lord_of_the_rings_the_return_of_the_king_extended_2003", year: 2003, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Lord of the Rings" },
-
-      { title: "The Hobbit: An Unexpected Journey", year: 2012, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Hobbit" },
-      { title: "The Hobbit: The Desolation of Smaug", year: 2013, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "The Hobbit" },
-      { title: "The Hobbit: The Battle of the Five Armies", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "The Hobbit" },
+      { title: "The Lord of the Rings: The Fellowship of the Ring", year: 2001, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Middle-earth" },
+      { title: "The Lord of the Rings: The Two Towers", id: "the_lord_of_the_rings_the_two_towers_extended_2002", year: 2002, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "Middle-earth" },
+      { title: "The Lord of the Rings: The Return of the King", id: "the_lord_of_the_rings_the_return_of_the_king_extended_2003", year: 2003, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "Middle-earth" },
+      { title: "The Hobbit: An Unexpected Journey", year: 2012, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "Middle-earth" },
+      { title: "The Hobbit: The Desolation of Smaug", year: 2013, tag: "Scope", audio: "7.1 Surround (Extended)", saga: "Middle-earth" },
+      { title: "The Hobbit: The Battle of the Five Armies", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Middle-earth" },
 
       { title: "The Maze Runner", year: 2014, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Maze Runner", audioTags: ["EN", "ES"] },
       { title: "Maze Runner: The Scorch Trials", year: 2015, tag: "HAR", audio: "5.1 Surround (Open Matte)", saga: "Maze Runner", audioTags: ["EN", "ES"] },
@@ -1831,6 +1895,7 @@
       { title: "Top Gun: Maverick", year: 2022, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Top Gun" },
 
       { title: "Mission: Impossible", year: 1996, tag: "Scope", audio: "5.1 Surround (Remastered)", saga: "Mission: Impossible", audioTags: ["EN", "ES"] },
+      { title: "Mission: Impossible 2", year: 2000, tag: "Scope", audio: "5.1 Surround (Remastered)", saga: "Mission: Impossible", audioTags: ["EN", "ES"] },
       { title: "Mission: Impossible - Ghost Protocol", year: 2011, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Mission: Impossible" },
       { title: "Mission: Impossible - Fallout", year: 2018, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Mission: Impossible" },
       { title: "Mission: Impossible - The Final Reckoning", year: 2025, tag: "HAR", audio: "7.1 Surround (IMAX)", saga: "Mission: Impossible" },
@@ -1899,8 +1964,7 @@
       "Terminator": "url('./assets/Terminator Franchise.jpg')",
       "The Hunger Games": "url('./assets/The Hunger Games.jpg')",
       "The Matrix": "url('./assets/The Matrix Trilogy.jpg')",
-      "The Lord of the Rings": "url('./assets/the lord of the rings.jpg')",
-      "The Hobbit": "url('./assets/The Hobbit.jpg')",
+      "Middle-earth": "url('./assets/the lord of the rings.jpg')",
       "Maze Runner": "url('./assets/Maze Runner.jpg')",
       "A Quiet Place": "url('./assets/A Quiet Place.jpg')",
       "Dune": "url('./assets/Dune.jpg')",
@@ -1937,6 +2001,56 @@
     movies.forEach(m => {
       (sagasMap[m.saga] ||= []).push(m);
     });
+
+    // Sections inside a collection, shown as tabs above its movies. A section can list
+    // movies by id (in watch order, even ones from other collections) or filter its own.
+    const DOOMSDAY_DATE = new Date(2026, 11, 18);
+    const daysUntil = (date) => Math.ceil((date - Date.now()) / 86400000);
+    const SAGA_SECTIONS = {
+      "Marvel Cinematic Universe": [
+        {
+          key: "doomsday",
+          label: (tr) => tr.sec_doomsday,
+          cls: "chip-doomsday",
+          numbered: true,
+          note: (tr) => tr.doomsday_note(daysUntil(DOOMSDAY_DATE)),
+          ids: [
+            "x2_x_men_united_2003",
+            "avengers_infinity_war_2018",
+            "avengers_endgame_2019",
+            "spider_man_no_way_home_2021",
+            "shang_chi_and_the_legend_of_the_ten_rings_2021",
+            "doctor_strange_in_the_multiverse_of_madness_2022",
+            "thor_love_and_thunder_2022",
+            "black_panther_wakanda_forever_2022",
+            "ant_man_and_the_wasp_quantumania_2023",
+            "deadpool_wolverine_2024",
+            "captain_america_brave_new_world_2025",
+            "thunderbolts_2025",
+            "the_fantastic_four_first_steps_2025",
+            "spider_man_brand_new_day_2026"
+          ]
+        },
+        ...[1, 2, 3, 4, 5, 6].map(n => ({ key: `phase${n}`, label: (tr) => tr.sec_phase(n), filter: (m) => m.phase === n })),
+        { key: "all", label: (tr) => tr.sec_all }
+      ]
+    };
+    Object.values(SAGA_SECTIONS).flat().forEach(sec => {
+      sec.ids?.filter(id => !movieById[id]).forEach(id => console.warn(`Section "${sec.key}" lists unknown movie id: ${id}`));
+    });
+    const sectionBySaga = {};
+
+    function sectionList(saga, sec) {
+      if (sec.ids) return sec.ids.map(id => movieById[id]).filter(Boolean);
+      const all = sagasMap[saga] || [];
+      return sec.filter ? all.filter(sec.filter) : all;
+    }
+
+    function currentSection(saga) {
+      const sections = SAGA_SECTIONS[saga];
+      if (!sections) return null;
+      return sections.find(sec => sec.key === sectionBySaga[saga]) || sections[0];
+    }
 
     // ---------- State ----------
     let currentSession = null;
@@ -1975,6 +2089,8 @@
     const sagasGrid = $("sagasGrid");
     const catalogContainer = $("catalogContainer");
     const catalogEl = $("catalog");
+    const subtabsEl = $("subtabs");
+    const subtabNote = $("subtabNote");
     const filtersEl = $("filters");
     const backBtn = $("backBtn");
     const historyBtn = $("historyBtn");
@@ -2261,6 +2377,19 @@
         </article>`;
     }
 
+    function renderSubtabs(saga) {
+      const tr = t();
+      const sections = saga ? SAGA_SECTIONS[saga] : null;
+      const active = currentSection(saga);
+      subtabsEl.hidden = !sections;
+      subtabNote.hidden = !active?.note;
+      if (!sections) return;
+      subtabsEl.innerHTML = sections.map(sec => `
+        <button class="chip ${sec.cls || ""}" data-section="${sec.key}" aria-pressed="${sec === active}">${esc(sec.label(tr))}<span class="chip-count">${sectionList(saga, sec).length}</span></button>`
+      ).join("");
+      if (active.note) subtabNote.innerHTML = active.note(tr);
+    }
+
     function renderCatalog(list, labelFor, emptyText) {
       if (!list.length) {
         catalogEl.innerHTML = `<p class="empty-state">${emptyText}</p>`;
@@ -2305,15 +2434,21 @@
       historyBtn.classList.toggle("is-active", mode === "history");
       historyBtn.setAttribute("aria-pressed", String(mode === "history"));
       renderFilters();
+      if (mode !== "movies") renderSubtabs(null);
 
       if (mode === "sagas") {
         renderSagas();
         setTitle(tr.collections, Object.keys(sagasMap).length);
         if (animate) replayFade(sagasGrid);
       } else if (mode === "movies") {
-        const list = sagasMap[activeSaga] || [];
-        renderCatalog(list, null, "");
-        setTitle(activeSaga, list.length);
+        const section = currentSection(activeSaga);
+        const list = section ? sectionList(activeSaga, section) : (sagasMap[activeSaga] || []);
+        const numbered = section?.numbered
+          ? (m) => [`#${list.indexOf(m) + 1}${m.saga !== activeSaga ? ` · ${m.saga}` : ""}`, ""]
+          : null;
+        renderSubtabs(activeSaga);
+        renderCatalog(list, numbered, "");
+        setTitle(activeSaga, (sagasMap[activeSaga] || []).length);
         if (animate) replayFade(catalogContainer);
       } else if (mode === "history") {
         const list = historyList();
@@ -2523,6 +2658,10 @@
     function focusMovie(movieId) {
       const movie = movieById[movieId];
       if (!movie) return;
+      const sections = SAGA_SECTIONS[movie.saga];
+      if (sections && !sectionList(movie.saga, currentSection(movie.saga)).includes(movie)) {
+        sectionBySaga[movie.saga] = (sections.find(sec => sec.filter?.(movie)) || sections.at(-1)).key;
+      }
       openSaga(movie.saga);
       requestAnimationFrame(() => {
         const card = catalogEl.querySelector(`.card[data-id="${movieId}"]`);
@@ -2587,6 +2726,15 @@
       }
       renderView(!wasSearching && currentMode() === "search");
       filtersEl.querySelector(`[data-filter="${key}"]`)?.focus();
+    });
+
+    subtabsEl.addEventListener("click", (e) => {
+      const chip = e.target.closest("[data-section]");
+      if (!chip || !activeSaga) return;
+      sectionBySaga[activeSaga] = chip.dataset.section;
+      renderView(false);
+      replayFade(catalogEl);
+      subtabsEl.querySelector(`[data-section="${chip.dataset.section}"]`)?.focus();
     });
 
     leaderMoreBtn.addEventListener("click", () => {
