@@ -1109,6 +1109,132 @@
       z-index: 10;
     }
 
+    .badge-float {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .fmt-icon {
+      width: 15px;
+      height: 9px;
+      margin-right: 5px;
+      flex-shrink: 0;
+    }
+
+    .chip .fmt-icon {
+      vertical-align: -1px;
+      margin-right: 6px;
+    }
+
+    .chip[data-filter="har"] .fmt-icon {
+      color: var(--accent-har);
+    }
+
+    .chip[data-filter="scope"] .fmt-icon {
+      color: var(--accent-scope);
+    }
+
+    .fmt-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .fmt-big {
+      width: 44px;
+      height: 25px;
+      flex-shrink: 0;
+    }
+
+    .fmt-row.is-har .fmt-big,
+    .legend-har .legend-icon {
+      color: var(--accent-har);
+    }
+
+    .fmt-row.is-scope .fmt-big,
+    .legend-scope .legend-icon {
+      color: var(--accent-scope);
+    }
+
+    .format-legend {
+      max-width: 1200px;
+      margin: 1rem auto 0;
+      padding: 0 var(--gutter);
+    }
+
+    .legend-box {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem 1.6rem;
+      padding: 0.9rem 1.1rem;
+      border-radius: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+    }
+
+    .legend-title {
+      flex-basis: 100%;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.8rem;
+      line-height: 1.3;
+    }
+
+    .legend-item b {
+      display: block;
+      color: #fff;
+    }
+
+    .legend-item span {
+      color: var(--text-dim);
+    }
+
+    .legend-icon {
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .legend-key {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 26px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.82);
+      color: #fff !important;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .legend-close {
+      margin-left: auto;
+      border: 1px solid var(--card-border);
+      background: var(--surface);
+      color: #fff;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .legend-close:hover,
+    .legend-close:focus-visible {
+      border-color: var(--card-hover-border);
+    }
+
     .badge-har {
       background: rgba(245, 158, 11, 0.92);
       color: #000;
@@ -1215,7 +1341,7 @@
     .back-overview {
       color: #cbd5e1;
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       cursor: pointer;
@@ -1670,6 +1796,20 @@
         margin-top: 1rem;
       }
 
+      .legend-box {
+        gap: 0.7rem;
+        padding: 0.8rem 0.9rem;
+      }
+
+      .legend-item {
+        flex-basis: 100%;
+      }
+
+      .legend-close {
+        margin-left: 0;
+        width: 100%;
+      }
+
       .shelf-title {
         font-size: 1.05rem;
       }
@@ -1946,6 +2086,7 @@
 
   <main id="content">
     <div class="filters" id="filters" role="group" aria-label="Filters"></div>
+    <div class="format-legend" id="formatLegend" hidden></div>
     <div class="sagas-grid" id="sagasGrid"></div>
     <div class="catalog-container" id="catalogContainer" hidden>
       <div class="hub" id="hub" hidden></div>
@@ -2062,13 +2203,15 @@
         specs_loading: "Loading details…",
         specs_error: "Couldn't load the details. Check your connection and try again.",
         sp_format: "Format", sp_audio: "Audio", sp_languages: "Languages", sp_runtime: "Runtime",
-        sp_seasons: "Seasons", sp_episodes: "episodes", sp_rating: "Rating", sp_votes: "votes",
-        sp_released: "Released", sp_genres: "Genres", sp_director: "Director", sp_creator: "Created by",
-        sp_starring: "Starring", sp_studio: "Studio", sp_budget: "Budget", sp_boxoffice: "Box office",
-        sp_collection: "Collection",
+        sp_seasons: "Seasons", sp_episodes: "episodes", sp_released: "Released",
         lang_names: { EN: "English", ES: "Spanish" },
-        har_desc: "Taller picture (IMAX / open matte) that fills more of a 16:9 TV",
-        scope_desc: "2.39:1 widescreen, with black bars on a 16:9 TV",
+        har_short: "Fills your whole TV",
+        scope_short: "Widescreen, black bars top & bottom",
+        picture_names: { "IMAX": "IMAX Expanded", "Open Matte": "Open Matte · extra picture top & bottom", "Native": "Native aspect ratio", "1.33:1 Full IMAX": "Full IMAX 1.33:1" },
+        edition_names: { "Extended": "Extended Edition", "Remastered": "Remastered", "Special Edition": "Special Edition" },
+        legend_title: "How to read the cards",
+        legend_specs: "Tap it on any movie for details",
+        legend_close: "Got it",
         watched: "✓ Watched",
         watched_on: (d) => `Watched ${d}`,
         seasons: (n) => `${n} ${n === 1 ? "season" : "seasons"}`,
@@ -2160,13 +2303,15 @@
         specs_loading: "Cargando detalles…",
         specs_error: "No se pudieron cargar los detalles. Revisa tu conexión e intenta de nuevo.",
         sp_format: "Formato", sp_audio: "Audio", sp_languages: "Idiomas", sp_runtime: "Duración",
-        sp_seasons: "Temporadas", sp_episodes: "episodios", sp_rating: "Calificación", sp_votes: "votos",
-        sp_released: "Estreno", sp_genres: "Géneros", sp_director: "Dirección", sp_creator: "Creada por",
-        sp_starring: "Reparto", sp_studio: "Estudio", sp_budget: "Presupuesto", sp_boxoffice: "Taquilla",
-        sp_collection: "Colección",
+        sp_seasons: "Temporadas", sp_episodes: "episodios", sp_released: "Estreno",
         lang_names: { EN: "Inglés", ES: "Español" },
-        har_desc: "Imagen más alta (IMAX / open matte) que llena más una TV 16:9",
-        scope_desc: "Pantalla ancha 2.39:1, con barras negras en una TV 16:9",
+        har_short: "Llena toda tu TV",
+        scope_short: "Pantalla ancha, barras negras arriba y abajo",
+        picture_names: { "IMAX": "IMAX ampliado", "Open Matte": "Open Matte · más imagen arriba y abajo", "Native": "Relación de aspecto original", "1.33:1 Full IMAX": "IMAX completo 1.33:1" },
+        edition_names: { "Extended": "Edición extendida", "Remastered": "Remasterizada", "Special Edition": "Edición especial" },
+        legend_title: "Cómo leer las tarjetas",
+        legend_specs: "Tócalo en cualquier película para ver detalles",
+        legend_close: "Entendido",
         watched: "✓ Vista",
         watched_on: (d) => `Vista el ${d}`,
         seasons: (n) => `${n} ${n === 1 ? "temporada" : "temporadas"}`,
@@ -2263,7 +2408,7 @@
       { title: "Captain America: Brave New World", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 5 },
       { title: "Thunderbolts*", year: 2025, tag: "Scope", audio: "7.1 Surround", saga: "Marvel Cinematic Universe", phase: 5 },
       { title: "The Fantastic Four: First Steps", year: 2025, tag: "HAR", audio: "5.1 Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 6 },
-      { title: "Avengers Endgame: Encore", year: 2026, tag: "HAR", audio: "5.1 Dolby Atmos Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 3, poster: "https://m.media-amazon.com/images/M/MV5BMWEyNDM2ZmQtMmFkNi00MTQ1LTk1MjItMzdlZGJlYmIyYzZlXkEyXkFqcGc@._V1_.jpg", audioTags: ["EN", "ES"] },
+      { title: "Avengers Endgame: Encore", year: 2026, tag: "HAR", audio: "5.1 Dolby Atmos Surround (IMAX)", saga: "Marvel Cinematic Universe", phase: 6, poster: "https://m.media-amazon.com/images/M/MV5BMWEyNDM2ZmQtMmFkNi00MTQ1LTk1MjItMzdlZGJlYmIyYzZlXkEyXkFqcGc@._V1_.jpg", audioTags: ["EN", "ES"] },
 
       { title: "Spider-Man", year: 2002, tag: "HAR", audio: "5.1 Surround (Native)", saga: "Spider-Man" },
       { title: "Spider-Man 2", year: 2004, tag: "Scope", audio: "5.1 Surround", saga: "Spider-Man" },
@@ -2428,6 +2573,14 @@
       "Standalone Films": "url('https://image.tmdb.org/t/p/w500/aDb548BOkFfI4nFm0kx8A3Ezh7H.jpg')"
     };
 
+    // A little TV: HAR fills it, Scope leaves black bars top and bottom.
+    function formatIcon(tag, cls = "fmt-icon") {
+      const picture = tag === "Scope"
+        ? `<rect x="3.2" y="5.6" width="25.6" height="6.8" rx="0.6" fill="currentColor"/>`
+        : `<rect x="3.2" y="3.2" width="25.6" height="11.6" rx="0.6" fill="currentColor"/>`;
+      return `<svg class="${cls}" viewBox="0 0 32 18" aria-hidden="true" focusable="false"><rect x="1" y="1" width="30" height="16" rx="2.5" fill="rgba(0,0,0,0.6)" stroke="currentColor" stroke-width="1.6"/>${picture}</svg>`;
+    }
+
     const FILTERS = {
       har: { label: "f_har", test: (m) => m.tag === "HAR", excludes: "scope" },
       scope: { label: "f_scope", test: (m) => m.tag === "Scope", excludes: "har" },
@@ -2439,8 +2592,24 @@
     const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_");
     const normalize = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
+    // The audio field also carries picture and edition notes, e.g. "5.1 Surround (IMAX)".
+    // Split them so cards show just the sound, and the specs show the rest under Format.
+    const PICTURE_NOTES = ["IMAX", "Open Matte", "Native", "1.33:1 Full IMAX"];
+    const EDITION_NOTES = ["Extended", "Remastered", "Special Edition"];
+    function parseAudio(audio) {
+      const match = audio.match(/^(.*?)\s*\(([^)]*)\)$/);
+      const notes = match ? match[2].split(",").map(n => n.trim()) : [];
+      const other = notes.filter(n => !PICTURE_NOTES.includes(n) && !EDITION_NOTES.includes(n));
+      return {
+        sound: (match ? match[1] : audio) + (other.length ? ` (${other.join(", ")})` : ""),
+        picture: notes.find(n => PICTURE_NOTES.includes(n)) || null,
+        edition: notes.find(n => EDITION_NOTES.includes(n)) || null
+      };
+    }
+
     const movies = rawMovies.map(m => ({
       ...m,
+      ...parseAudio(m.audio),
       id: m.id || slug(`${m.title}_${m.year}`),
       haystack: normalize(`${m.title} ${m.saga} ${m.year}`)
     }));
@@ -2571,6 +2740,8 @@
     const hubEl = $("hub");
     const sectionNote = $("sectionNote");
     const filtersEl = $("filters");
+    const legendEl = $("formatLegend");
+    const LEGEND_KEY = "vault_legend_dismissed";
     const backBtn = $("backBtn");
     const historyBtn = $("historyBtn");
     const collectionTitle = $("currentCollectionTitle");
@@ -2873,10 +3044,30 @@
       sagasGrid.querySelectorAll(".shelf").forEach(updateShelfArrows);
     });
 
+    function renderLegend(show) {
+      const tr = t();
+      legendEl.hidden = !show || store.get(LEGEND_KEY) === "1";
+      if (legendEl.hidden) return;
+      legendEl.innerHTML = `
+        <div class="legend-box">
+          <p class="legend-title">${tr.legend_title}</p>
+          <div class="legend-item legend-har">${formatIcon("HAR", "legend-icon")}<div><b>HAR</b><span>${tr.har_short}</span></div></div>
+          <div class="legend-item legend-scope">${formatIcon("Scope", "legend-icon")}<div><b>Scope</b><span>${tr.scope_short}</span></div></div>
+          <div class="legend-item legend-specs"><span class="legend-key">ⓘ</span><div><b>${esc(tr.specs_btn.replace("ⓘ", "").trim())}</b><span>${tr.legend_specs}</span></div></div>
+          <button class="legend-close" type="button">${tr.legend_close}</button>
+        </div>`;
+    }
+
+    legendEl.addEventListener("click", (e) => {
+      if (!e.target.closest(".legend-close")) return;
+      store.set(LEGEND_KEY, "1");
+      legendEl.hidden = true;
+    });
+
     function renderFilters() {
       const tr = t();
       filtersEl.innerHTML = Object.entries(FILTERS).map(([key, f]) =>
-        `<button class="chip" data-filter="${key}" aria-pressed="${activeFilters.has(key)}">${tr[f.label]}</button>`
+        `<button class="chip" data-filter="${key}" aria-pressed="${activeFilters.has(key)}">${key === "har" ? formatIcon("HAR") : key === "scope" ? formatIcon("Scope") : ""}${tr[f.label]}</button>`
       ).join("") + (activeFilters.size ? `<button class="chip chip-clear" data-filter="clear">${tr.f_clear}</button>` : "");
     }
 
@@ -2892,7 +3083,7 @@
             <img src="${poster}" alt="" data-poster="${m.id}" class="poster-img" loading="lazy" decoding="async"
               onload="if (!this.src.startsWith('data:')) this.dataset.loaded = '1'">
             <span class="poster-fallback">${esc(m.title)}</span>
-            <span class="badge-float ${m.tag === "HAR" ? "badge-har" : "badge-scope"}">[${m.tag}]</span>
+            <span class="badge-float ${m.tag === "HAR" ? "badge-har" : "badge-scope"}">${formatIcon(m.tag)}${m.tag}</span>
             <span class="watched-badge" hidden></span>
             <span class="trailer-hint">${tr.trailer_hint}</span>
           </button>
@@ -2903,7 +3094,7 @@
               ${label ? `<div class="card-label ${labelClass}">${esc(label)}</div>` : ""}
               <h3 class="card-title">${esc(m.title)}</h3>
               <div class="card-meta">
-                <span>${m.year} • ${esc(m.audio)}</span>
+                <span>${m.year} • ${esc(m.sound)}</span>
                 ${m.audioTags ? `<span class="dual-pill">${m.audioTags.join(" / ")}</span>` : ""}
               </div>
               <div class="card-extra" data-extra="${m.id}" ${extra ? "" : "hidden"}>${extra}</div>
@@ -3009,7 +3200,7 @@
           if (!hit) return null;
           const tv = hit.type === "tv";
           const base = `${TMDB_API}/${hit.type}/${hit.id}?api_key=${TMDB_KEY}`;
-          const d = await tmdbFetch(`${base}&language=${lang}&append_to_response=credits`);
+          const d = await tmdbFetch(`${base}&language=${lang}`);
           if (!d || d.success === false) return null;
           const crew = d.credits?.crew || [];
           const spec = {
@@ -3055,32 +3246,26 @@
       const tr = t();
       const rows = [];
       const row = (label, value) => { if (value) rows.push(`<dt>${label}</dt><dd>${value}</dd>`); };
-      row(tr.sp_format, `<b>[${m.tag}]</b> <span class="dim">${m.tag === "HAR" ? tr.har_desc : tr.scope_desc}</span>`);
-      row(tr.sp_audio, esc(m.audio));
+      const notes = [m.picture && tr.picture_names[m.picture], m.edition && tr.edition_names[m.edition]].filter(Boolean).join(" · ");
+      row(tr.sp_format, `
+        <div class="fmt-row ${m.tag === "HAR" ? "is-har" : "is-scope"}">
+          ${formatIcon(m.tag, "fmt-big")}
+          <div><b>${m.tag}</b> · ${m.tag === "HAR" ? tr.har_short : tr.scope_short}${notes ? `<div class="dim">${esc(notes)}</div>` : ""}</div>
+        </div>`);
+      row(tr.sp_audio, esc(m.sound));
       row(tr.sp_languages, (m.audioTags || ["EN"]).map(code => tr.lang_names[code] || code).join(", "));
-      if (spec) {
-        row(spec.tv ? tr.sp_seasons : tr.sp_runtime, spec.tv
-          ? (spec.seasons ? `${spec.seasons}${spec.episodes ? ` · ${spec.episodes} ${tr.sp_episodes}` : ""}` : "")
-          : (spec.runtime ? formatRuntime(spec.runtime) : ""));
-        row(tr.sp_rating, spec.rating ? `★ ${spec.rating.toFixed(1)} <span class="dim">(${spec.votes.toLocaleString(uiLocale())} ${tr.sp_votes})</span>` : "");
-        row(tr.sp_released, spec.date ? formatLongDate(spec.date) : "");
-        row(tr.sp_genres, esc(spec.genres.join(", ")));
-        row(spec.tv ? tr.sp_creator : tr.sp_director, esc(spec.directors.join(", ")));
-        row(tr.sp_starring, esc(spec.cast.join(", ")));
-        row(tr.sp_studio, esc(spec.studios.join(", ")));
-        row(tr.sp_budget, spec.budget ? formatMoney(spec.budget) : "");
-        row(tr.sp_boxoffice, spec.revenue ? formatMoney(spec.revenue) : "");
-      }
-      row(tr.sp_collection, esc(m.saga));
+      const runtime = spec?.runtime || (freshDetails(m) || detailsCache[m.id])?.runtime;
+      if (spec?.tv) row(tr.sp_seasons, spec.seasons ? `${spec.seasons}${spec.episodes ? ` · ${spec.episodes} ${tr.sp_episodes}` : ""}` : "");
+      else row(tr.sp_runtime, runtime ? formatRuntime(runtime) : "");
+      row(tr.sp_released, spec?.date ? formatLongDate(spec.date) : "");
       return `
         <div>
           <div class="back-title">${esc(m.title)}</div>
           <div class="back-sub">${m.year}</div>
         </div>
-        ${spec?.tagline ? `<p class="back-tagline">“${esc(spec.tagline)}”</p>` : ""}
-        ${spec?.overview ? `<p class="back-overview" title="${esc(tr.read_more)}">${esc(spec.overview)}</p>` : ""}
-        ${spec ? "" : `<p class="back-status">${failed ? tr.specs_error : tr.specs_loading}</p>`}
         <dl class="spec-list">${rows.join("")}</dl>
+        ${spec ? "" : `<p class="back-status">${failed ? tr.specs_error : tr.specs_loading}</p>`}
+        ${spec?.overview ? `<p class="back-overview" title="${esc(tr.read_more)}">${esc(spec.overview)}</p>` : ""}
         <div class="back-actions">
           <button class="back-action" data-action="trailer" data-id="${m.id}">${tr.trailer_hint}</button>
           <button class="back-action back-close" data-action="flip" data-id="${m.id}">${tr.flip_back}</button>
@@ -3182,6 +3367,7 @@
       historyBtn.classList.toggle("is-active", mode === "history");
       historyBtn.setAttribute("aria-pressed", String(mode === "history"));
       renderFilters();
+      renderLegend(mode === "sagas");
 
       if (mode === "sagas") {
         renderSagas();
@@ -3590,7 +3776,7 @@
       if (!movie) return;
       const tr = t();
       $("winnerTitle").textContent = movie.title;
-      const baseMeta = `${movie.year} • ${movie.audio} • [${movie.tag}]`;
+      const baseMeta = `${movie.year} • ${movie.sound} • ${movie.tag}`;
       const metaEl = $("winnerMeta");
       metaEl.textContent = baseMeta;
       $("winnerVotes").textContent = `${tr.won_with} ${plural(votes, tr.pick_singular, tr.pick_plural)}! ${wasTie ? tr.tie_breaker : ""}`.trim();
