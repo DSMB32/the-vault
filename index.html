@@ -767,43 +767,175 @@
       color: #fff;
     }
 
-    /* COLLECTION SECTIONS (e.g. MCU phases) */
-    .subtabs {
+    /* COLLECTION HUB (a collection made of smaller collections, e.g. MCU phases) */
+    .hub {
+      max-width: 1200px;
+      margin: 1.5rem auto 2rem;
+      padding: 0 var(--gutter);
+    }
+
+    .hero {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      min-height: 360px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #0b0d14;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center 20%;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(9, 10, 15, 0.97) 0%, rgba(9, 10, 15, 0.7) 38%, rgba(9, 10, 15, 0.1) 80%),
+        linear-gradient(to right, rgba(9, 10, 15, 0.85) 0%, rgba(9, 10, 15, 0) 65%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 2rem 2.2rem;
+      max-width: 680px;
+    }
+
+    .hero-kicker {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #86efac;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.9rem, 4.6vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.02;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .countdown {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .cd-unit {
+      min-width: 4.4rem;
+      padding: 0.65rem 0.5rem 0.55rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .cd-num {
+      display: block;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cd-label {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .hero-cta {
+      border: 0;
+      border-radius: 10px;
+      padding: 0.9rem 1.5rem;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      background: #fff;
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .hero-cta:hover,
+    .hero-cta:focus-visible {
+      transform: scale(1.03);
+      background: #e2e8f0;
+    }
+
+    .hub-row-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 2.2rem 0 1rem;
+    }
+
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .hub-all {
+      display: block;
+      margin: 2.2rem auto 0;
+      padding: 0.8rem 1.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: #fff;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .hub-all:hover,
+    .hub-all:focus-visible {
+      border-color: var(--card-hover-border);
+      background: var(--surface);
+    }
+
+    .saga-flag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.92);
+      color: #fff;
+    }
+
+    .section-note {
       max-width: 1200px;
       margin: 1.25rem auto 0;
       padding: 0 var(--gutter);
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .subtabs .chip {
-      font-size: 0.82rem;
-      padding: 0.45rem 1rem;
-    }
-
-    .subtabs .chip .chip-count {
-      opacity: 0.55;
-      margin-left: 0.35rem;
-      font-weight: 600;
-    }
-
-    .subtabs .chip.chip-doomsday[aria-pressed="true"] {
-      background: rgba(34, 197, 94, 0.14);
-      border-color: rgba(34, 197, 94, 0.6);
-      color: #bbf7d0;
-    }
-
-    .subtab-note {
-      max-width: 1200px;
-      margin: 0.9rem auto 0;
-      padding: 0 var(--gutter);
       color: var(--text-dim);
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       line-height: 1.5;
     }
 
-    .subtab-note b {
+    .section-note b {
       color: #fff;
     }
 
@@ -945,6 +1077,141 @@
     .poster-wrap:hover .trailer-hint,
     .poster-wrap:focus-visible .trailer-hint {
       background: var(--danger);
+    }
+
+    .poster-box {
+      position: relative;
+    }
+
+    .specs-btn {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      z-index: 11;
+      border: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font: inherit;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .specs-btn:hover,
+    .specs-btn:focus-visible {
+      background: var(--primary);
+    }
+
+    .card-back {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1rem 0.95rem;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: linear-gradient(180deg, #171c2b 0%, #0f121b 100%);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .back-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .back-sub,
+    .back-status {
+      color: var(--text-dim);
+      font-size: 0.74rem;
+      margin-top: 0.15rem;
+    }
+
+    .back-tagline {
+      color: #e2e8f0;
+      font-style: italic;
+    }
+
+    .back-overview {
+      color: #cbd5e1;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .back-overview.is-open {
+      display: block;
+      -webkit-line-clamp: unset;
+    }
+
+    .spec-list {
+      border-top: 1px solid var(--card-border);
+      padding-top: 0.75rem;
+    }
+
+    .spec-list dt {
+      color: var(--text-dim);
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.6rem;
+    }
+
+    .spec-list dt:first-child {
+      margin-top: 0;
+    }
+
+    .spec-list dd {
+      margin-top: 0.1rem;
+    }
+
+    .spec-list dd {
+      color: #fff;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .spec-list .dim {
+      color: var(--text-dim);
+    }
+
+    .back-actions {
+      position: sticky;
+      bottom: -1rem;
+      display: flex;
+      gap: 0.5rem;
+      margin: auto -0.95rem -1rem;
+      padding: 0.7rem 0.95rem 0.9rem;
+      background: linear-gradient(to bottom, rgba(15, 18, 27, 0.6), #0f121b 35%);
+    }
+
+    .back-action {
+      flex: 1;
+      border: 1px solid var(--card-border);
+      background: var(--surface);
+      color: #fff;
+      font: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.55rem 0.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .back-action:hover,
+    .back-action:focus-visible {
+      border-color: var(--card-hover-border);
     }
 
     .card-info {
@@ -1305,6 +1572,7 @@
       }
 
       .sagas-grid,
+      .hub-grid,
       .catalog {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.9rem;
@@ -1322,15 +1590,39 @@
         display: none;
       }
 
-      .subtabs {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        scrollbar-width: none;
-        margin-top: 1rem;
+      .hero {
+        min-height: 330px;
       }
 
-      .subtabs::-webkit-scrollbar {
-        display: none;
+      .hero-content {
+        padding: 1.4rem 1.2rem;
+      }
+
+      .countdown {
+        gap: 0.4rem;
+      }
+
+      .cd-unit {
+        min-width: 0;
+        flex: 1;
+        padding: 0.55rem 0.3rem 0.45rem;
+      }
+
+      .cd-num {
+        font-size: 1.5rem;
+      }
+
+      .cd-label {
+        font-size: 0.52rem;
+        letter-spacing: 0.12em;
+      }
+
+      .hero-cta {
+        width: 100%;
+      }
+
+      .hub-row-title {
+        margin: 1.6rem 0 0.8rem;
       }
 
       .saga-logo-text {
@@ -1559,8 +1851,8 @@
     <div class="filters" id="filters" role="group" aria-label="Filters"></div>
     <div class="sagas-grid" id="sagasGrid"></div>
     <div class="catalog-container" id="catalogContainer" hidden>
-      <div class="subtabs" id="subtabs" role="group" aria-label="Sections" hidden></div>
-      <p class="subtab-note" id="subtabNote" hidden></p>
+      <div class="hub" id="hub" hidden></div>
+      <p class="section-note" id="sectionNote" hidden></p>
       <div class="catalog" id="catalog"></div>
     </div>
   </main>
@@ -1644,12 +1936,35 @@
         f_dual: "🇪🇸 Spanish audio",
         f_unwatched: "Not watched yet",
         f_clear: "✕ Clear",
-        sec_doomsday: "🔥 Road to Doomsday",
+        sec_doomsday: "Road to Doomsday",
         sec_phase: (n) => `Phase ${n}`,
-        sec_all: "All",
+        sec_all: "All Marvel movies",
+        saga_infinity: "The Infinity Saga",
+        saga_multiverse: "The Multiverse Saga",
+        see_all: (n) => `See all ${n} movies →`,
+        doomsday_kicker: "Marvel Studios · In theaters December 18, 2026",
+        doomsday_out: "Marvel Studios · Now in theaters",
+        doomsday_cta: (n) => `🔥 Start the Road to Doomsday · ${n} movies`,
+        doomsday_badge: (d) => `⏳ ${d} ${d === 1 ? "day" : "days"} to Doomsday`,
         doomsday_note: (days) => days > 0
           ? `The must-watch list before <b>Avengers: Doomsday</b> hits theaters Dec 18 · <b>${days} ${days === 1 ? "day" : "days"} to go</b>`
           : `The must-watch list for <b>Avengers: Doomsday</b>, now in theaters`,
+        cd_d: "Days", cd_h: "Hours", cd_m: "Min", cd_s: "Sec",
+        cd_aria: "Countdown to Avengers: Doomsday",
+        specs_btn: "ⓘ Specs",
+        read_more: "Tap to read more",
+        specs_aria: "Show specs",
+        flip_back: "↩ Back",
+        specs_loading: "Loading details…",
+        specs_error: "Couldn't load the details. Check your connection and try again.",
+        sp_format: "Format", sp_audio: "Audio", sp_languages: "Languages", sp_runtime: "Runtime",
+        sp_seasons: "Seasons", sp_episodes: "episodes", sp_rating: "Rating", sp_votes: "votes",
+        sp_released: "Released", sp_genres: "Genres", sp_director: "Director", sp_creator: "Created by",
+        sp_starring: "Starring", sp_studio: "Studio", sp_budget: "Budget", sp_boxoffice: "Box office",
+        sp_collection: "Collection",
+        lang_names: { EN: "English", ES: "Spanish" },
+        har_desc: "Taller picture (IMAX / open matte) that fills more of a 16:9 TV",
+        scope_desc: "2.39:1 widescreen, with black bars on a 16:9 TV",
         watched: "✓ Watched",
         watched_on: (d) => `Watched ${d}`,
         seasons: (n) => `${n} ${n === 1 ? "season" : "seasons"}`,
@@ -1712,12 +2027,35 @@
         f_dual: "🇪🇸 Audio en español",
         f_unwatched: "No vistas",
         f_clear: "✕ Limpiar",
-        sec_doomsday: "🔥 Camino a Doomsday",
+        sec_doomsday: "Camino a Doomsday",
         sec_phase: (n) => `Fase ${n}`,
-        sec_all: "Todas",
+        sec_all: "Todo Marvel",
+        saga_infinity: "La Saga del Infinito",
+        saga_multiverse: "La Saga del Multiverso",
+        see_all: (n) => `Ver las ${n} películas →`,
+        doomsday_kicker: "Marvel Studios · En cines el 18 de diciembre de 2026",
+        doomsday_out: "Marvel Studios · Ya en cines",
+        doomsday_cta: (n) => `🔥 Empieza el Camino a Doomsday · ${n} películas`,
+        doomsday_badge: (d) => `⏳ Doomsday en ${d} ${d === 1 ? "día" : "días"}`,
         doomsday_note: (days) => days > 0
           ? `Lo que tienes que ver antes de que <b>Avengers: Doomsday</b> llegue a cines el 18 de diciembre · <b>${days === 1 ? "falta 1 día" : `faltan ${days} días`}</b>`
           : `Lo que tienes que ver para <b>Avengers: Doomsday</b>, ya en cines`,
+        cd_d: "Días", cd_h: "Horas", cd_m: "Min", cd_s: "Seg",
+        cd_aria: "Cuenta regresiva para Avengers: Doomsday",
+        specs_btn: "ⓘ Ficha",
+        read_more: "Toca para leer más",
+        specs_aria: "Ver ficha técnica",
+        flip_back: "↩ Volver",
+        specs_loading: "Cargando detalles…",
+        specs_error: "No se pudieron cargar los detalles. Revisa tu conexión e intenta de nuevo.",
+        sp_format: "Formato", sp_audio: "Audio", sp_languages: "Idiomas", sp_runtime: "Duración",
+        sp_seasons: "Temporadas", sp_episodes: "episodios", sp_rating: "Calificación", sp_votes: "votos",
+        sp_released: "Estreno", sp_genres: "Géneros", sp_director: "Dirección", sp_creator: "Creada por",
+        sp_starring: "Reparto", sp_studio: "Estudio", sp_budget: "Presupuesto", sp_boxoffice: "Taquilla",
+        sp_collection: "Colección",
+        lang_names: { EN: "Inglés", ES: "Español" },
+        har_desc: "Imagen más alta (IMAX / open matte) que llena más una TV 16:9",
+        scope_desc: "Pantalla ancha 2.39:1, con barras negras en una TV 16:9",
         watched: "✓ Vista",
         watched_on: (d) => `Vista el ${d}`,
         seasons: (n) => `${n} ${n === 1 ? "temporada" : "temporadas"}`,
@@ -2002,19 +2340,35 @@
       (sagasMap[m.saga] ||= []).push(m);
     });
 
-    // Sections inside a collection, shown as tabs above its movies. A section can list
-    // movies by id (in watch order, even ones from other collections) or filter its own.
+    // Hubs: a collection whose page shows smaller collections (cards) instead of a long
+    // list of movies. A section either lists movies by id, in watch order and from any
+    // collection, or filters the hub's own movies.
     const DOOMSDAY_DATE = new Date(2026, 11, 18);
+    const DOOMSDAY_BACKDROP = "https://image.tmdb.org/t/p/w1280/rObL4of4eFA8yWaN9pRFo9aOVNi.jpg";
+    const DOOMSDAY_POSTER = "https://image.tmdb.org/t/p/w500/1zqWkLwC1zLBBBtIWzmkmWeMWnT.jpg";
     const daysUntil = (date) => Math.ceil((date - Date.now()) / 86400000);
-    const SAGA_SECTIONS = {
-      "Marvel Cinematic Universe": [
-        {
-          key: "doomsday",
-          label: (tr) => tr.sec_doomsday,
-          cls: "chip-doomsday",
-          numbered: true,
-          note: (tr) => tr.doomsday_note(daysUntil(DOOMSDAY_DATE)),
-          ids: [
+    const PHASE_COVERS = {
+      1: "the_avengers_2012",
+      2: "avengers_age_of_ultron_2015",
+      3: "avengers_endgame_2019",
+      4: "doctor_strange_in_the_multiverse_of_madness_2022",
+      5: "thunderbolts_2025",
+      6: "the_fantastic_four_first_steps_2025"
+    };
+    // Official phase years (the 2026 Endgame re-release would otherwise stretch Phase 3).
+    const PHASE_YEARS = { 1: "2008–2012", 2: "2013–2015", 3: "2016–2019", 4: "2021–2022", 5: "2023–2025", 6: "2025–2027" };
+    const SAGA_HUBS = {
+      "Marvel Cinematic Universe": {
+        short: "Marvel",
+        countdown: true,
+        sections: [
+          {
+            key: "doomsday",
+            label: (tr) => tr.sec_doomsday,
+            numbered: true,
+            coverUrl: DOOMSDAY_POSTER,
+            note: (tr) => tr.doomsday_note(daysUntil(DOOMSDAY_DATE)),
+            ids: [
             "x2_x_men_united_2003",
             "avengers_infinity_war_2018",
             "avengers_endgame_2019",
@@ -2029,16 +2383,29 @@
             "thunderbolts_2025",
             "the_fantastic_four_first_steps_2025",
             "spider_man_brand_new_day_2026"
-          ]
-        },
-        ...[1, 2, 3, 4, 5, 6].map(n => ({ key: `phase${n}`, label: (tr) => tr.sec_phase(n), filter: (m) => m.phase === n })),
-        { key: "all", label: (tr) => tr.sec_all }
-      ]
+            ]
+          },
+          ...[1, 2, 3, 4, 5, 6].map(n => ({
+            key: `phase${n}`,
+            label: (tr) => tr.sec_phase(n),
+            filter: (m) => m.phase === n,
+            coverId: PHASE_COVERS[n],
+            years: PHASE_YEARS[n]
+          })),
+          { key: "all", label: (tr) => tr.sec_all }
+        ],
+        rows: [
+          { title: (tr) => tr.saga_infinity, keys: ["phase1", "phase2", "phase3"] },
+          { title: (tr) => tr.saga_multiverse, keys: ["phase4", "phase5", "phase6"] }
+        ]
+      }
     };
-    Object.values(SAGA_SECTIONS).flat().forEach(sec => {
+    Object.values(SAGA_HUBS).forEach(hub => hub.sections.forEach(sec => {
       sec.ids?.filter(id => !movieById[id]).forEach(id => console.warn(`Section "${sec.key}" lists unknown movie id: ${id}`));
-    });
-    const sectionBySaga = {};
+    }));
+
+    const hubOf = (saga) => SAGA_HUBS[saga] || null;
+    const findSection = (saga, key) => hubOf(saga)?.sections.find(sec => sec.key === key) || null;
 
     function sectionList(saga, sec) {
       if (sec.ids) return sec.ids.map(id => movieById[id]).filter(Boolean);
@@ -2046,10 +2413,10 @@
       return sec.filter ? all.filter(sec.filter) : all;
     }
 
-    function currentSection(saga) {
-      const sections = SAGA_SECTIONS[saga];
-      if (!sections) return null;
-      return sections.find(sec => sec.key === sectionBySaga[saga]) || sections[0];
+    function yearSpan(list) {
+      const years = list.map(m => m.year);
+      const lo = Math.min(...years), hi = Math.max(...years);
+      return lo === hi ? `${lo}` : `${lo}–${hi}`;
     }
 
     // ---------- State ----------
@@ -2062,6 +2429,7 @@
     let watchedMap = {};
     let currentView = "sagas"; // sagas | movies | history
     let activeSaga = null;
+    let activeSection = null; // a section key inside a hub, or null for the hub page itself
     let searchQuery = "";
     const activeFilters = new Set();
     let sagasScrollY = 0;
@@ -2089,8 +2457,8 @@
     const sagasGrid = $("sagasGrid");
     const catalogContainer = $("catalogContainer");
     const catalogEl = $("catalog");
-    const subtabsEl = $("subtabs");
-    const subtabNote = $("subtabNote");
+    const hubEl = $("hub");
+    const sectionNote = $("sectionNote");
     const filtersEl = $("filters");
     const backBtn = $("backBtn");
     const historyBtn = $("historyBtn");
@@ -2329,6 +2697,7 @@
           <button class="saga-card" data-action="open-saga" data-saga="${esc(name)}" aria-label="${esc(name)} — ${films}">
             <span class="saga-bg" style="background-image: ${sagaStyles[name] || "none"};"></span>
             <span class="saga-votes" hidden></span>
+            ${hubOf(name)?.countdown && daysUntil(DOOMSDAY_DATE) > 0 ? `<span class="saga-flag">${tr.doomsday_badge(daysUntil(DOOMSDAY_DATE))}</span>` : ""}
             <span class="saga-overlay">
               <span class="saga-logo-text">${esc(name)}</span>
               <span class="saga-label">${tr.collection_label} · ${films}</span>
@@ -2351,6 +2720,7 @@
       const extra = extraHTML(info);
       return `
         <article class="card" data-id="${m.id}">
+          <div class="poster-box">
           <button class="poster-wrap" data-action="trailer" data-id="${m.id}" aria-label="${tr.play_trailer}: ${esc(m.title)}">
             <img src="${poster}" alt="" data-poster="${m.id}" class="poster-img" loading="lazy" decoding="async"
               onload="if (!this.src.startsWith('data:')) this.dataset.loaded = '1'">
@@ -2359,6 +2729,8 @@
             <span class="watched-badge" hidden></span>
             <span class="trailer-hint">${tr.trailer_hint}</span>
           </button>
+          <button class="specs-btn" data-action="flip" data-id="${m.id}" aria-label="${tr.specs_aria}: ${esc(m.title)}">${tr.specs_btn}</button>
+          </div>
           <div class="card-info">
             <div>
               ${label ? `<div class="card-label ${labelClass}">${esc(label)}</div>` : ""}
@@ -2374,20 +2746,223 @@
               <button class="vote-btn" data-action="vote" data-id="${m.id}" aria-pressed="false"></button>
             </div>
           </div>
+          <div class="card-back" hidden></div>
         </article>`;
     }
 
-    function renderSubtabs(saga) {
+    function sectionCardHTML(saga, sec) {
       const tr = t();
-      const sections = saga ? SAGA_SECTIONS[saga] : null;
-      const active = currentSection(saga);
-      subtabsEl.hidden = !sections;
-      subtabNote.hidden = !active?.note;
-      if (!sections) return;
-      subtabsEl.innerHTML = sections.map(sec => `
-        <button class="chip ${sec.cls || ""}" data-section="${sec.key}" aria-pressed="${sec === active}">${esc(sec.label(tr))}<span class="chip-count">${sectionList(saga, sec).length}</span></button>`
+      const list = sectionList(saga, sec);
+      const cover = sec.coverUrl || (sec.coverId && (movieById[sec.coverId]?.poster || posterCache[sec.coverId]));
+      const films = plural(list.length, tr.film_singular, tr.film_plural);
+      return `
+        <button class="saga-card" data-action="open-section" data-saga="${esc(saga)}" data-section="${sec.key}" aria-label="${esc(sec.label(tr))} — ${films}">
+          <span class="saga-bg" data-section-bg="${sec.key}" style="background-image: ${cover ? `url('${cover}')` : "none"};"></span>
+          <span class="saga-votes" hidden></span>
+          <span class="saga-overlay">
+            <span class="saga-logo-text">${esc(sec.label(tr))}</span>
+            <span class="saga-label">${sec.years || yearSpan(list)} · ${films}</span>
+          </span>
+        </button>`;
+    }
+
+    function countdownHeroHTML(saga) {
+      const tr = t();
+      const released = Date.now() >= DOOMSDAY_DATE;
+      const count = sectionList(saga, findSection(saga, "doomsday")).length;
+      const units = ["d", "h", "m", "s"].map(u =>
+        `<span class="cd-unit"><span class="cd-num" data-cd="${u}">00</span><span class="cd-label">${tr["cd_" + u]}</span></span>`
       ).join("");
-      if (active.note) subtabNote.innerHTML = active.note(tr);
+      return `
+        <section class="hero">
+          <div class="hero-bg" style="background-image: url('${DOOMSDAY_BACKDROP}');"></div>
+          <div class="hero-content">
+            <p class="hero-kicker">${released ? tr.doomsday_out : tr.doomsday_kicker}</p>
+            <h2 class="hero-title">Avengers: Doomsday</h2>
+            ${released ? "" : `<div class="countdown" data-countdown role="timer" aria-label="${tr.cd_aria}">${units}</div>`}
+            <button class="hero-cta" data-action="open-section" data-section="doomsday">${tr.doomsday_cta(count)}</button>
+          </div>
+        </section>`;
+    }
+
+    function tickCountdown() {
+      const el = document.querySelector("[data-countdown]");
+      if (!el) return;
+      const ms = Math.max(0, DOOMSDAY_DATE - Date.now());
+      const parts = { d: Math.floor(ms / 86400000), h: Math.floor(ms / 3600000) % 24, m: Math.floor(ms / 60000) % 60, s: Math.floor(ms / 1000) % 60 };
+      Object.entries(parts).forEach(([u, v]) => {
+        const n = el.querySelector(`[data-cd="${u}"]`);
+        if (n) n.textContent = String(v).padStart(2, "0");
+      });
+    }
+    setInterval(tickCountdown, 1000);
+
+    function renderHub(saga) {
+      const tr = t();
+      const hub = hubOf(saga);
+      hubEl.innerHTML = `
+        ${hub.countdown ? countdownHeroHTML(saga) : ""}
+        ${hub.rows.map(row => `
+          <h3 class="hub-row-title">${esc(row.title(tr))}</h3>
+          <div class="hub-grid">${row.keys.map(key => sectionCardHTML(saga, findSection(saga, key))).join("")}</div>`).join("")}
+        <button class="hub-all" data-action="open-section" data-section="all">${tr.see_all((sagasMap[saga] || []).length)}</button>`;
+      hubEl.hidden = false;
+      tickCountdown();
+      hub.sections.forEach(sec => {
+        const movie = movieById[sec.coverId];
+        if (sec.coverUrl || !movie || movie.poster || posterCache[movie.id]) return;
+        getPoster(movie).then(url => {
+          const bg = hubEl.querySelector(`[data-section-bg="${sec.key}"]`);
+          if (url && bg) bg.style.backgroundImage = `url('${url}')`;
+        });
+      });
+    }
+
+    // ---------- Card specs (the flip side) ----------
+    const SPECS_CACHE_KEY = "vault_specs_cache_v1";
+    const SPECS_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+    const specsCache = store.json(SPECS_CACHE_KEY);
+    const specsInflight = {};
+    const tmdbLang = () => currentLang === "es" ? "es-MX" : "en-US";
+    const uiLocale = () => currentLang === "es" ? "es-GT" : "en-US";
+
+    function cachedSpecs(movie) {
+      const spec = specsCache[`${movie.id}|${tmdbLang()}`];
+      return spec && Date.now() - (spec.fetchedAt || 0) < SPECS_TTL_MS ? spec : null;
+    }
+
+    function getSpecs(movie) {
+      const cached = cachedSpecs(movie);
+      if (cached) return Promise.resolve(cached);
+      const lang = tmdbLang();
+      const key = `${movie.id}|${lang}`;
+      if (!specsInflight[key]) {
+        specsInflight[key] = (async () => {
+          const hit = await resolveTmdb(movie);
+          if (!hit) return null;
+          const tv = hit.type === "tv";
+          const base = `${TMDB_API}/${hit.type}/${hit.id}?api_key=${TMDB_KEY}`;
+          const d = await tmdbFetch(`${base}&language=${lang}&append_to_response=credits`);
+          if (!d || d.success === false) return null;
+          const crew = d.credits?.crew || [];
+          const spec = {
+            tv,
+            runtime: d.runtime || null,
+            seasons: d.number_of_seasons || null,
+            episodes: d.number_of_episodes || null,
+            rating: d.vote_count > 0 && d.vote_average ? Math.round(d.vote_average * 10) / 10 : null,
+            votes: d.vote_count || 0,
+            date: d.release_date || d.first_air_date || null,
+            genres: (d.genres || []).map(g => g.name),
+            directors: tv ? (d.created_by || []).map(p => p.name) : crew.filter(p => p.job === "Director").map(p => p.name),
+            cast: (d.credits?.cast || []).slice(0, 4).map(p => p.name),
+            studios: (d.production_companies || []).slice(0, 2).map(p => p.name),
+            budget: d.budget || 0,
+            revenue: d.revenue || 0,
+            tagline: d.tagline || "",
+            overview: d.overview || "",
+            fetchedAt: Date.now()
+          };
+          if (!spec.overview && lang !== "en-US") {
+            const en = await tmdbFetch(base).catch(() => null);
+            spec.overview = en?.overview || "";
+            spec.tagline ||= en?.tagline || "";
+          }
+          specsCache[key] = spec;
+          store.set(SPECS_CACHE_KEY, JSON.stringify(specsCache));
+          return spec;
+        })().catch(() => null).finally(() => { delete specsInflight[key]; });
+      }
+      return specsInflight[key];
+    }
+
+    function formatMoney(n) {
+      return new Intl.NumberFormat(uiLocale(), { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(n);
+    }
+
+    function formatLongDate(iso) {
+      return new Date(`${iso}T12:00:00`).toLocaleDateString(uiLocale(), { year: "numeric", month: "long", day: "numeric" });
+    }
+
+    function specsBackHTML(m, spec, failed) {
+      const tr = t();
+      const rows = [];
+      const row = (label, value) => { if (value) rows.push(`<dt>${label}</dt><dd>${value}</dd>`); };
+      row(tr.sp_format, `<b>[${m.tag}]</b> <span class="dim">${m.tag === "HAR" ? tr.har_desc : tr.scope_desc}</span>`);
+      row(tr.sp_audio, esc(m.audio));
+      row(tr.sp_languages, (m.audioTags || ["EN"]).map(code => tr.lang_names[code] || code).join(", "));
+      if (spec) {
+        row(spec.tv ? tr.sp_seasons : tr.sp_runtime, spec.tv
+          ? (spec.seasons ? `${spec.seasons}${spec.episodes ? ` · ${spec.episodes} ${tr.sp_episodes}` : ""}` : "")
+          : (spec.runtime ? formatRuntime(spec.runtime) : ""));
+        row(tr.sp_rating, spec.rating ? `★ ${spec.rating.toFixed(1)} <span class="dim">(${spec.votes.toLocaleString(uiLocale())} ${tr.sp_votes})</span>` : "");
+        row(tr.sp_released, spec.date ? formatLongDate(spec.date) : "");
+        row(tr.sp_genres, esc(spec.genres.join(", ")));
+        row(spec.tv ? tr.sp_creator : tr.sp_director, esc(spec.directors.join(", ")));
+        row(tr.sp_starring, esc(spec.cast.join(", ")));
+        row(tr.sp_studio, esc(spec.studios.join(", ")));
+        row(tr.sp_budget, spec.budget ? formatMoney(spec.budget) : "");
+        row(tr.sp_boxoffice, spec.revenue ? formatMoney(spec.revenue) : "");
+      }
+      row(tr.sp_collection, esc(m.saga));
+      return `
+        <div>
+          <div class="back-title">${esc(m.title)}</div>
+          <div class="back-sub">${m.year}</div>
+        </div>
+        ${spec?.tagline ? `<p class="back-tagline">“${esc(spec.tagline)}”</p>` : ""}
+        ${spec?.overview ? `<p class="back-overview" title="${esc(tr.read_more)}">${esc(spec.overview)}</p>` : ""}
+        ${spec ? "" : `<p class="back-status">${failed ? tr.specs_error : tr.specs_loading}</p>`}
+        <dl class="spec-list">${rows.join("")}</dl>
+        <div class="back-actions">
+          <button class="back-action" data-action="trailer" data-id="${m.id}">${tr.trailer_hint}</button>
+          <button class="back-action back-close" data-action="flip" data-id="${m.id}">${tr.flip_back}</button>
+        </div>`;
+    }
+
+    function animateFlip(card, swap) {
+      if (!card.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        swap();
+        return Promise.resolve();
+      }
+      const out = card.animate(
+        [{ transform: "perspective(1000px) rotateY(0deg)" }, { transform: "perspective(1000px) rotateY(90deg)" }],
+        { duration: 170, easing: "ease-in", fill: "forwards" });
+      return out.finished.then(() => {
+        swap();
+        const back = card.animate(
+          [{ transform: "perspective(1000px) rotateY(-90deg)" }, { transform: "perspective(1000px) rotateY(0deg)" }],
+          { duration: 230, easing: "ease-out" });
+        out.cancel();
+        return back.finished;
+      }).catch(() => swap());
+    }
+
+    async function flipCard(card) {
+      if (!card || card.dataset.flipping) return;
+      const movie = movieById[card.dataset.id];
+      if (!movie) return;
+      const back = card.querySelector(".card-back");
+      const toBack = !card.classList.contains("is-flipped");
+      card.dataset.flipping = "1";
+      if (toBack) back.innerHTML = specsBackHTML(movie, cachedSpecs(movie), false);
+      await animateFlip(card, () => {
+        card.classList.toggle("is-flipped", toBack);
+        back.hidden = !toBack;
+      });
+      delete card.dataset.flipping;
+      if (!toBack) {
+        card.querySelector(".specs-btn")?.focus();
+        return;
+      }
+      back.scrollTop = 0;
+      back.querySelector(".back-close")?.focus({ preventScroll: true });
+      if (cachedSpecs(movie)) return;
+      const spec = await getSpecs(movie);
+      if (!card.classList.contains("is-flipped")) return;
+      const hadFocus = back.contains(document.activeElement);
+      back.innerHTML = specsBackHTML(movie, spec, !spec);
+      if (hadFocus) back.querySelector(".back-close")?.focus({ preventScroll: true });
     }
 
     function renderCatalog(list, labelFor, emptyText) {
@@ -2429,26 +3004,42 @@
       const mode = currentMode();
       sagasGrid.hidden = mode !== "sagas";
       catalogContainer.hidden = mode === "sagas";
-      filtersEl.hidden = mode === "history";
+      // Filters search the whole vault, so they only show on the home page and in results.
+      filtersEl.hidden = mode === "history" || mode === "movies";
+      hubEl.hidden = true;
+      sectionNote.hidden = true;
+      catalogEl.hidden = false;
+      const inSection = mode === "movies" && !!findSection(activeSaga, activeSection);
+      backBtn.querySelector(".btn-label").textContent = inSection ? hubOf(activeSaga).short : tr.btn_back_sagas;
       backBtn.hidden = mode === "sagas";
       historyBtn.classList.toggle("is-active", mode === "history");
       historyBtn.setAttribute("aria-pressed", String(mode === "history"));
       renderFilters();
-      if (mode !== "movies") renderSubtabs(null);
 
       if (mode === "sagas") {
         renderSagas();
         setTitle(tr.collections, Object.keys(sagasMap).length);
         if (animate) replayFade(sagasGrid);
       } else if (mode === "movies") {
-        const section = currentSection(activeSaga);
-        const list = section ? sectionList(activeSaga, section) : (sagasMap[activeSaga] || []);
-        const numbered = section?.numbered
-          ? (m) => [`#${list.indexOf(m) + 1}${m.saga !== activeSaga ? ` · ${m.saga}` : ""}`, ""]
-          : null;
-        renderSubtabs(activeSaga);
-        renderCatalog(list, numbered, "");
-        setTitle(activeSaga, (sagasMap[activeSaga] || []).length);
+        const all = sagasMap[activeSaga] || [];
+        const section = findSection(activeSaga, activeSection);
+        if (hubOf(activeSaga) && !section) {
+          catalogEl.innerHTML = "";
+          catalogEl.hidden = true;
+          renderHub(activeSaga);
+          setTitle(activeSaga, all.length);
+        } else {
+          const list = section ? sectionList(activeSaga, section) : all;
+          const numbered = section?.numbered
+            ? (m) => [`#${list.indexOf(m) + 1}${m.saga !== activeSaga ? ` · ${m.saga}` : ""}`, ""]
+            : null;
+          if (section?.note) {
+            sectionNote.innerHTML = section.note(tr);
+            sectionNote.hidden = false;
+          }
+          renderCatalog(list, numbered, "");
+          setTitle(section ? section.label(tr) : activeSaga, list.length);
+        }
         if (animate) replayFade(catalogContainer);
       } else if (mode === "history") {
         const list = historyList();
@@ -2492,8 +3083,10 @@
         btn.textContent = picked ? tr.picked_btn : tr.pick_btn;
       });
 
-      sagasGrid.querySelectorAll(".saga-card").forEach(card => {
-        const list = sagasMap[card.dataset.saga] || [];
+      document.querySelectorAll(".saga-card").forEach(card => {
+        const { saga, section } = card.dataset;
+        const sec = section && findSection(saga, section);
+        const list = sec ? sectionList(saga, sec) : (sagasMap[saga] || []);
         const total = list.reduce((sum, m) => sum + (tally[m.id] || 0), 0);
         const chip = card.querySelector(".saga-votes");
         chip.hidden = total === 0;
@@ -2630,9 +3223,10 @@
       activeFilters.clear();
     }
 
-    function openSaga(sagaName) {
+    function openSaga(sagaName, section = null) {
       rememberSagasScroll();
       activeSaga = sagaName;
+      activeSection = section;
       currentView = "movies";
       resetFiltering();
       renderView(true);
@@ -2647,9 +3241,17 @@
       scrollToContent();
     }
 
+    function openSection(key) {
+      activeSection = key;
+      resetFiltering();
+      renderView(true);
+      scrollToContent();
+    }
+
     function goToCollections() {
       currentView = "sagas";
       activeSaga = null;
+      activeSection = null;
       resetFiltering();
       renderView(true);
       window.scrollTo({ top: sagasScrollY, behavior: "auto" });
@@ -2658,11 +3260,9 @@
     function focusMovie(movieId) {
       const movie = movieById[movieId];
       if (!movie) return;
-      const sections = SAGA_SECTIONS[movie.saga];
-      if (sections && !sectionList(movie.saga, currentSection(movie.saga)).includes(movie)) {
-        sectionBySaga[movie.saga] = (sections.find(sec => sec.filter?.(movie)) || sections.at(-1)).key;
-      }
-      openSaga(movie.saga);
+      const hub = hubOf(movie.saga);
+      const section = hub ? (hub.sections.find(sec => sec.filter?.(movie)) || findSection(movie.saga, "all")) : null;
+      openSaga(movie.saga, section?.key || null);
       requestAnimationFrame(() => {
         const card = catalogEl.querySelector(`.card[data-id="${movieId}"]`);
         if (!card) return;
@@ -2682,6 +3282,10 @@
       if (currentMode() === "search") {
         resetFiltering();
         renderView(true);
+      } else if (currentView === "movies" && findSection(activeSaga, activeSection)) {
+        activeSection = null;
+        renderView(true);
+        scrollToContent();
       } else {
         goToCollections();
       }
@@ -2726,15 +3330,6 @@
       }
       renderView(!wasSearching && currentMode() === "search");
       filtersEl.querySelector(`[data-filter="${key}"]`)?.focus();
-    });
-
-    subtabsEl.addEventListener("click", (e) => {
-      const chip = e.target.closest("[data-section]");
-      if (!chip || !activeSaga) return;
-      sectionBySaga[activeSaga] = chip.dataset.section;
-      renderView(false);
-      replayFade(catalogEl);
-      subtabsEl.querySelector(`[data-section="${chip.dataset.section}"]`)?.focus();
     });
 
     leaderMoreBtn.addEventListener("click", () => {
@@ -2789,6 +3384,13 @@
       else if (action === "trailer") openTrailer(id);
       else if (action === "vote") handleVoteClick(id, el);
       else if (action === "focus") focusMovie(id);
+      else if (action === "open-section") openSection(el.dataset.section);
+      else if (action === "flip") flipCard(el.closest(".card"));
+    });
+
+    // Tap the plot summary on a card's back to read all of it.
+    document.addEventListener("click", (e) => {
+      e.target.closest(".back-overview")?.classList.toggle("is-open");
     });
 
     document.addEventListener("keydown", (e) => {
