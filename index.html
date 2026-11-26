@@ -2545,6 +2545,160 @@
       { title: "Sinners", year: 2025, tag: "HAR", audio: "7.1 Dolby Atmos Surround (IMAX)", saga: "Standalone Films" }
     ];
 
+    // Latin American Spanish titles (TMDB es-MX, matching IMDb's Mexico titles, lightly cleaned).
+    // Used only when the site is in Spanish; anything missing here shows its English title.
+    const TITLES_ES = {
+      "interstellar_2014": "Interestelar",
+      "the_dark_knight_rises_2012": "Batman: El caballero de la noche asciende",
+      "dunkirk_2017": "Dunkerque",
+      "inception_2010": "El Origen",
+      "memento_2000": "Amnesia",
+      "the_dark_knight_2008": "Batman: El caballero de la noche",
+      "batman_begins_2005": "Batman inicia",
+      "the_prestige_2006": "El Gran Truco",
+      "the_odyssey_2026": "La Odisea",
+      "iron_man_2008": "Iron Man: El hombre de hierro",
+      "captain_america_the_winter_soldier_2014": "Capitán América y el Soldado del Invierno",
+      "the_avengers_2012": "Los Vengadores",
+      "captain_america_the_first_avenger_2011": "Capitán América: El Primer Vengador",
+      "guardians_of_the_galaxy_2014": "Guardianes de la Galaxia",
+      "avengers_age_of_ultron_2015": "Avengers: Era de Ultrón",
+      "ant_man_2015": "Ant-Man: El Hombre Hormiga",
+      "captain_america_civil_war_2016": "Capitán América: Civil War",
+      "doctor_strange_2016": "Doctor Strange: Hechicero supremo",
+      "guardians_of_the_galaxy_vol_2_2017": "Guardianes de la Galaxia Vol. 2",
+      "ant_man_and_the_wasp_2018": "Ant-Man y la Avispa",
+      "the_incredible_hulk_2008": "Hulk: El hombre increíble",
+      "captain_marvel_2019": "Capitana Marvel",
+      "shang_chi_and_the_legend_of_the_ten_rings_2021": "Shang-Chi y la leyenda de los Diez Anillos",
+      "black_panther_wakanda_forever_2022": "Pantera Negra: Wakanda por siempre",
+      "black_panther_2018": "Pantera Negra",
+      "doctor_strange_in_the_multiverse_of_madness_2022": "Doctor Strange en el multiverso de la locura",
+      "thor_love_and_thunder_2022": "Thor: Amor y trueno",
+      "guardians_of_the_galaxy_vol_3_2023": "Guardianes de la Galaxia Vol. 3",
+      "the_fantastic_four_first_steps_2025": "Los 4 Fantásticos: Primeros pasos",
+      "the_amazing_spider_man_2012": "El sorprendente Hombre Araña",
+      "the_amazing_spider_man_2_2014": "El sorprendente Hombre Araña 2: La amenaza de Electro",
+      "spider_man_homecoming_2017": "Spider-Man: De regreso a casa",
+      "captain_america_brave_new_world_2025": "Capitán América: Un nuevo mundo",
+      "spider_man_far_from_home_2019": "Spider-Man: Lejos de casa",
+      "avengers_endgame_encore_2026": "Avengers: Endgame – Encore",
+      "spider_man_into_the_spider_verse_2018": "Spider-Man: Un nuevo universo",
+      "spider_man_across_the_spider_verse_2023": "Spider-Man: A través del Spider-Verso",
+      "spider_man_2_2004": "El hombre araña 2",
+      "x2_x_men_united_2003": "X-Men 2",
+      "spider_man_3_2007": "El hombre araña 3",
+      "spider_man_no_way_home_2021": "Spider-Man: Sin camino a casa",
+      "x_men_origins_wolverine_2009": "X-Men orígenes: Wolverine",
+      "x_men_days_of_future_past_2014": "X-Men: Días del futuro pasado",
+      "spider_man_2002": "El hombre araña",
+      "logan_2017": "Logan: Wolverine",
+      "x_men_the_last_stand_2006": "X-Men: La batalla final",
+      "spider_man_brand_new_day_2026": "Spider-Man: Un nuevo día",
+      "venom_let_there_be_carnage_2021": "Venom: Carnage liberado",
+      "venom_the_last_dance_2024": "Venom: El último baile",
+      "zack_snyder_s_justice_league_2021": "La Liga de la Justicia de Zack Snyder",
+      "aquaman_and_the_lost_kingdom_2023": "Aquaman y el reino perdido",
+      "tron_1982": "Tron",
+      "joker_2019": "Guasón",
+      "batman_v_superman_dawn_of_justice_2016": "Batman vs Superman: El origen de la justicia",
+      "tron_legacy_2010": "Tron: El Legado",
+      "transformers_revenge_of_the_fallen_2009": "Transformers: La venganza de los caídos",
+      "transformers_dark_of_the_moon_2011": "Transformers: El lado oscuro de la luna",
+      "transformers_the_last_knight_2017": "Transformers: El último caballero",
+      "the_suicide_squad_2021": "El Escuadrón Suicida",
+      "transformers_age_of_extinction_2014": "Transformers: La era de la extinción",
+      "terminator_2_judgment_day_1991": "Terminator 2: El juicio final",
+      "the_hunger_games_2012": "Los juegos del hambre",
+      "the_hunger_games_catching_fire_2013": "Los juegos del hambre: En llamas",
+      "the_hunger_games_mockingjay_part_1_2014": "Los juegos del hambre: Sinsajo - Parte 1",
+      "transformers_rise_of_the_beasts_2023": "Transformers: El despertar de las bestias",
+      "the_hunger_games_mockingjay_part_2_2015": "Los juegos del hambre: Sinsajo - Parte 2",
+      "the_hunger_games_ballad_of_songbirds_snakes_2023": "Los juegos del hambre: La balada de pájaros cantores y serpientes",
+      "the_matrix_1999": "Matrix",
+      "the_matrix_reloaded_2003": "Matrix recargado",
+      "the_lord_of_the_rings_the_two_towers_extended_2002": "El señor de los anillos: Las dos torres",
+      "the_terminator_1984": "Terminator: El exterminador",
+      "the_hobbit_the_desolation_of_smaug_2013": "El Hobbit: La desolación de Smaug",
+      "the_matrix_revolutions_2003": "Matrix: Revoluciones",
+      "the_hobbit_the_battle_of_the_five_armies_2014": "El Hobbit: La batalla de los cinco ejércitos",
+      "the_maze_runner_2014": "Maze Runner: Correr o morir",
+      "maze_runner_the_scorch_trials_2015": "Maze Runner: Prueba de fuego",
+      "terminator_3_rise_of_the_machines_2003": "Terminator 3: La rebelión de las máquinas",
+      "maze_runner_the_death_cure_2018": "Maze Runner: La cura mortal",
+      "a_quiet_place_part_ii_2020": "Un lugar en silencio: Parte II",
+      "a_quiet_place_2018": "Un lugar en silencio",
+      "the_lord_of_the_rings_the_fellowship_of_the_ring_2001": "El señor de los anillos: La comunidad del anillo",
+      "dune_part_one_2021": "Duna",
+      "a_quiet_place_day_one_2024": "Un lugar en silencio: Día uno",
+      "mission_impossible_ghost_protocol_2011": "Misión Imposible: Protocolo fantasma",
+      "the_hobbit_an_unexpected_journey_2012": "El Hobbit: Un viaje inesperado",
+      "mission_impossible_1996": "Misión Imposible",
+      "the_lord_of_the_rings_the_return_of_the_king_extended_2003": "El señor de los anillos: El retorno del rey",
+      "mission_impossible_fallout_2018": "Misión Imposible: Repercusión",
+      "top_gun_1986": "Top Gun: Pasión y gloria",
+      "mission_impossible_the_final_reckoning_2025": "Misión Imposible: La sentencia final",
+      "avatar_the_way_of_water_2022": "Avatar: El camino del agua",
+      "dune_part_two_2024": "Duna: Parte dos",
+      "avatar_fire_and_ash_2025": "Avatar: Fuego y ceniza",
+      "twilight_2008": "Crepúsculo",
+      "the_twilight_saga_eclipse_2010": "Crepúsculo: Eclipse",
+      "the_twilight_saga_new_moon_2009": "Crepúsculo: Luna nueva",
+      "back_to_the_future_1985": "Volver al futuro",
+      "back_to_the_future_part_iii_1990": "Volver al futuro III",
+      "mission_impossible_2_2000": "Misión Imposible 2",
+      "mickey_s_twice_upon_a_christmas_2004": "Mickey y sus amigos juntos otra Navidad",
+      "the_polar_express_2004": "El expreso polar",
+      "back_to_the_future_part_ii_1989": "Volver al futuro II",
+      "arthur_christmas_2011": "Operación Regalo",
+      "aliens_special_edition_1986": "Aliens: El regreso",
+      "the_twilight_saga_breaking_dawn_part_2_2012": "Crepúsculo: Amanecer - Parte 2",
+      "pacific_rim_2013": "Titanes del Pacífico",
+      "arrival_2016": "La llegada",
+      "star_trek_into_darkness_2013": "Star Trek: En la oscuridad",
+      "jurassic_park_1993": "Parque Jurásico",
+      "alita_battle_angel_2019": "Battle Angel: La última guerrera",
+      "real_steel_2011": "Gigantes de acero",
+      "nope_2022": "¡Nop!",
+      "project_hail_mary_2026": "Proyecto Fin del Mundo",
+      "the_dog_stars_2026": "La guerra de los últimos",
+      "saving_private_ryan_1998": "Rescatando al soldado Ryan",
+      "star_wars_the_force_awakens_2015": "Star Wars: El despertar de la fuerza",
+      "the_hurt_locker_2008": "Zona de miedo",
+      "american_sniper_2014": "Francotirador",
+      "sully_2016": "Sully: Hazaña en el Hudson",
+      "oblivion_2013": "Oblivion: El tiempo del olvido",
+      "hacksaw_ridge_2016": "Hasta el último hombre",
+      "first_man_2018": "El primer hombre en la Luna",
+      "gladiator_2000": "Gladiador",
+      "civil_war_2024": "Guerra Civil",
+      "drumline_2002": "Ritmo Total",
+      "pride_prejudice_2005": "Orgullo y prejuicio",
+      "the_twilight_saga_breaking_dawn_part_1_2011": "Crepúsculo: Amanecer - Parte 1",
+      "sinners_2025": "Pecadores",
+      "skyfall_2012": "007: Operación Skyfall"
+    };
+
+    const SAGA_NAMES_ES = {
+      "The Dark Knight": "El Caballero de la Noche",
+      "Marvel Cinematic Universe": "Universo Cinematográfico de Marvel",
+      "X-Men and Mutants": "X-Men y mutantes",
+      "Sony Universe": "Universo Sony",
+      "DC Universe": "Universo DC",
+      "The Hunger Games": "Los juegos del hambre",
+      "The Matrix": "Matrix",
+      "Middle-earth": "Tierra Media",
+      "A Quiet Place": "Un lugar en silencio",
+      "Dune": "Duna",
+      "Mission: Impossible": "Misión Imposible",
+      "The Twilight Saga": "Crepúsculo",
+      "Back to the Future": "Volver al futuro",
+      "Christmas": "Navidad",
+      "Sci-Fi": "Ciencia ficción",
+      "War & True Stories": "Guerra e historias reales",
+      "Standalone Films": "Otras películas"
+    };
+
     const sagaStyles = {
       "The Dark Knight": "url('./assets/The Dark Knight Trilogy.jpeg')",
       "Christopher Nolan": "url('./assets/Christopher Nolan.jpg')",
@@ -2611,8 +2765,17 @@
       ...m,
       ...parseAudio(m.audio),
       id: m.id || slug(`${m.title}_${m.year}`),
+      titleEs: TITLES_ES[m.id || slug(`${m.title}_${m.year}`)] || null,
       haystack: normalize(`${m.title} ${m.saga} ${m.year}`)
     }));
+    // In Spanish, search matches the Spanish title and collection name too (and still the English ones).
+    movies.forEach(m => {
+      m.haystackEs = normalize(`${m.titleEs || ""} ${m.title} ${SAGA_NAMES_ES[m.saga] || ""} ${m.saga} ${m.year}`);
+    });
+
+    // Display names: Spanish titles only when the site is in Spanish; English otherwise.
+    const titleOf = (m) => currentLang === "es" && m.titleEs ? m.titleEs : m.title;
+    const sagaName = (name) => currentLang === "es" && SAGA_NAMES_ES[name] ? SAGA_NAMES_ES[name] : name;
     const movieById = Object.fromEntries(movies.map(m => [m.id, m]));
 
     const sagasMap = {};
@@ -2995,12 +3158,12 @@
       const count = sagasMap[name].length;
       const films = plural(count, tr.film_singular, tr.film_plural);
       return `
-        <button class="saga-card" data-action="open-saga" data-saga="${esc(name)}" aria-label="${esc(name)} — ${films}">
+        <button class="saga-card" data-action="open-saga" data-saga="${esc(name)}" aria-label="${esc(sagaName(name))} — ${films}">
           <span class="saga-bg" style="background-image: ${sagaStyles[name] || "none"};"></span>
           <span class="saga-votes" hidden></span>
           ${hubOf(name)?.countdown && daysUntil(DOOMSDAY_DATE) > 0 ? `<span class="saga-flag">${tr.doomsday_badge(daysUntil(DOOMSDAY_DATE))}</span>` : ""}
           <span class="saga-overlay">
-            <span class="saga-logo-text">${esc(name)}</span>
+            <span class="saga-logo-text">${esc(sagaName(name))}</span>
             <span class="saga-label">${tr.collection_label} · ${films}</span>
           </span>
         </button>`;
@@ -3079,20 +3242,20 @@
       return `
         <article class="card" data-id="${m.id}">
           <div class="poster-box">
-          <button class="poster-wrap" data-action="trailer" data-id="${m.id}" aria-label="${tr.play_trailer}: ${esc(m.title)}">
+          <button class="poster-wrap" data-action="trailer" data-id="${m.id}" aria-label="${tr.play_trailer}: ${esc(titleOf(m))}">
             <img src="${poster}" alt="" data-poster="${m.id}" class="poster-img" loading="lazy" decoding="async"
               onload="if (!this.src.startsWith('data:')) this.dataset.loaded = '1'">
-            <span class="poster-fallback">${esc(m.title)}</span>
+            <span class="poster-fallback">${esc(titleOf(m))}</span>
             <span class="badge-float ${m.tag === "HAR" ? "badge-har" : "badge-scope"}">${formatIcon(m.tag)}${m.tag}</span>
             <span class="watched-badge" hidden></span>
             <span class="trailer-hint">${tr.trailer_hint}</span>
           </button>
-          <button class="specs-btn" data-action="flip" data-id="${m.id}" aria-label="${tr.specs_aria}: ${esc(m.title)}">${tr.specs_btn}</button>
+          <button class="specs-btn" data-action="flip" data-id="${m.id}" aria-label="${tr.specs_aria}: ${esc(titleOf(m))}">${tr.specs_btn}</button>
           </div>
           <div class="card-info">
             <div>
               ${label ? `<div class="card-label ${labelClass}">${esc(label)}</div>` : ""}
-              <h3 class="card-title">${esc(m.title)}</h3>
+              <h3 class="card-title">${esc(titleOf(m))}</h3>
               <div class="card-meta">
                 <span>${m.year} • ${esc(m.sound)}</span>
                 ${m.audioTags ? `<span class="dual-pill">${m.audioTags.join(" / ")}</span>` : ""}
@@ -3260,7 +3423,7 @@
       row(tr.sp_released, spec?.date ? formatLongDate(spec.date) : "");
       return `
         <div>
-          <div class="back-title">${esc(m.title)}</div>
+          <div class="back-title">${esc(titleOf(m))}</div>
           <div class="back-sub">${m.year}</div>
         </div>
         <dl class="spec-list">${rows.join("")}</dl>
@@ -3380,18 +3543,18 @@
           catalogEl.innerHTML = "";
           catalogEl.hidden = true;
           renderHub(activeSaga);
-          setTitle(activeSaga, all.length);
+          setTitle(sagaName(activeSaga), all.length);
         } else {
           const list = section ? sectionList(activeSaga, section) : all;
           const numbered = section?.numbered
-            ? (m) => [`#${list.indexOf(m) + 1}${m.saga !== activeSaga ? ` · ${m.saga}` : ""}`, ""]
+            ? (m) => [`#${list.indexOf(m) + 1}${m.saga !== activeSaga ? ` · ${sagaName(m.saga)}` : ""}`, ""]
             : null;
           if (section?.note) {
             sectionNote.innerHTML = section.note(tr);
             sectionNote.hidden = false;
           }
           renderCatalog(list, numbered, "");
-          setTitle(section ? section.label(tr) : activeSaga, list.length);
+          setTitle(section ? section.label(tr) : sagaName(activeSaga), list.length);
         }
         if (animate) replayFade(catalogContainer);
       } else if (mode === "history") {
@@ -3401,8 +3564,8 @@
         if (animate) replayFade(catalogContainer);
       } else {
         const q = normalize(searchQuery);
-        const results = movies.filter(m => m.haystack.includes(q) && [...activeFilters].every(key => FILTERS[key].test(m)));
-        renderCatalog(results, (m) => [m.saga, ""], tr.no_results(esc(searchQuery)));
+        const results = movies.filter(m => (currentLang === "es" ? m.haystackEs : m.haystack).includes(q) && [...activeFilters].every(key => FILTERS[key].test(m)));
+        renderCatalog(results, (m) => [sagaName(m.saga), ""], tr.no_results(esc(searchQuery)));
         setTitle(tr.results, results.length);
         if (animate) replayFade(catalogContainer);
       }
@@ -3474,7 +3637,7 @@
           <button class="leader-item ${item.count === max ? "is-lead" : ""}" data-action="focus" data-id="${item.movie.id}">
             <span class="leader-bar" style="--pct: ${(item.count / max) * 100}%"></span>
             <span class="leader-rank">${rank}</span>
-            <span class="leader-name">${esc(item.movie.title)}</span>
+            <span class="leader-name">${esc(titleOf(item.movie))}</span>
             <span class="leader-votes">${item.count}</span>
           </button>`;
       }).join("");
@@ -3700,7 +3863,7 @@
       const request = ++trailerRequest;
       trailerReturnFocus = document.activeElement;
 
-      $("trailerTitle").textContent = `${movie.title} (${movie.year})`;
+      $("trailerTitle").textContent = `${titleOf(movie)} (${movie.year})`;
       trailerIframe.src = "about:blank";
       trailerModal.hidden = false;
       document.body.classList.add("modal-open");
@@ -3775,7 +3938,7 @@
       const movie = movieById[id];
       if (!movie) return;
       const tr = t();
-      $("winnerTitle").textContent = movie.title;
+      $("winnerTitle").textContent = titleOf(movie);
       const baseMeta = `${movie.year} • ${movie.sound} • ${movie.tag}`;
       const metaEl = $("winnerMeta");
       metaEl.textContent = baseMeta;
@@ -3783,7 +3946,7 @@
       $("winnerTrailerBtn").dataset.id = movie.id;
 
       const img = $("winnerPoster");
-      img.alt = movie.title;
+      img.alt = titleOf(movie);
       if (img.dataset.movie !== movie.id) {
         img.dataset.movie = movie.id;
         img.src = posterCache[movie.id] || movie.poster || PLACEHOLDER;
@@ -3838,7 +4001,7 @@
         const img = $("winnerPoster");
         img.dataset.movie = "";
         $("winnerVotes").textContent = t().tie_spin;
-        $("winnerMeta").textContent = tied.map(m => m.title).join("  ·  ");
+        $("winnerMeta").textContent = tied.map(m => titleOf(m)).join("  ·  ");
         const posters = await Promise.all(tied.map(m => getPoster(m).catch(() => null)));
 
         const winIdx = tied.indexOf(winner);
@@ -3851,8 +4014,8 @@
             return;
           }
           img.src = posters[i] || PLACEHOLDER;
-          img.alt = tied[i].title;
-          $("winnerTitle").textContent = tied[i].title;
+          img.alt = titleOf(tied[i]);
+          $("winnerTitle").textContent = titleOf(tied[i]);
           await sleep(delay);
           if (delay >= 420 && i === winIdx) break;
           delay = Math.min(delay * 1.12, 480);
