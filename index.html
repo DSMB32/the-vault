@@ -670,13 +670,86 @@
     }
 
     /* SAGA GRID */
+    /* HOME ROWS (swipeable shelves of collections) */
     .sagas-grid {
       max-width: 1200px;
-      margin: 1.5rem auto 2rem;
+      margin: 0.75rem auto 2rem;
+    }
+
+    .shelf {
+      position: relative;
+      margin-top: 1.4rem;
+    }
+
+    .shelf-title {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
       padding: 0 var(--gutter);
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .shelf-count {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+
+    .shelf-track {
+      display: flex;
+      gap: 1.1rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scroll-padding-inline: var(--gutter);
+      padding: 0.8rem var(--gutter) 1.4rem;
+      scrollbar-width: none;
+    }
+
+    .shelf-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .shelf-track .saga-card {
+      flex: 0 0 200px;
+      scroll-snap-align: start;
+    }
+
+    .shelf-arrow {
+      position: absolute;
+      top: 2.6rem;
+      bottom: 1.4rem;
+      z-index: 5;
+      width: 3rem;
+      border: 0;
+      color: #fff;
+      font-size: 1.6rem;
+      font-weight: 800;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .shelf-arrow.prev {
+      left: 0;
+      background: linear-gradient(to right, rgba(9, 10, 15, 0.95), rgba(9, 10, 15, 0));
+    }
+
+    .shelf-arrow.next {
+      right: 0;
+      background: linear-gradient(to left, rgba(9, 10, 15, 0.95), rgba(9, 10, 15, 0));
+    }
+
+    @media (hover: hover) {
+      .shelf:hover .shelf-arrow:not([disabled]),
+      .shelf-arrow:focus-visible {
+        opacity: 1;
+      }
+    }
+
+    .shelf-arrow[disabled] {
+      pointer-events: none;
     }
 
     .saga-card {
@@ -1571,7 +1644,6 @@
         padding: 2rem var(--gutter) 1.25rem;
       }
 
-      .sagas-grid,
       .hub-grid,
       .catalog {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1592,6 +1664,23 @@
 
       .hero {
         min-height: 330px;
+      }
+
+      .shelf {
+        margin-top: 1rem;
+      }
+
+      .shelf-title {
+        font-size: 1.05rem;
+      }
+
+      .shelf-track {
+        gap: 0.8rem;
+        padding: 0.6rem var(--gutter) 1rem;
+      }
+
+      .shelf-track .saga-card {
+        flex-basis: 40vw;
       }
 
       .hero-content {
@@ -1936,6 +2025,13 @@
         f_dual: "🇪🇸 Spanish audio",
         f_unwatched: "Not watched yet",
         f_clear: "✕ Clear",
+        row_holiday: "🎄 Holiday Season",
+        row_heroes: "Superheroes",
+        row_action: "Action & Sci-Fi Sagas",
+        row_adventure: "Adventure & Fantasy Sagas",
+        row_more: "More to Explore",
+        shelf_prev: "Scroll left",
+        shelf_next: "Scroll right",
         sec_doomsday: "Road to Doomsday",
         sec_phase: (n) => `Phase ${n}`,
         sec_all: "All Marvel movies",
@@ -2027,6 +2123,13 @@
         f_dual: "🇪🇸 Audio en español",
         f_unwatched: "No vistas",
         f_clear: "✕ Limpiar",
+        row_holiday: "🎄 Temporada navideña",
+        row_heroes: "Superhéroes",
+        row_action: "Sagas de acción y ciencia ficción",
+        row_adventure: "Sagas de aventura y fantasía",
+        row_more: "Más para explorar",
+        shelf_prev: "Desplazar a la izquierda",
+        shelf_next: "Desplazar a la derecha",
         sec_doomsday: "Camino a Doomsday",
         sec_phase: (n) => `Fase ${n}`,
         sec_all: "Todo Marvel",
@@ -2682,29 +2785,85 @@
       return d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() <= 6);
     }
 
-    function sagaOrder() {
-      const names = Object.keys(sagasMap);
-      if (!isChristmasSeason() || !sagasMap["Christmas"]) return names;
-      return ["Christmas", ...names.filter(n => n !== "Christmas")];
+    // Home page rows. Any collection not listed here lands in the last row, so new
+    // collections always show up. The holiday row only appears in season (at the top).
+    const HOME_ROWS = [
+      { key: "holiday", title: "row_holiday", seasonal: true, sagas: ["Christmas"] },
+      { key: "heroes", title: "row_heroes", sagas: ["Marvel Cinematic Universe", "Spider-Man", "X-Men and Mutants", "The Dark Knight", "DC Universe", "Sony Universe"] },
+      { key: "action", title: "row_action", sagas: ["Mission: Impossible", "Transformers", "The Matrix", "Terminator", "Avatar", "Dune", "TRON", "Top Gun", "A Quiet Place"] },
+      { key: "adventure", title: "row_adventure", sagas: ["Middle-earth", "The Hunger Games", "Back to the Future", "Maze Runner", "The Twilight Saga"] },
+      { key: "more", title: "row_more", sagas: ["Christopher Nolan", "Sci-Fi", "War & True Stories", "Standalone Films"] }
+    ];
+    const shelfScroll = {};
+
+    function homeRows() {
+      const inSeason = isChristmasSeason();
+      const placed = new Set();
+      const rows = HOME_ROWS
+        .filter(row => !row.seasonal || inSeason)
+        .map(row => {
+          const sagas = row.sagas.filter(name => sagasMap[name] && !placed.has(name));
+          sagas.forEach(name => placed.add(name));
+          return { ...row, sagas };
+        });
+      const leftover = Object.keys(sagasMap).filter(name => !placed.has(name));
+      rows[rows.length - 1].sagas.push(...leftover);
+      return rows.filter(row => row.sagas.length);
+    }
+
+    function sagaCardHTML(name) {
+      const tr = t();
+      const count = sagasMap[name].length;
+      const films = plural(count, tr.film_singular, tr.film_plural);
+      return `
+        <button class="saga-card" data-action="open-saga" data-saga="${esc(name)}" aria-label="${esc(name)} — ${films}">
+          <span class="saga-bg" style="background-image: ${sagaStyles[name] || "none"};"></span>
+          <span class="saga-votes" hidden></span>
+          ${hubOf(name)?.countdown && daysUntil(DOOMSDAY_DATE) > 0 ? `<span class="saga-flag">${tr.doomsday_badge(daysUntil(DOOMSDAY_DATE))}</span>` : ""}
+          <span class="saga-overlay">
+            <span class="saga-logo-text">${esc(name)}</span>
+            <span class="saga-label">${tr.collection_label} · ${films}</span>
+          </span>
+        </button>`;
+    }
+
+    function updateShelfArrows(shelf) {
+      const track = shelf.querySelector(".shelf-track");
+      const max = track.scrollWidth - track.clientWidth - 2;
+      shelf.querySelector(".shelf-arrow.prev").disabled = track.scrollLeft <= 2;
+      shelf.querySelector(".shelf-arrow.next").disabled = track.scrollLeft >= max;
     }
 
     function renderSagas() {
       const tr = t();
-      sagasGrid.innerHTML = sagaOrder().map(name => {
-        const count = sagasMap[name].length;
-        const films = plural(count, tr.film_singular, tr.film_plural);
-        return `
-          <button class="saga-card" data-action="open-saga" data-saga="${esc(name)}" aria-label="${esc(name)} — ${films}">
-            <span class="saga-bg" style="background-image: ${sagaStyles[name] || "none"};"></span>
-            <span class="saga-votes" hidden></span>
-            ${hubOf(name)?.countdown && daysUntil(DOOMSDAY_DATE) > 0 ? `<span class="saga-flag">${tr.doomsday_badge(daysUntil(DOOMSDAY_DATE))}</span>` : ""}
-            <span class="saga-overlay">
-              <span class="saga-logo-text">${esc(name)}</span>
-              <span class="saga-label">${tr.collection_label} · ${films}</span>
-            </span>
-          </button>`;
-      }).join("");
+      sagasGrid.innerHTML = homeRows().map(row => `
+        <section class="shelf" data-shelf="${row.key}" aria-labelledby="shelf-${row.key}">
+          <h3 class="shelf-title" id="shelf-${row.key}">${esc(tr[row.title])}<span class="shelf-count">${row.sagas.length}</span></h3>
+          <button class="shelf-arrow prev" data-dir="-1" aria-label="${tr.shelf_prev}" tabindex="-1">‹</button>
+          <div class="shelf-track">${row.sagas.map(sagaCardHTML).join("")}</div>
+          <button class="shelf-arrow next" data-dir="1" aria-label="${tr.shelf_next}" tabindex="-1">›</button>
+        </section>`).join("");
+      sagasGrid.querySelectorAll(".shelf").forEach(shelf => {
+        const track = shelf.querySelector(".shelf-track");
+        track.scrollLeft = shelfScroll[shelf.dataset.shelf] || 0;
+        track.addEventListener("scroll", () => {
+          shelfScroll[shelf.dataset.shelf] = track.scrollLeft;
+          updateShelfArrows(shelf);
+        }, { passive: true });
+        updateShelfArrows(shelf);
+      });
     }
+
+    sagasGrid.addEventListener("click", (e) => {
+      const arrow = e.target.closest(".shelf-arrow");
+      if (!arrow) return;
+      const track = arrow.parentElement.querySelector(".shelf-track");
+      track.scrollBy({ left: Number(arrow.dataset.dir) * track.clientWidth * 0.85, behavior: "smooth" });
+    });
+
+    window.addEventListener("resize", () => {
+      sagasGrid.querySelectorAll(".shelf").forEach(updateShelfArrows);
+    });
 
     function renderFilters() {
       const tr = t();
